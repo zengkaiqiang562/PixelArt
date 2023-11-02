@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="15dp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/wifi_location"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/location_permission"
+        android:layout_marginTop="15dp"
+        android:textStyle="bold"
+        android:textSize="21sp"
+        android:textColor="@color/black_33"
+        />
+    
+    <TextView
+        android:layout_width="315dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/location_permission_text"
+        android:textColor="@color/black_33"
+        android:textSize="16sp"
+        android:gravity="center"
+        />
+
+    <TextView
+        android:id="@id/wifi_item_permission"
+        android:layout_width="286dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_ff8a49ff_r28"
+        android:gravity="center"
+        android:text="@string/request_location_permission"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        />
+
+</LinearLayout>

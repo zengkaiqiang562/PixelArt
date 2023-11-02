@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_f3">
+
+    <View
+        android:id="@+id/stub_bar"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@id/test_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stub_bar"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/icon_back"/>
+
+    <TextView
+        android:id="@id/test_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stub_bar"
+        android:layout_marginTop="16dp"
+        android:text="@string/test_title"
+        android:textColor="@color/black_33"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@id/test_info_root"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_back"
+        android:background="@drawable/test_info_bg"
+        >
+
+        <TextView
+            android:id="@id/test_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="19dp"
+            android:textColor="@color/black_33"
+            android:textSize="14sp"
+            android:text="@string/test_device"
+            />
+
+        <TextView
+            android:id="@id/test_delay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/test_device"
+            app:layout_constraintBaseline_toBaselineOf="@id/test_device"
+            android:layout_marginStart="3dp"
+            android:textColor="@color/black_33"
+            android:textSize="14sp"
+            tools:text="199ms"
+            />
+
+        <ImageView
+            android:id="@id/test_rx_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/test_device"
+            app:layout_constraintTop_toBottomOf="@id/test_device"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/test_rx_icon"
+            />
+
+        <TextView
+            android:id="@id/test_rx_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/test_rx_icon"
+            app:layout_constraintTop_toTopOf="@id/test_rx_icon"
+            app:layout_constraintBottom_toBottomOf="@id/test_rx_icon"
+            android:layout_marginStart="3dp"
+            tools:text="20Mbps"
+            android:textColor="@color/black_33"
+            android:textSize="14sp"
+            />
+
+        <ImageView
+            android:id="@id/test_tx_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/test_rx_value"
+            app:layout_constraintTop_toTopOf="@id/test_rx_icon"
+            android:layout_marginStart="25dp"
+            android:src="@drawable/test_tx_icon"
+            />
+
+        <TextView
+            android:id="@id/test_tx_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/test_tx_icon"
+            app:layout_constraintTop_toTopOf="@id/test_tx_icon"
+            app:layout_constraintBottom_toBottomOf="@id/test_tx_icon"
+            android:layout_marginStart="3dp"
+            tools:text="10Mbps"
+            android:textColor="@color/black_33"
+            android:textSize="14sp"
+            />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@id/test_chart"
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/test_rx_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="3dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+        <ImageView
+            android:id="@id/test_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/test_rx_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="21dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/test_empty_icon"
+            android:visibility="gone"
+            tools:visibility="gone"
+            />
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@id/test_start"
+        android:layout_width="286dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_info_root"
+        android:background="@drawable/button_ff8a49ff_r28"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:text="@string/start_speed_test"
+        android:textSize="14sp"
+        />
+
+    <TextView
+        android:id="@id/test_records"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_start"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="13dp"
+        android:text="@string/records"
+        android:textColor="@color/black_33"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@id/test_history"
+        android:layout_width="72dp"
+        android:layout_height="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_start"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/test_history_entrance"
+        android:gravity="center"
+        android:textColor="@color/black_33"
+        android:textSize="12sp"
+        android:text="@string/history"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@id/test_rv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_records"
+        android:layout_marginTop="2dp"
+        tools:listitem="@layout/item_history"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_f3"
+    tools:ignore="MissingDefaultResource">
+
+    <View
+        android:id="@+id/stub_bar"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@id/report_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stub_bar"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/icon_back"/>
+
+    <TextView
+        android:id="@id/report_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stub_bar"
+        android:layout_marginTop="16dp"
+        android:text="@string/report"
+        android:textColor="@color/black_33"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        />
+
+    <ImageView
+        android:id="@id/report_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/report_back"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/report_success"
+        />
+
+    <TextView
+        android:id="@id/report_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/report_icon"
+        android:layout_marginTop="20dp"
+        android:text="@string/connect_success"
+        android:textColor="@color/black_33"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <LinearLayout
+        android:id="@id/report_info_root"
+        android:layout_width="0dp"
+        android:layout_height="183dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/report_text"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/report_info_bg"
+        >
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@id/report_download_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/report_rx"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/report_download_icon"
+                android:layout_marginStart="10dp"
+                android:text="@string/download"
+                android:textSize="16sp"
+                android:textColor="@color/black_33"
+                />
+
+            <TextView
+                android:id="@id/report_download_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="30dp"
+                tools:text="110KB/S"
+                android:textSize="16sp"
+                android:textColor="@color/alpha_99_33"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp">
+
+            <ImageView
+                android:id="@id/report_upload_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/report_tx"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/report_upload_icon"
+                android:layout_marginStart="10dp"
+                android:text="@string/upload"
+                android:textSize="16sp"
+                android:textColor="@color/black_33"
+                />
+
+            <TextView
+                android:id="@id/report_upload_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="30dp"
+                tools:text="110KB/S"
+                android:textSize="16sp"
+                android:textColor="@color/alpha_99_33"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp">
+
+            <ImageView
+                android:id="@id/report_duration_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/report_duration"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/report_duration_icon"
+                android:layout_marginStart="10dp"
+                android:text="@string/duration"
+                android:textSize="16sp"
+                android:textColor="@color/black_33"
+                />
+
+            <TextView
+                android:id="@id/report_duration_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="30dp"
+                tools:text="00:12:23"
+                android:textSize="16sp"
+                android:textColor="@color/alpha_99_33"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp">
+
+            <ImageView
+                android:id="@id/report_server_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/report_node_icon"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/report_server_icon"
+                android:layout_marginStart="10dp"
+                android:text="@string/server"
+                android:textSize="16sp"
+                android:textColor="@color/black_33"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="30dp"
+                android:text="@string/us"
+                android:textSize="16sp"
+                android:textColor="@color/alpha_99_33"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

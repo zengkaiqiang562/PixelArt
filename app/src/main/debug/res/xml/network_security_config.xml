@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!--正式版，不可抓包-->
+            <certificates src="system" />
+
+            <!-- 测试版，可抓包-->
+            <!--<certificates src="system" overridePins="true" />
+            <certificates src="user" overridePins="true" />-->
+        </trust-anchors>
+    </base-config>
+
+</network-security-config>

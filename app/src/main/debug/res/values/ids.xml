@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--  隐私页 -->
+    <item name="privacy_icon" type="id"/>
+    <item name="privacy_name" type="id"/>
+    <item name="privacy_status" type="id"/>
+    <item name="privacy_terms" type="id"/>
+    <item name="privacy_policy" type="id"/>
+    <item name="privacy_start" type="id"/>
+
+    <!-- 启动页 -->
+    <item name="start_anim" type="id"/>
+    <item name="start_loop_text" type="id"/>
+    <item name="start_progress" type="id"/>
+    <item name="start_name" type="id"/>
+    <item name="start_subname" type="id"/>
+
+    <!-- 首页 -->
+    <item name="home_title" type="id"/>
+    <item name="home_button_test" type="id"/>
+    <item name="home_connecting_anim" type="id"/>
+    <item name="home_connect_button" type="id"/>
+    <item name="home_left_button" type="id"/>
+    <item name="home_right_button" type="id"/>
+    <item name="home_menu_root" type="id"/>
+    <item name="home_menu_wifi_parent" type="id"/>
+    <item name="home_manu_wifi_icon" type="id"/>
+    <item name="home_manu_wifi_text" type="id"/>
+    <item name="home_menu_vpn_parent" type="id"/>
+    <item name="home_manu_vpn_icon" type="id"/>
+    <item name="home_manu_vpn_text" type="id"/>
+    <item name="home_menu_mine_parent" type="id"/>
+    <item name="home_manu_mine_icon" type="id"/>
+    <item name="home_manu_mine_text" type="id"/>
+
+    <!-- 报告页（成功，失败，结果） -->
+    <item name="report_back" type="id"/>
+    <item name="report_title" type="id"/>
+    <item name="report_icon" type="id"/>
+    <item name="report_text" type="id"/>
+    <item name="report_reconnect" type="id"/>
+    <item name="report_info_root" type="id"/>
+    <item name="report_download_icon" type="id"/>
+    <item name="report_download_text" type="id"/>
+    <item name="report_download_value" type="id"/>
+    <item name="report_upload_icon" type="id"/>
+    <item name="report_upload_text" type="id"/>
+    <item name="report_upload_value" type="id"/>
+    <item name="report_duration_icon" type="id"/>
+    <item name="report_duration_text" type="id"/>
+    <item name="report_duration_value" type="id"/>
+    <item name="report_server_icon" type="id"/>
+    <item name="report_server_text" type="id"/>
+    <item name="report_server_value" type="id"/>
+
+    <!-- 更多页 -->
+    <item name="more_title" type="id"/>
+    <item name="more_button_test" type="id"/>
+    <item name="more_privacy_root" type="id"/>
+    <item name="more_privacy_icon" type="id"/>
+    <item name="more_privacy_text" type="id"/>
+    <item name="more_service_root" type="id"/>
+    <item name="more_service_icon" type="id"/>
+    <item name="more_service_text" type="id"/>
+    <item name="more_rate_root" type="id"/>
+    <item name="more_rate_icon" type="id"/>
+    <item name="more_rate_text" type="id"/>
+    <item name="more_feedback_root" type="id"/>
+    <item name="more_feedback_icon" type="id"/>
+    <item name="more_feedback_text" type="id"/>
+    <item name="more_share_root" type="id"/>
+    <item name="more_share_icon" type="id"/>
+    <item name="more_share_text" type="id"/>
+    <item name="more_about_root" type="id"/>
+    <item name="more_about_icon" type="id"/>
+    <item name="more_about_text" type="id"/>
+
+    <!-- 关于页 -->
+    <item name="about_title" type="id"/>
+    <item name="about_back" type="id"/>
+    <item name="about_info_root" type="id"/>
+    <item name="about_icon" type="id"/>
+    <item name="about_name" type="id"/>
+    <item name="about_official" type="id"/>
+    <item name="about_email" type="id"/>
+    <item name="about_version" type="id"/>
+
+    <!-- VPN 限制弹窗 -->
+    <item name="limit_title" type="id"/>
+    <item name="limit_text" type="id"/>
+    <item name="limit_leave_button" type="id"/>
+
+    <!-- 更新弹窗 -->
+    <item name="update_title" type="id"/>
+    <item name="update_text" type="id"/>
+    <item name="update_confirm_button" type="id"/>
+    <item name="update_cancel_button" type="id"/>
+
+    <!-- 网络异常弹窗 -->
+    <item name="neterr_title" type="id"/>
+    <item name="neterr_text" type="id"/>
+    <item name="neterr_try_again_button" type="id"/>
+    <item name="neterr_cancel_button" type="id"/>
+
+    <!-- 断开连接弹窗 -->
+    <item name="disconnect_title" type="id"/>
+    <item name="disconnect_text" type="id"/>
+    <item name="disconnect_confirm_button" type="id"/>
+    <item name="disconnect_cancel_button" type="id"/>
+
+    <!-- 连接成功弹窗 -->
+    <item name="connected_icon" type="id"/>
+    <item name="connected_text" type="id"/>
+    <item name="connected_test_button" type="id"/>
+    <item name="connected_later_button" type="id"/>
+
+    <!-- 评论弹窗 -->
+    <item name="rate_star_1" type="id"/>
+    <item name="rate_star_2" type="id"/>
+    <item name="rate_star_3" type="id"/>
+    <item name="rate_star_4" type="id"/>
+    <item name="rate_star_5" type="id"/>
+    <item name="rate_text" type="id"/>
+    <item name="rate_confirm_button" type="id"/>
+    <item name="rate_cancel_button" type="id"/>
+
+
+    <!-- 测试页 -->
+    <item name="test_title" type="id"/>
+    <item name="test_back" type="id"/>
+    <item name="test_info_root" type="id"/>
+    <item name="test_device" type="id"/>
+    <item name="test_delay" type="id"/>
+    <item name="test_rx_icon" type="id"/>
+    <item name="test_rx_value" type="id"/>
+    <item name="test_tx_icon" type="id"/>
+    <item name="test_tx_value" type="id"/>
+    <item name="test_chart" type="id"/>
+    <item name="test_start" type="id"/>
+    <item name="test_empty" type="id"/>
+    <item name="test_records" type="id"/>
+    <item name="test_history" type="id"/>
+    <item name="test_rv" type="id"/>
+
+    <!-- 历史页 -->
+    <item name="history_back" type="id"/>
+    <item name="history_title" type="id"/>
+    <item name="history_rv" type="id"/>
+    <item name="history_item_time" type="id"/>
+    <item name="history_item_net_icon" type="id"/>
+    <item name="history_item_net_name" type="id"/>
+    <item name="history_item_rx_bar" type="id"/>
+    <item name="history_item_rx_icon" type="id"/>
+    <item name="history_item_rx_value" type="id"/>
+    <item name="history_item_tx_bar" type="id"/>
+    <item name="history_item_tx_icon" type="id"/>
+    <item name="history_item_tx_value" type="id"/>
+    <item name="history_item_device" type="id"/>
+    <item name="history_item_delay" type="id"/>
+    <item name="history_item_clear" type="id"/>
+    <item name="history_item_test" type="id"/>
+    <item name="history_item_empty_icon" type="id"/>
+
+    <!--测试执行页-->
+    <item name="test_exec_back" type="id"/>
+    <item name="test_exec_title" type="id"/>
+    <item name="test_exec_top" type="id"/>
+    <item name="test_exec_server" type="id"/>
+    <item name="test_exec_client" type="id"/>
+    <item name="test_exec_trans_container" type="id"/>
+    <item name="test_exec_delay" type="id"/>
+    <item name="test_exec_tx_icon" type="id"/>
+    <item name="test_exec_tx_value" type="id"/>
+    <item name="test_exec_rx_icon" type="id"/>
+    <item name="test_exec_rx_value" type="id"/>
+    <item name="test_exec_name" type="id"/>
+    <item name="test_exec_value" type="id"/>
+    <item name="test_exec_unit" type="id"/>
+    <item name="test_exec_rx_chart" type="id"/>
+    <item name="test_exec_tx_chart" type="id"/>
+
+    <!--测试结果页-->
+    <item name="test_result_back" type="id"/>
+    <item name="test_result_title" type="id"/>
+    <item name="test_result_server_icon" type="id"/>
+    <item name="test_result_server_name" type="id"/>
+    <item name="test_result_client_icon" type="id"/>
+    <item name="test_result_client_name" type="id"/>
+    <item name="test_result_trans_container" type="id"/>
+    <item name="test_result_delay" type="id"/>
+    <item name="test_result_tx_icon" type="id"/>
+    <item name="test_result_tx_value" type="id"/>
+    <item name="test_result_rx_icon" type="id"/>
+    <item name="test_result_rx_value" type="id"/>
+    <item name="test_result_ssid_name" type="id"/>
+    <item name="test_result_ssid_value" type="id"/>
+    <item name="test_result_mode_name" type="id"/>
+    <item name="test_result_mode_value" type="id"/>
+    <item name="test_result_speed_name" type="id"/>
+    <item name="test_result_speed_value" type="id"/>
+    <item name="test_result_signal_name" type="id"/>
+    <item name="test_result_signal_value" type="id"/>
+    <item name="test_result_dns_name" type="id"/>
+    <item name="test_result_dns_value" type="id"/>
+
+    <!-- wifi 页-->
+    <item name="wifi_title" type="id"/>
+    <item name="wifi_rv" type="id"/>
+    <item name="wifi_item_icon" type="id"/>
+    <item name="wifi_item_ssid" type="id"/>
+    <item name="wifi_item_signal" type="id"/>
+    <item name="wifi_item_more" type="id"/>
+    <item name="wifi_item_permission" type="id"/>
+    <item name="wifi_item_title" type="id"/>
+
+    <!--wifi 弹窗-->
+    <item name="wifi_dialog_ssid" type="id"/>
+    <item name="wifi_dialog_pwd_input" type="id"/>
+    <item name="wifi_dialog_pwd_display" type="id"/>
+    <item name="wifi_dialog_connection" type="id"/>
+    <item name="wifi_dialog_cancel" type="id"/>
+    <item name="wifi_dialog_enter_pwd" type="id"/>
+    <item name="wifi_dialog_ignore" type="id"/>
+    <item name="wifi_dialog_later" type="id"/>
+
+    <!--wifi 连接中-->
+    <item name="wifi_connecting_back" type="id"/>
+    <item name="wifi_connecting_title" type="id"/>
+    <item name="wifi_connecting_anim" type="id"/>
+
+    <!--完成弹窗-->
+    <item name="complete_anim" type="id"/>
+
+</resources>

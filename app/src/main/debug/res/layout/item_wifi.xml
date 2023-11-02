@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="67dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="11dp"
+    android:layout_marginEnd="11dp"
+    android:background="@drawable/wifi_item_bg">
+
+    <ImageView
+        android:id="@id/wifi_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/wifi_item_logo"
+        />
+
+    <TextView
+        android:id="@id/wifi_item_ssid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/wifi_item_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"
+        tools:text="Sinozo-A-5G"
+        android:textColor="@color/black_33"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@id/wifi_item_signal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/wifi_item_more"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="15dp"
+        tools:text="-60dBm"
+        android:textColor="@color/black_33"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        />
+
+    <ImageView
+        android:id="@id/wifi_item_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/wifi_item_more"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
