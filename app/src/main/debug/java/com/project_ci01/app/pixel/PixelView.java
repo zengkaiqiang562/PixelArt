@@ -41,6 +41,15 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private ScaleGestureDetector scaleGestureDetector;
 
     private float curFactor = 1.0f; // 默认不缩放
+
+    private float transX = 0f; // 水平平移量
+    private float transY = 0f; // 垂直平移量
+
+    private boolean firstScroll; // Down事件后的第一次滚动
+    private boolean isScaleEvent; // 是否为缩放事件
+
+    private float lastPixelUnit;
+
     /*========== 画笔 ==========*/
     private Paint numberPaint; // 数字画笔
     private Paint borderPaint; // 像素边框画笔
@@ -201,8 +210,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
         float pixelUnit = pixelList.curUnitSize * curFactor;
 
-        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f;
-        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f;
+        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f; // 绘图的左上角的 x
+        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f; // 绘图的左上角的 y
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -275,8 +284,30 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
         float pixelUnit = pixelList.curUnitSize * curFactor;
 
-        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f;
-        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f;
+//        float tmpTransX;
+//        float tmpTransY;
+//        if (isScaleEvent) {
+//            if (pixelUnit < lastPixelUnit) { // 缩小
+//                transX = transX * pixelUnit / lastPixelUnit;
+//                transY = transY * pixelUnit / lastPixelUnit;
+//            } else { // 放大
+//                transX = transX * pixelUnit / lastPixelUnit;
+//                transY = transY * pixelUnit / lastPixelUnit;
+//            }
+//
+//        } else {
+//            tmpTransX = transX;
+//            tmpTransY = transY;
+//        }
+        if (lastPixelUnit > 0) {
+            transX = transX * pixelUnit / lastPixelUnit; // 缩放调整
+            transY = transY * pixelUnit / lastPixelUnit; // 缩放调整
+        }
+
+        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
+        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
+//        float drawLeft = 0 + transX; // 绘图的左上角的 x
+//        float drawTop = 0 + transY; // 绘图的左上角的 y
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -303,6 +334,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             }
         }
 
+        lastPixelUnit = pixelUnit;
+
 //        int numberBitmapWidth = numberBitmap.getWidth();
 //        int numberBitmapHeight = numberBitmap.getHeight();
 //        float drawLeft = (width - numberBitmapWidth) / 2f;
@@ -325,13 +358,17 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
          */
 //        LogUtils.e(TAG, "-->  onTouchEvent()  action=" + event.getAction() + "  pointerCount=" + pointerCount);
 
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            isScaleEvent = false; // reset
+        }
 
         scaleGestureDetector.onTouchEvent(event);
         if (scaleGestureDetector.isInProgress()) {
+            isScaleEvent = true;
             return true;
         }
 
-        if (pointerCount == 1 && gestureDetector.onTouchEvent(event)) {
+        if (pointerCount == 1 && !isScaleEvent && gestureDetector.onTouchEvent(event)) {
             return true;
         }
 
@@ -342,6 +379,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     @Override
     public boolean onDown(@NonNull MotionEvent e) {
         LogUtils.e(TAG, "--> OnGestureListener onDown()  action=" + e.getAction());
+        firstScroll = true;
         return true; // 消费掉
     }
 
@@ -360,7 +398,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     public boolean onScroll(@NonNull MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
         LogUtils.e(TAG, "--> OnGestureListener onScroll()  e1.action=" + e1.getAction() + ", e2.action=" + e2.getAction()
                 + ", distanceX=" + distanceX + ", distanceY=" + distanceY);
-        return false;
+        if (firstScroll) { // 第一次滚动不处理
+            firstScroll = false;
+            return false;
+        }
+        transX += -distanceX;
+        transY += -distanceY;
+        invalidate();
+        return true;
     }
 
     @Override
@@ -389,6 +434,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         float xFactor = currentSpanX / previousSpanX;
         float yFactor = currentSpanY / previousSpanY;
         float factor = currentSpan / previousSpan;
+
 //        float scaleFactor = detector.getScaleFactor();
 //        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()  currentSpanX=" + currentSpanX + ",  currentSpanY=" + currentSpanY+ ",  currentSpan=" + currentSpan
 //                + ",  previousSpanX=" + previousSpanX + ",  previousSpanY=" + previousSpanY+ ",  previousSpan=" + previousSpan
