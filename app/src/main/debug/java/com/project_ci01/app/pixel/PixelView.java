@@ -9,7 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RectF;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -20,34 +21,44 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.util.Hex;
 import com.project_m1142.app.base.utils.LogUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PixelView extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
 
     private static final String TAG = "PixelView";
 
     private final Context context;
-    private Bitmap srcBitmap;
     private int width;
     private int height;
     private Matrix matrix;
-    private Canvas convertCanvas;
 
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
 
+    private float curFactor = 1.0f; // 默认不缩放
     /*========== 画笔 ==========*/
     private Paint numberPaint; // 数字画笔
     private Paint borderPaint; // 像素边框画笔
     private Paint bgPaint; // 像素背景画笔
     private Paint colorPaint; // 填色画笔
     /*========== 画笔 ==========*/
+
+
+    /*========== 画布 和 要画的图 和 像素单元 ==========*/
+//    private Canvas colorCanvas; // 填色画布
+//    private Bitmap colorBitmap; // 填色图
+    private RectF colorRectF; // 填色像素单元
+//    private Canvas numberCanvas; // 数字画布
+//    private Bitmap numberBitmap; // 数字图
+    private RectF numberRectF; // 数字像素单元
+    /*========== 画布 ==========*/
+
+    private PixelList pixelList;
 
     public PixelView(Context context) {
         this(context, null);
@@ -72,11 +83,15 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             InputStream inputStream = assetManager.open(assetFilePath);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inMutable = true;
-            srcBitmap = BitmapFactory.decodeStream(inputStream, null, options);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+            LogUtils.e(TAG, "--> init()  bitmap=" + bitmap);
+            if (bitmap != null) {
+            LogUtils.e(TAG, "--> init()  bitmap.isMutable=" + bitmap.isMutable());
+                pixelList = PixelHelper.getAllPixels(bitmap, 30); // 每个像素点扩大30倍（即原图扩大30倍）
+            }
+
             matrix = new Matrix();
 
-            //TODO test
-            srcBitmap = convertBitmap(srcBitmap);
         } catch (IOException e) {
             Log.e(TAG, "--> init()  assetManager.open Failed !!!   assetFilePath=" + assetFilePath);
         }
@@ -112,31 +127,51 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        LogUtils.e(TAG, "--> onDraw()  srcBitmap=" + srcBitmap);
+        LogUtils.e(TAG, "--> onDraw()  pixelList=" + pixelList);
 
-        if (srcBitmap == null) {
+        if (pixelList == null) {
             return;
         }
 
-        LogUtils.e(TAG, "--> onDraw()  srcBitmap.isMutable=" + srcBitmap.isMutable());
+        drawColorBitmap(canvas);
+        drawNumberBitmap(canvas);
 
-        int srcBitmapWidth = srcBitmap.getWidth();
-        int srcBitmapHeight = srcBitmap.getHeight();
-        float drawLeft = (width - srcBitmapWidth) / 2f;
-        float drawTop = (height - srcBitmapHeight) / 2f;
+//        int numberBitmapWidth = numberBitmap.getWidth();
+//        int numberBitmapHeight = numberBitmap.getHeight();
+//        float drawLeft = (width - numberBitmapWidth) / 2f;
+//        float drawTop = (height - numberBitmapHeight) / 2f;
+//        LogUtils.e(TAG, "--> onDraw()  width=" + width);
+//        LogUtils.e(TAG, "--> onDraw()  height=" + height);
+//        LogUtils.e(TAG, "--> onDraw()  numberBitmapWidth=" + numberBitmapWidth);
+//        LogUtils.e(TAG, "--> onDraw()  numberBitmapHeight=" + numberBitmapHeight);
+//        LogUtils.e(TAG, "--> onDraw()  drawLeft=" + drawLeft);
+//        LogUtils.e(TAG, "--> onDraw()  drawTop=" + drawTop);
+//        Rect srcRect = new Rect();
+//        srcRect.set(0, 0, width, height);
+//        RectF dstRect = new RectF();
+//        dstRect.set(0, 0, width, height);
+//        canvas.drawBitmap(numberBitmap, srcRect, dstRect, null);
 
-        canvas.drawBitmap(srcBitmap, drawLeft, drawTop, null);
 
-        /*=================================*/
+//        LogUtils.e(TAG, "--> onDraw()  srcBitmap.isMutable=" + srcBitmap.isMutable());
+//
+//        int srcBitmapWidth = srcBitmap.getWidth();
+//        int srcBitmapHeight = srcBitmap.getHeight();
+//        float drawLeft = (width - srcBitmapWidth) / 2f;
+//        float drawTop = (height - srcBitmapHeight) / 2f;
+//
+//        canvas.drawBitmap(srcBitmap, drawLeft, drawTop, null);
+
+//        /*=================================*/
 //        matrix.reset();
-//        float transCenterX = (width - srcBitmapWidth*5f) / 2f;
-//        float transCenterY = (height - srcBitmapHeight*5f) / 2f;
-//        matrix.postScale(5f, 5f);
+//        float transCenterX = (width - numberBitmap.getWidth()*scaleFactor) / 2f;
+//        float transCenterY = (height - numberBitmap.getHeight()*scaleFactor) / 2f;
+//        matrix.postScale(scaleFactor, scaleFactor);
 //        matrix.postTranslate(transCenterX, transCenterY);
 //        // createBitmap(@NonNull Bitmap source, int x, int y, int width, int height, @Nullable Matrix m, boolean filter)
 ////        Bitmap dstBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmapWidth, srcBitmapHeight, matrix, false);
-//        canvas.drawBitmap(srcBitmap, matrix, null); // 不会对 srcBitmap 产生作用
-        /*=================================*/
+//        canvas.drawBitmap(numberBitmap, matrix, null); // 不会对 srcBitmap 产生作用
+//        /*=================================*/
 
 
 
@@ -145,55 +180,134 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         /*=================================*/
     }
 
-    private Bitmap convertBitmap(@NonNull Bitmap bitmap) {
-        if (convertCanvas == null) {
-            convertCanvas = new Canvas();
+
+    private void drawColorBitmap(@NonNull Canvas canvas) { // 绘制填色图
+        if (colorPaint == null) {
+            colorPaint = new Paint();
+            colorPaint.setStyle(Paint.Style.FILL);
+            colorPaint.setAntiAlias(true);
         }
+//        if (colorBitmap == null) {
+//            colorBitmap = Bitmap.createBitmap(pixelList.stdWidth(), pixelList.stdHeight(), Bitmap.Config.ARGB_8888);
+//        }
+//        colorBitmap.setWidth(pixelList.realWidth());
+//        colorBitmap.setHeight(pixelList.realHeight());
+//        if (colorCanvas == null) {
+//            colorCanvas = new Canvas();
+//        }
+//        colorCanvas.setBitmap(colorBitmap);
+        if (colorRectF == null) {
+            colorRectF = new RectF();
+        }
+        float pixelUnit = pixelList.curUnitSize * curFactor;
 
-        Paint strokePaint = new Paint();
-        strokePaint.setStyle(Paint.Style.STROKE);
-        strokePaint.setAntiAlias(true);
-        strokePaint.setColor(Color.BLACK);
-        strokePaint.setStrokeWidth(0.1f);
+        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f;
+        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f;
 
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setAntiAlias(true);
-        paint.setColor(Color.LTGRAY);
-
-        Paint textPaint = new Paint();
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setAntiAlias(true);
-        textPaint.setColor(Color.WHITE);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
-        float fontHeight = fontMetrics.ascent - fontMetrics.descent;
-
-        List<Pixel> allPixels = PixelHelper.getAllPixels(bitmap, 90);
-        int pixelUnit = allPixels.get(0).unit;
-        Bitmap convertBitmap = Bitmap.createBitmap(bitmap.getWidth() * pixelUnit, bitmap.getHeight() * pixelUnit, Bitmap.Config.ARGB_8888);
-        convertCanvas.setBitmap(convertBitmap);
-        Rect rect = new Rect();
-        for (int index = 0; index < allPixels.size(); index++) {
-            Pixel pixel = allPixels.get(index);
-            LogUtils.e(TAG, "--> convertBitmap()  pixel.color=" + pixel.color);
-            if (pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT) { // 不处理白色和透明
+        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+            Integer color = entry.getKey();
+            String number = pixelList.numberMap.get(color);
+            if (TextUtils.isEmpty(number)) {
                 continue;
             }
-            int left = pixel.x * pixel.unit;
-            int right = pixel.x * pixel.unit + pixel.unit;
-            int top = pixel.y * pixel.unit;
-            int bottom = pixel.y * pixel.unit + pixel.unit;
-            rect.set(left, top, right, bottom);
-//            paint.setColor(pixel.color);
-            convertCanvas.drawRect(rect, paint);
-            convertCanvas.drawRect(rect, strokePaint);
-
-            textPaint.setTextSize(pixel.unit * 0.5f);
-            convertCanvas.drawText("1", rect.centerX(), rect.centerY() - fontHeight / 2, textPaint);
+            for (PixelUnit pixel : entry.getValue()) {
+                if (pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT) { // 不处理白色和透明
+                    continue;
+                }
+                float left = drawLeft + pixel.x * pixelUnit;
+                float right = left + pixelUnit;
+                float top = drawTop + pixel.y * pixelUnit;
+                float bottom = top + pixelUnit;
+                colorRectF.set(left, top, right, bottom);
+                colorPaint.setColor(color);
+                canvas.drawRect(colorRectF, colorPaint);
+            }
         }
-        convertCanvas.setBitmap(null);
-        return convertBitmap;
+
+//        int colorBitmapWidth = colorBitmap.getWidth();
+//        int colorBitmapHeight = colorBitmap.getHeight();
+//        float drawLeft = (width - colorBitmapWidth) / 2f;
+//        float drawTop = (height - colorBitmapHeight) / 2f;
+//        canvas.drawBitmap(colorBitmap, drawLeft, drawTop, null);
+    }
+
+    private void drawNumberBitmap(@NonNull Canvas canvas) { // 绘制数字图
+        if (borderPaint == null) {
+            borderPaint = new Paint();
+            borderPaint.setStyle(Paint.Style.STROKE);
+            borderPaint.setAntiAlias(true);
+            borderPaint.setColor(Color.BLACK);
+            borderPaint.setStrokeWidth(0.1f);
+        }
+
+        if (bgPaint == null) {
+            bgPaint = new Paint();
+            bgPaint.setStyle(Paint.Style.FILL);
+            bgPaint.setAntiAlias(true);
+            bgPaint.setColor(Color.LTGRAY);
+        }
+
+        if (numberPaint == null) {
+            numberPaint = new Paint();
+            numberPaint.setStyle(Paint.Style.FILL);
+            numberPaint.setAntiAlias(true);
+            numberPaint.setColor(Color.WHITE);
+            numberPaint.setTextAlign(Paint.Align.CENTER);
+        }
+
+//        if (numberBitmap != null) {
+//            numberBitmap.recycle();
+//            numberBitmap = null;
+//        }
+//        numberBitmap = Bitmap.createBitmap(pixelList.realWidth(), pixelList.realHeight(), Bitmap.Config.ARGB_8888);
+////        if (numberBitmap == null) {
+////            numberBitmap = Bitmap.createBitmap(pixelList.stdWidth(), pixelList.stdHeight(), Bitmap.Config.ARGB_8888);
+////        }
+////        numberBitmap.setWidth(pixelList.realWidth());
+////        numberBitmap.setHeight(pixelList.realHeight());
+//        if (numberCanvas == null) {
+//            numberCanvas = new Canvas();
+//        }
+//        numberCanvas.setBitmap(numberBitmap);
+        if (numberRectF == null) {
+            numberRectF = new RectF();
+        }
+
+        float pixelUnit = pixelList.curUnitSize * curFactor;
+
+        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f;
+        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f;
+
+        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+            Integer color = entry.getKey();
+            String number = pixelList.numberMap.get(color);
+            if (TextUtils.isEmpty(number)) {
+                continue;
+            }
+            for (PixelUnit pixel : entry.getValue()) {
+                if (pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT) { // 不处理白色和透明
+                    continue;
+                }
+                float left = drawLeft + pixel.x * pixelUnit;
+                float right = left + pixelUnit;
+                float top = drawTop + pixel.y * pixelUnit;
+                float bottom = top + pixelUnit;
+                numberRectF.set(left, top, right, bottom);
+
+                canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框
+                canvas.drawRect(numberRectF, borderPaint); // 画数字像素单元的背景
+                numberPaint.setTextSize(pixelUnit * 0.5f);
+                Paint.FontMetrics fontMetrics = numberPaint.getFontMetrics();
+                float fontHeight = fontMetrics.ascent - fontMetrics.descent;
+                canvas.drawText(number, numberRectF.centerX(), numberRectF.centerY() - fontHeight / 2, numberPaint);  // 画数字像素单元的内容数字
+            }
+        }
+
+//        int numberBitmapWidth = numberBitmap.getWidth();
+//        int numberBitmapHeight = numberBitmap.getHeight();
+//        float drawLeft = (width - numberBitmapWidth) / 2f;
+//        float drawTop = (height - numberBitmapHeight) / 2f;
+//        canvas.drawBitmap(numberBitmap, drawLeft, drawTop, null);
     }
 
     /*==================== 触摸事件 & 手势 ========================*/
@@ -274,18 +388,23 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         float previousSpan = detector.getPreviousSpan();
         float xFactor = currentSpanX / previousSpanX;
         float yFactor = currentSpanY / previousSpanY;
-        float scaleFactor = currentSpan / previousSpan;
+        float factor = currentSpan / previousSpan;
 //        float scaleFactor = detector.getScaleFactor();
-        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()  currentSpanX=" + currentSpanX + ",  currentSpanY=" + currentSpanY+ ",  currentSpan=" + currentSpan
-                + ",  previousSpanX=" + previousSpanX + ",  previousSpanY=" + previousSpanY+ ",  previousSpan=" + previousSpan
-                + ",  xFactor=" + xFactor + ",  yFactor=" + yFactor + ",  scaleFactor=" + scaleFactor
-        );
+//        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()  currentSpanX=" + currentSpanX + ",  currentSpanY=" + currentSpanY+ ",  currentSpan=" + currentSpan
+//                + ",  previousSpanX=" + previousSpanX + ",  previousSpanY=" + previousSpanY+ ",  previousSpan=" + previousSpan
+//                + ",  xFactor=" + xFactor + ",  yFactor=" + yFactor + ",  factor=" + factor
+//        );
+        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()    factor=" + factor);
+        curFactor = factor;
+
+        invalidate();
         return false;
     }
 
     @Override
     public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
         LogUtils.e(TAG, "--> OnScaleGestureListener onScaleBegin()");
+        pixelList.curUnitSize = (int) (pixelList.curUnitSize * curFactor); // 保存上次缩放时的状态
         return true;
     }
 

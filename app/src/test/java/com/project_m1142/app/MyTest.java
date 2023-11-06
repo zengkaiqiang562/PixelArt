@@ -1,8 +1,11 @@
 package com.project_m1142.app;
 
+import android.graphics.Color;
+
 import com.blankj.utilcode.constant.TimeConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.TimeUtils;
+import com.google.android.gms.common.util.Hex;
 import com.project_m1142.app.base.utils.MyTimeUtils;
 
 import org.junit.Test;
@@ -40,5 +43,16 @@ public class MyTest {
         System.out.println("str="+str);
         String result = Pattern.compile("^\"|\"$").matcher(str).replaceAll("");
         System.out.println("result="+result);
+    }
+
+    @Test
+    public void test3() { // 颜色值转16进制
+        int color = -515;
+        byte alpha = (byte) (color >>> 24);
+        byte red = (byte) ((color >> 16) & 0xFF);
+        byte green = (byte) ((color >> 8) & 0xFF);
+        byte blue = (byte) (color & 0xFF);
+        String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+        System.out.println("hexColor="+hexColor);
     }
 }
