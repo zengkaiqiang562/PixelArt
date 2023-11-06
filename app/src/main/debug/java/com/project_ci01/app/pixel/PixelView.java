@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -59,6 +60,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private RectF numberRectF; // 数字像素单元
 
     private PixelList pixelList;
+    private float drawLeft; // 绘图的左上角的 x
+    private float drawTop; // 绘图的左上角的 y
+
+    private Region drawRegion; // 绘图区域
 
     public PixelView(Context context) {
         this(context, null);
@@ -136,8 +141,13 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             transX = transX * pixelUnit / lastPixelUnit; // 缩放调整
             transY = transY * pixelUnit / lastPixelUnit; // 缩放调整
         }
-        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
-        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
+
+        drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX;
+        drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY;
+        if (drawRegion == null) {
+            drawRegion = new Region();
+        }
+        drawRegion.set((int) drawLeft, (int) drawTop, (int) (drawLeft + pixelList.originWidth * pixelUnit), (int) (drawTop + pixelList.originHeight * pixelUnit));
         drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop);
         drawNumberBitmap(canvas, pixelUnit, drawLeft, drawTop);
         lastPixelUnit = pixelUnit;
@@ -212,6 +222,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 if (pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT) { // 不处理白色和透明
                     continue;
                 }
+                if (pixel.enableDraw) { // 需要绘制的像素点不再用数字遮盖
+                    continue;
+                }
                 float left = drawLeft + pixel.x * pixelUnit;
                 float right = left + pixelUnit;
                 float top = drawTop + pixel.y * pixelUnit;
@@ -228,10 +241,39 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
     }
 
+    /**
+     * 根据坐标 x,y 查找像素点
+     */
+    @Nullable
+    private PixelUnit findPixel(float x, float y) {
+        boolean contains = drawRegion.contains((int) x, (int) y);
+        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  contains=" + contains);
+        if (!contains) {
+            return null;
+        }
+        // 在绘图区域内，再判断具体是哪个像素点
+        float left = x - drawLeft; // 相对于绘图区域的left
+        float top = y - drawTop; // 相对于绘图区域的top
+        int column = (int) (left / lastPixelUnit); // 第几列
+        int row = (int) (top / lastPixelUnit); // 第几行
+        // TODO 注意当不同图片尺寸时，这里是否会出现 索引越界
+        int pixelIndex = row + column * pixelList.originHeight; // pixelList 集合是按列遍历的， 一列有 pixelList.originHeight 个像素
+        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  column=" + column + "  row=" + row+ "  pixelIndex=" + pixelIndex + "  pixelList.pixels.size=" + pixelList.pixels.size());
+        PixelUnit pixelUnit = pixelList.pixels.get(pixelIndex);
+        String number = pixelList.numberMap.get(pixelUnit.color);
+        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  number=" + number + "  pixelUnit=" + pixelUnit);
+        return pixelUnit;
+    }
+
     /*==================== 触摸事件 & 手势 ========================*/
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        if (pixelList == null) {
+            return super.onTouchEvent(event);
+        }
+
         int pointerCount = event.getPointerCount();
 
         /*
@@ -275,8 +317,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     @Override
     public boolean onSingleTapUp(@NonNull MotionEvent e) { // onDown 消费掉才会回调
-        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  action=" + e.getAction());
-        return false;
+        float x = e.getX();
+        float y = e.getY();
+        PixelUnit pixel = findPixel(x, y);
+        if (pixel != null) {
+            pixel.enableDraw = true;
+            invalidate();
+        }
+        return pixel != null; // 找到像素点时消费掉
     }
 
     @Override

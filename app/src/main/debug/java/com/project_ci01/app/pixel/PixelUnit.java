@@ -9,13 +9,13 @@ public class PixelUnit {
     int y;
     int color; // ColorInt
 
-    boolean isDrawn; // 是否已绘制
+    boolean enableDraw; // 是否绘制
 
-    public PixelUnit(int x, int y, int color, boolean isDrawn) {
+    public PixelUnit(int x, int y, int color, boolean enableDraw) {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.isDrawn = isDrawn;
+        this.enableDraw = enableDraw;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class PixelUnit {
                 "x=" + x +
                 ", y=" + y +
                 ", color=" + hexColor +
-                ", isDrawn=" + isDrawn +
+                ", isDrawn=" + enableDraw +
                 '}';
     }
 

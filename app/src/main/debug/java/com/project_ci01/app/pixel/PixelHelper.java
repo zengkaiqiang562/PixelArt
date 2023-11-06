@@ -25,7 +25,7 @@ public class PixelHelper {
         List<PixelUnit> pixels = new ArrayList<>();
         Map<Integer, List<PixelUnit>> colorMap = new HashMap<>();
         PixelUnit pixel;
-        for (int x = 0; x < bitmapWidth; x++) {
+        for (int x = 0; x < bitmapWidth; x++) { // 按列遍历（先垂直遍历[内]，再水平遍历[外]）
             for (int y = 0; y < bitmapHeight; y++) {
 
                 int color = bitmap.getPixel(x, y);
