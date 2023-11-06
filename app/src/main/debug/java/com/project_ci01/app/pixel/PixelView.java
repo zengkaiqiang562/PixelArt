@@ -142,8 +142,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             return;
         }
 
-        drawColorBitmap(canvas);
-        drawNumberBitmap(canvas);
+        float pixelUnit = pixelList.curUnitSize * curFactor;
+        if (lastPixelUnit > 0) {
+            transX = transX * pixelUnit / lastPixelUnit; // 缩放调整
+            transY = transY * pixelUnit / lastPixelUnit; // 缩放调整
+        }
+        drawColorBitmap(canvas, pixelUnit);
+        drawNumberBitmap(canvas, pixelUnit);
+        lastPixelUnit = pixelUnit;
 
 //        int numberBitmapWidth = numberBitmap.getWidth();
 //        int numberBitmapHeight = numberBitmap.getHeight();
@@ -190,28 +196,18 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     }
 
 
-    private void drawColorBitmap(@NonNull Canvas canvas) { // 绘制填色图
+    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit) { // 绘制填色图
         if (colorPaint == null) {
             colorPaint = new Paint();
             colorPaint.setStyle(Paint.Style.FILL);
             colorPaint.setAntiAlias(true);
         }
-//        if (colorBitmap == null) {
-//            colorBitmap = Bitmap.createBitmap(pixelList.stdWidth(), pixelList.stdHeight(), Bitmap.Config.ARGB_8888);
-//        }
-//        colorBitmap.setWidth(pixelList.realWidth());
-//        colorBitmap.setHeight(pixelList.realHeight());
-//        if (colorCanvas == null) {
-//            colorCanvas = new Canvas();
-//        }
-//        colorCanvas.setBitmap(colorBitmap);
         if (colorRectF == null) {
             colorRectF = new RectF();
         }
-        float pixelUnit = pixelList.curUnitSize * curFactor;
 
-        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f; // 绘图的左上角的 x
-        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f; // 绘图的左上角的 y
+        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
+        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -232,15 +228,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 canvas.drawRect(colorRectF, colorPaint);
             }
         }
-
-//        int colorBitmapWidth = colorBitmap.getWidth();
-//        int colorBitmapHeight = colorBitmap.getHeight();
-//        float drawLeft = (width - colorBitmapWidth) / 2f;
-//        float drawTop = (height - colorBitmapHeight) / 2f;
-//        canvas.drawBitmap(colorBitmap, drawLeft, drawTop, null);
     }
 
-    private void drawNumberBitmap(@NonNull Canvas canvas) { // 绘制数字图
+    private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit) { // 绘制数字图
         if (borderPaint == null) {
             borderPaint = new Paint();
             borderPaint.setStyle(Paint.Style.STROKE);
@@ -264,50 +254,12 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             numberPaint.setTextAlign(Paint.Align.CENTER);
         }
 
-//        if (numberBitmap != null) {
-//            numberBitmap.recycle();
-//            numberBitmap = null;
-//        }
-//        numberBitmap = Bitmap.createBitmap(pixelList.realWidth(), pixelList.realHeight(), Bitmap.Config.ARGB_8888);
-////        if (numberBitmap == null) {
-////            numberBitmap = Bitmap.createBitmap(pixelList.stdWidth(), pixelList.stdHeight(), Bitmap.Config.ARGB_8888);
-////        }
-////        numberBitmap.setWidth(pixelList.realWidth());
-////        numberBitmap.setHeight(pixelList.realHeight());
-//        if (numberCanvas == null) {
-//            numberCanvas = new Canvas();
-//        }
-//        numberCanvas.setBitmap(numberBitmap);
         if (numberRectF == null) {
             numberRectF = new RectF();
         }
 
-        float pixelUnit = pixelList.curUnitSize * curFactor;
-
-//        float tmpTransX;
-//        float tmpTransY;
-//        if (isScaleEvent) {
-//            if (pixelUnit < lastPixelUnit) { // 缩小
-//                transX = transX * pixelUnit / lastPixelUnit;
-//                transY = transY * pixelUnit / lastPixelUnit;
-//            } else { // 放大
-//                transX = transX * pixelUnit / lastPixelUnit;
-//                transY = transY * pixelUnit / lastPixelUnit;
-//            }
-//
-//        } else {
-//            tmpTransX = transX;
-//            tmpTransY = transY;
-//        }
-        if (lastPixelUnit > 0) {
-            transX = transX * pixelUnit / lastPixelUnit; // 缩放调整
-            transY = transY * pixelUnit / lastPixelUnit; // 缩放调整
-        }
-
         float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
         float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
-//        float drawLeft = 0 + transX; // 绘图的左上角的 x
-//        float drawTop = 0 + transY; // 绘图的左上角的 y
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -333,14 +285,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 canvas.drawText(number, numberRectF.centerX(), numberRectF.centerY() - fontHeight / 2, numberPaint);  // 画数字像素单元的内容数字
             }
         }
-
-        lastPixelUnit = pixelUnit;
-
-//        int numberBitmapWidth = numberBitmap.getWidth();
-//        int numberBitmapHeight = numberBitmap.getHeight();
-//        float drawLeft = (width - numberBitmapWidth) / 2f;
-//        float drawTop = (height - numberBitmapHeight) / 2f;
-//        canvas.drawBitmap(numberBitmap, drawLeft, drawTop, null);
     }
 
     /*==================== 触摸事件 & 手势 ========================*/
