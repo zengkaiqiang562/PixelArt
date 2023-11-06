@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.TextUtils;
@@ -35,7 +34,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private final Context context;
     private int width;
     private int height;
-    private Matrix matrix;
 
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
@@ -57,15 +55,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private Paint colorPaint; // 填色画笔
     /*========== 画笔 ==========*/
 
-
-    /*========== 画布 和 要画的图 和 像素单元 ==========*/
-//    private Canvas colorCanvas; // 填色画布
-//    private Bitmap colorBitmap; // 填色图
     private RectF colorRectF; // 填色像素单元
-//    private Canvas numberCanvas; // 数字画布
-//    private Bitmap numberBitmap; // 数字图
     private RectF numberRectF; // 数字像素单元
-    /*========== 画布 ==========*/
 
     private PixelList pixelList;
 
@@ -98,8 +89,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             LogUtils.e(TAG, "--> init()  bitmap.isMutable=" + bitmap.isMutable());
                 pixelList = PixelHelper.getAllPixels(bitmap, 30); // 每个像素点扩大30倍（即原图扩大30倍）
             }
-
-            matrix = new Matrix();
 
         } catch (IOException e) {
             Log.e(TAG, "--> init()  assetManager.open Failed !!!   assetFilePath=" + assetFilePath);
@@ -147,56 +136,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             transX = transX * pixelUnit / lastPixelUnit; // 缩放调整
             transY = transY * pixelUnit / lastPixelUnit; // 缩放调整
         }
-        drawColorBitmap(canvas, pixelUnit);
-        drawNumberBitmap(canvas, pixelUnit);
+        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
+        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
+        drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop);
+        drawNumberBitmap(canvas, pixelUnit, drawLeft, drawTop);
         lastPixelUnit = pixelUnit;
-
-//        int numberBitmapWidth = numberBitmap.getWidth();
-//        int numberBitmapHeight = numberBitmap.getHeight();
-//        float drawLeft = (width - numberBitmapWidth) / 2f;
-//        float drawTop = (height - numberBitmapHeight) / 2f;
-//        LogUtils.e(TAG, "--> onDraw()  width=" + width);
-//        LogUtils.e(TAG, "--> onDraw()  height=" + height);
-//        LogUtils.e(TAG, "--> onDraw()  numberBitmapWidth=" + numberBitmapWidth);
-//        LogUtils.e(TAG, "--> onDraw()  numberBitmapHeight=" + numberBitmapHeight);
-//        LogUtils.e(TAG, "--> onDraw()  drawLeft=" + drawLeft);
-//        LogUtils.e(TAG, "--> onDraw()  drawTop=" + drawTop);
-//        Rect srcRect = new Rect();
-//        srcRect.set(0, 0, width, height);
-//        RectF dstRect = new RectF();
-//        dstRect.set(0, 0, width, height);
-//        canvas.drawBitmap(numberBitmap, srcRect, dstRect, null);
-
-
-//        LogUtils.e(TAG, "--> onDraw()  srcBitmap.isMutable=" + srcBitmap.isMutable());
-//
-//        int srcBitmapWidth = srcBitmap.getWidth();
-//        int srcBitmapHeight = srcBitmap.getHeight();
-//        float drawLeft = (width - srcBitmapWidth) / 2f;
-//        float drawTop = (height - srcBitmapHeight) / 2f;
-//
-//        canvas.drawBitmap(srcBitmap, drawLeft, drawTop, null);
-
-//        /*=================================*/
-//        matrix.reset();
-//        float transCenterX = (width - numberBitmap.getWidth()*scaleFactor) / 2f;
-//        float transCenterY = (height - numberBitmap.getHeight()*scaleFactor) / 2f;
-//        matrix.postScale(scaleFactor, scaleFactor);
-//        matrix.postTranslate(transCenterX, transCenterY);
-//        // createBitmap(@NonNull Bitmap source, int x, int y, int width, int height, @Nullable Matrix m, boolean filter)
-////        Bitmap dstBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmapWidth, srcBitmapHeight, matrix, false);
-//        canvas.drawBitmap(numberBitmap, matrix, null); // 不会对 srcBitmap 产生作用
-//        /*=================================*/
-
-
-
-        /*=================================*/
-//        canvas.drawBitmap(srcBitmap, drawLeft, drawTop, null);
-        /*=================================*/
     }
 
-
-    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit) { // 绘制填色图
+    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制填色图
         if (colorPaint == null) {
             colorPaint = new Paint();
             colorPaint.setStyle(Paint.Style.FILL);
@@ -205,9 +152,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (colorRectF == null) {
             colorRectF = new RectF();
         }
-
-        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
-        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -230,7 +174,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
     }
 
-    private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit) { // 绘制数字图
+    private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制数字图
         if (borderPaint == null) {
             borderPaint = new Paint();
             borderPaint.setStyle(Paint.Style.STROKE);
@@ -257,9 +201,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (numberRectF == null) {
             numberRectF = new RectF();
         }
-
-        float drawLeft = (width - pixelList.originWidth * pixelUnit) / 2f + transX; // 绘图的左上角的 x
-        float drawTop = (height - pixelList.originHeight * pixelUnit) / 2f + transY; // 绘图的左上角的 y
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -369,22 +310,22 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     @Override
     public boolean onScale(@NonNull ScaleGestureDetector detector) { // onScaleBegin 消费掉才会回调
-        float currentSpanX = detector.getCurrentSpanX();
-        float currentSpanY = detector.getCurrentSpanY();
+//        float currentSpanX = detector.getCurrentSpanX();
+//        float currentSpanY = detector.getCurrentSpanY();
         float currentSpan = detector.getCurrentSpan();
-        float previousSpanX = detector.getPreviousSpanX();
-        float previousSpanY = detector.getPreviousSpanY();
+//        float previousSpanX = detector.getPreviousSpanX();
+//        float previousSpanY = detector.getPreviousSpanY();
         float previousSpan = detector.getPreviousSpan();
-        float xFactor = currentSpanX / previousSpanX;
-        float yFactor = currentSpanY / previousSpanY;
+//        float xFactor = currentSpanX / previousSpanX;
+//        float yFactor = currentSpanY / previousSpanY;
         float factor = currentSpan / previousSpan;
 
-//        float scaleFactor = detector.getScaleFactor();
-//        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()  currentSpanX=" + currentSpanX + ",  currentSpanY=" + currentSpanY+ ",  currentSpan=" + currentSpan
-//                + ",  previousSpanX=" + previousSpanX + ",  previousSpanY=" + previousSpanY+ ",  previousSpan=" + previousSpan
-//                + ",  xFactor=" + xFactor + ",  yFactor=" + yFactor + ",  factor=" + factor
-//        );
-        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()    factor=" + factor);
+////        float scaleFactor = detector.getScaleFactor();
+////        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()  currentSpanX=" + currentSpanX + ",  currentSpanY=" + currentSpanY+ ",  currentSpan=" + currentSpan
+////                + ",  previousSpanX=" + previousSpanX + ",  previousSpanY=" + previousSpanY+ ",  previousSpan=" + previousSpan
+////                + ",  xFactor=" + xFactor + ",  yFactor=" + yFactor + ",  factor=" + factor
+////        );
+//        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()    factor=" + factor);
         curFactor = factor;
 
         invalidate();
