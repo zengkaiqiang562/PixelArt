@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-public class PixelView extends View implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
+public class PixelView extends View implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, ScaleGestureDetector.OnScaleGestureListener {
 
     private static final String TAG = "PixelView";
 
@@ -65,6 +65,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private Region drawRegion; // 绘图区域
 
+    /*========================*/
+    private int selColor; // 当前选中的颜色
+
     public PixelView(Context context) {
         this(context, null);
     }
@@ -81,6 +84,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private void init() {
         gestureDetector = new GestureDetector(context, this);
+        gestureDetector.setOnDoubleTapListener(this);
         scaleGestureDetector = new ScaleGestureDetector(context, this);
         AssetManager assetManager = context.getAssets();
         String assetFilePath = "images/cartoon/01.png";
@@ -231,6 +235,12 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 float bottom = top + pixelUnit;
                 numberRectF.set(left, top, right, bottom);
 
+                if (selColor == pixel.color) { // 选中颜色的部分高亮
+                    bgPaint.setColor(Color.GRAY);
+                } else {
+                    bgPaint.setColor(Color.LTGRAY);
+                }
+
                 canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框
                 canvas.drawRect(numberRectF, borderPaint); // 画数字像素单元的背景
                 numberPaint.setTextSize(pixelUnit * 0.5f);
@@ -247,7 +257,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     @Nullable
     private PixelUnit findPixel(float x, float y) {
         boolean contains = drawRegion.contains((int) x, (int) y);
-        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  contains=" + contains);
+        LogUtils.e(TAG, "--> findPixel()  contains=" + contains);
         if (!contains) {
             return null;
         }
@@ -258,10 +268,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         int row = (int) (top / lastPixelUnit); // 第几行
         // TODO 注意当不同图片尺寸时，这里是否会出现 索引越界
         int pixelIndex = row + column * pixelList.originHeight; // pixelList 集合是按列遍历的， 一列有 pixelList.originHeight 个像素
-        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  column=" + column + "  row=" + row+ "  pixelIndex=" + pixelIndex + "  pixelList.pixels.size=" + pixelList.pixels.size());
+        LogUtils.e(TAG, "--> findPixel()  column=" + column + "  row=" + row+ "  pixelIndex=" + pixelIndex + "  pixelList.pixels.size=" + pixelList.pixels.size());
         PixelUnit pixelUnit = pixelList.pixels.get(pixelIndex);
         String number = pixelList.numberMap.get(pixelUnit.color);
-        LogUtils.e(TAG, "--> OnGestureListener onSingleTapUp()  number=" + number + "  pixelUnit=" + pixelUnit);
+        LogUtils.e(TAG, "--> findPixel()  number=" + number + "  pixelUnit=" + pixelUnit);
         return pixelUnit;
     }
 
@@ -322,7 +332,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         float x = e.getX();
         float y = e.getY();
         PixelUnit pixel = findPixel(x, y);
-        if (pixel != null) {
+        if (pixel != null && !pixel.enableDraw && selColor == pixel.color) { // 未绘制且匹配选中颜色的才能进行绘制
             pixel.enableDraw = true;
             invalidate();
         }
@@ -355,6 +365,47 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         return false;
     }
     /*--------------------------- GestureDetector.OnGestureListener  end -----------------------------*/
+
+
+    /*--------------------------- GestureDetector.OnDoubleTapListener  end -----------------------------*/
+
+    @Override
+    public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
+        LogUtils.e(TAG, "--> OnDoubleTapListener onSingleTapConfirmed()  action=" + e.getAction());
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(@NonNull MotionEvent e) {
+        LogUtils.e(TAG, "--> OnDoubleTapListener onDoubleTap()  action=" + e.getAction());
+        float x = e.getX();
+        float y = e.getY();
+        PixelUnit pixel = findPixel(x, y);
+        if (pixel != null) {
+            boolean invalid = false;
+            if (selColor != pixel.color) { // 选择当前绘制的颜色类别
+                selColor = pixel.color;
+                invalid = true;
+            }
+            if (!pixel.enableDraw) { // 双击事件也进行绘制
+                pixel.enableDraw = true;
+                invalid = true;
+            }
+            if (invalid) {
+                invalidate();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(@NonNull MotionEvent e) {
+        LogUtils.e(TAG, "--> OnDoubleTapListener onDoubleTapEvent()  action=" + e.getAction());
+        return false;
+    }
+    /*--------------------------- GestureDetector.OnDoubleTapListener  end -----------------------------*/
+
+
 
     /*--------------------------- ScaleGestureDetector.OnScaleGestureListener  start -----------------------------*/
 
