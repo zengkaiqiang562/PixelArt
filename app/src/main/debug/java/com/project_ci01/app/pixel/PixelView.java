@@ -289,7 +289,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             isScaleEvent = false; // reset
         }
 
-        scaleGestureDetector.onTouchEvent(event);
+        if (pointerCount >= 2) {
+            scaleGestureDetector.onTouchEvent(event);
+        }
         if (scaleGestureDetector.isInProgress()) {
             isScaleEvent = true;
             return true;
