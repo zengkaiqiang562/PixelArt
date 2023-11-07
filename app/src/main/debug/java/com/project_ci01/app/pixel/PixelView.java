@@ -69,6 +69,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private int selColor; // 当前选中的颜色
     private boolean swipeColor; // 为 true 表示滑动上色；false 时才允许拖动图片
 
+    private Props props = Props.NONE; // 默认不使用道具
+
     public PixelView(Context context) {
         this(context, null);
     }
@@ -290,6 +292,73 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         return false;
     }
 
+    /**
+     * 通过道具绘制，
+     * 返回true 已绘制，不再处理
+     * 返回false 没有使用道具绘制，继续处理
+     */
+    private boolean propsDraw(float x, float y) {
+        switch (props) {
+            case NONE:
+                return false;
+            case BUCKET:
+                bucketDraw(x, y);
+                return true;
+            case WAND:
+                wandDraw(x, y);
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * 通过颜料桶绘制：将所点击像素点相邻的同一颜色像素点全部正确上色
+     * @see Props#BUCKET
+     */
+    private void bucketDraw(float x, float y) {
+        PixelUnit pixel = findPixel(x, y);
+        if (pixel == null) {
+            return;
+        }
+        List<List<PixelUnit>> adjoinOuters = pixelList.adjoinMap.get(pixel.color);
+        if (adjoinOuters == null) {
+            return;
+        }
+        boolean handle = false;
+        for (List<PixelUnit> adjoinInners : adjoinOuters) {
+            if (!adjoinInners.contains(pixel)) {
+                continue;
+            }
+            for (PixelUnit adjoinPixel : adjoinInners) {
+                if (!adjoinPixel.enableDraw) {
+                    adjoinPixel.enableDraw = true;
+                    handle = true;
+                }
+            }
+        }
+        if (handle) {
+            invalidate();
+            // TODO 消耗掉道具
+            props = Props.NONE;
+        }
+    }
+
+    /**
+     * 通过魔棒绘制
+     * @see Props#WAND
+     */
+    private void wandDraw(float x, float y) {
+
+    }
+
+
+
+    /*===================== 对外提供的方法 =======================*/
+    public void setProps(@NonNull Props props) {
+        this.props = props;
+    }
+
+
     /*==================== 触摸事件 & 手势 ========================*/
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -348,6 +417,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     public boolean onSingleTapUp(@NonNull MotionEvent e) { // onDown 消费掉才会回调
         float x = e.getX();
         float y = e.getY();
+        if (propsDraw(x, y)) { // 道具绘制
+            return true;
+        }
         return drawPixel(x, y); // 绘制像素点时消费掉
     }
 
