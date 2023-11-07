@@ -67,6 +67,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     /*========================*/
     private int selColor; // 当前选中的颜色
+    private boolean swipeColor; // 为 true 表示滑动上色；false 时才允许拖动图片
 
     public PixelView(Context context) {
         this(context, null);
@@ -85,6 +86,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private void init() {
         gestureDetector = new GestureDetector(context, this);
         gestureDetector.setOnDoubleTapListener(this);
+        gestureDetector.setIsLongpressEnabled(false); // 禁止长按，因为长按事件触发后，onScroll 不会再回调
         scaleGestureDetector = new ScaleGestureDetector(context, this);
         AssetManager assetManager = context.getAssets();
         String assetFilePath = "images/cartoon/01.png";
@@ -275,6 +277,19 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         return pixelUnit;
     }
 
+    /**
+     * @return true 能绘制；false 其他没有绘制的情况（如没找到像素点，or 像素点已绘制，or 像素点颜色不是选中颜色）
+     */
+    private boolean drawPixel(float x, float y) {
+        PixelUnit pixel = findPixel(x, y);
+        if (pixel != null && !pixel.enableDraw && selColor == pixel.color) { // 未绘制且匹配选中颜色的才能进行绘制
+            pixel.enableDraw = true;
+            invalidate();
+            return true;
+        }
+        return false;
+    }
+
     /*==================== 触摸事件 & 手势 ========================*/
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -297,6 +312,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             isScaleEvent = false; // reset
+            swipeColor = false; // reset
         }
 
         if (pointerCount >= 2) {
@@ -325,18 +341,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     @Override
     public void onShowPress(@NonNull MotionEvent e) {
         LogUtils.e(TAG, "--> OnGestureListener onShowPress()  action=" + e.getAction());
+        swipeColor = true; // 有按压动作时，判定为滑动上色
     }
 
     @Override
     public boolean onSingleTapUp(@NonNull MotionEvent e) { // onDown 消费掉才会回调
         float x = e.getX();
         float y = e.getY();
-        PixelUnit pixel = findPixel(x, y);
-        if (pixel != null && !pixel.enableDraw && selColor == pixel.color) { // 未绘制且匹配选中颜色的才能进行绘制
-            pixel.enableDraw = true;
-            invalidate();
-        }
-        return pixel != null; // 找到像素点时消费掉
+        return drawPixel(x, y); // 绘制像素点时消费掉
     }
 
     @Override
@@ -347,9 +359,17 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             firstScroll = false;
             return false;
         }
-        transX += -distanceX;
-        transY += -distanceY;
-        invalidate();
+
+        if (swipeColor) { // 滑动上色
+            float x = e2.getX();
+            float y = e2.getY();
+            drawPixel(x, y);
+        } else { // 拖动图片
+            transX += -distanceX;
+            transY += -distanceY;
+            invalidate();
+        }
+
         return true;
     }
 
