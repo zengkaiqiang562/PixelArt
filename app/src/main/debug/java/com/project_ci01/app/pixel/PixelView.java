@@ -260,6 +260,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
      */
     @Nullable
     private PixelUnit findPixel(float x, float y) {
+        if (pixelList == null || drawRegion == null) {
+            return null;
+        }
         boolean contains = drawRegion.contains((int) x, (int) y);
         LogUtils.e(TAG, "--> findPixel()  contains=" + contains);
         if (!contains) {
@@ -319,6 +322,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
      * @see Props#BUCKET
      */
     private void bucketDraw(float x, float y) {
+        if (pixelList == null) {
+            return;
+        }
         PixelUnit pixel = findPixel(x, y);
         if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return;
@@ -351,6 +357,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
      * @see Props#WAND
      */
     private void wandDraw(float x, float y) {
+        if (pixelList == null) {
+            return;
+        }
         PixelUnit pixel = findPixel(x, y);
         if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return;
@@ -374,6 +383,49 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             // TODO 消耗掉道具
             props = Props.NONE;
         }
+    }
+
+    /**
+     * 通过选中颜色，查找同色的未绘制的像素点，并将该像素点移动到视图中间显示
+     * 从上至下，从左至右 查找（即按像素点的遍历顺序查找）
+     */
+    public void centerUndrawPixel() {
+        if (pixelList == null) {
+            return;
+        }
+
+        if (selColor == Color.WHITE || selColor == Color.TRANSPARENT) { // 不处理白色和透明
+            return;
+        }
+
+        List<PixelUnit> pixels = pixelList.colorMap.get(selColor);
+        if (pixels == null) {
+            return;
+        }
+
+        PixelUnit undrawPixel = null;
+        for (PixelUnit pixel : pixels) {
+            if (!pixel.enableDraw) {
+                undrawPixel = pixel;
+                break; // 找到第一个就结束循环
+            }
+        }
+        if (undrawPixel == null) {
+            return;
+        }
+
+        // 将 undrawPixel 移动到视图中间显示
+//        pixelList.curUnitSize = (int) (pixelList.curUnitSize * curFactor); // 保存上次缩放时的状态
+        pixelList.curUnitSize = 90; // 固定显示的大小
+        curFactor = 1.0f;
+        lastPixelUnit = pixelList.curUnitSize * curFactor;
+        int left = undrawPixel.x * pixelList.curUnitSize; // undrawPixel 相对于图片左边的距离
+        int top = undrawPixel.y * pixelList.curUnitSize; // undrawPixel 相对于图片顶部的距离
+        int centerLeft = pixelList.originWidth * pixelList.curUnitSize / 2; // 图片中心点相对于图片左边的距离
+        int centerTop = pixelList.originHeight * pixelList.curUnitSize / 2; // 图片中心点相对于图片顶部边的距离
+        transX = centerLeft - left; // 固定平移的位置
+        transY = centerTop - top; // 固定平移的位置
+        invalidate();
     }
 
 
@@ -498,21 +550,22 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         float x = e.getX();
         float y = e.getY();
         PixelUnit pixel = findPixel(x, y);
-        if (pixel != null) {
-            boolean invalid = false;
-            if (selColor != pixel.color) { // 选择当前绘制的颜色类别
-                selColor = pixel.color;
-                invalid = true;
-            }
-            if (!pixel.enableDraw) { // 双击事件也进行绘制
-                pixel.enableDraw = true;
-                invalid = true;
-            }
-            if (invalid) {
-                invalidate();
-            }
+        if (pixel == null || PixelHelper.ignorePixel(pixel)) {
+            return false;
         }
-        return false;
+        boolean invalid = false;
+        if (selColor != pixel.color) { // 选择当前绘制的颜色类别
+            selColor = pixel.color;
+            invalid = true;
+        }
+        if (!pixel.enableDraw) { // 双击事件也进行绘制
+            pixel.enableDraw = true;
+            invalid = true;
+        }
+        if (invalid) {
+            invalidate();
+        }
+        return true;
     }
 
     @Override
@@ -553,6 +606,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     @Override
     public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
         LogUtils.e(TAG, "--> OnScaleGestureListener onScaleBegin()");
+        if (pixelList == null) {
+            return false;
+        }
         pixelList.curUnitSize = (int) (pixelList.curUnitSize * curFactor); // 保存上次缩放时的状态
         return true;
     }

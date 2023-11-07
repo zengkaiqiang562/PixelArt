@@ -44,5 +44,9 @@ public class PixelActivity extends BaseActivity {
         binding.btnBrush.setOnClickListener(v -> {
             binding.viewPixel.setProps(Props.BRUSH);
         });
+
+        binding.btnTip.setOnClickListener(v -> {
+            binding.viewPixel.centerUndrawPixel();
+        });
     }
 }
