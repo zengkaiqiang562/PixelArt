@@ -287,7 +287,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return false;
         }
-        if (!pixel.enableDraw && selColor == pixel.color) { // 未绘制且匹配选中颜色的才能进行绘制
+        if (!pixel.enableDraw && (selColor == pixel.color || props == Props.BRUSH)) { // 未绘制，且 （匹配选中颜色 or 正在使用笔刷）时才能进行绘制
             pixel.enableDraw = true;
             invalidate();
             return true;
