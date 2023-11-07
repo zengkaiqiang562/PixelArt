@@ -36,5 +36,13 @@ public class PixelActivity extends BaseActivity {
         binding.btnBucket.setOnClickListener(v -> {
             binding.viewPixel.setProps(Props.BUCKET);
         });
+
+        binding.btnWand.setOnClickListener(v -> {
+            binding.viewPixel.setProps(Props.WAND);
+        });
+
+        binding.btnBrush.setOnClickListener(v -> {
+            binding.viewPixel.setProps(Props.BRUSH);
+        });
     }
 }

@@ -178,7 +178,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 continue;
             }
             for (PixelUnit pixel : entry.getValue()) {
-                if (pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT) { // 不处理白色和透明
+                if (PixelHelper.ignorePixel(pixel)) {
                     continue;
                 }
                 float left = drawLeft + pixel.x * pixelUnit;
@@ -227,7 +227,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 continue;
             }
             for (PixelUnit pixel : entry.getValue()) {
-                if (pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT) { // 不处理白色和透明
+                if (PixelHelper.ignorePixel(pixel)) {
                     continue;
                 }
                 if (pixel.enableDraw) { // 需要绘制的像素点不再用数字遮盖
@@ -284,7 +284,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
      */
     private boolean drawPixel(float x, float y) {
         PixelUnit pixel = findPixel(x, y);
-        if (pixel != null && !pixel.enableDraw && selColor == pixel.color) { // 未绘制且匹配选中颜色的才能进行绘制
+        if (pixel == null || PixelHelper.ignorePixel(pixel)) {
+            return false;
+        }
+        if (!pixel.enableDraw && selColor == pixel.color) { // 未绘制且匹配选中颜色的才能进行绘制
             pixel.enableDraw = true;
             invalidate();
             return true;
@@ -317,7 +320,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
      */
     private void bucketDraw(float x, float y) {
         PixelUnit pixel = findPixel(x, y);
-        if (pixel == null) {
+        if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return;
         }
         List<List<PixelUnit>> adjoinOuters = pixelList.adjoinMap.get(pixel.color);
@@ -348,7 +351,29 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
      * @see Props#WAND
      */
     private void wandDraw(float x, float y) {
+        PixelUnit pixel = findPixel(x, y);
+        if (pixel == null || PixelHelper.ignorePixel(pixel)) {
+            return;
+        }
 
+        List<PixelUnit> pixels = pixelList.colorMap.get(pixel.color); // 同颜色的所有像素点
+        if (pixels == null) {
+            return;
+        }
+
+        boolean handle = false;
+        for (PixelUnit drawPixel : pixels) {
+            if (!drawPixel.enableDraw) {
+                drawPixel.enableDraw = true;
+                handle = true;
+            }
+        }
+
+        if (handle) {
+            invalidate();
+            // TODO 消耗掉道具
+            props = Props.NONE;
+        }
     }
 
 

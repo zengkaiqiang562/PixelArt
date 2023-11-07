@@ -15,6 +15,19 @@ import java.util.Map;
 
 public class PixelHelper {
     private static final String TAG = "PixelHelper";
+
+
+    /**
+     *
+     * @return 检查是否要处理 pixel
+     * 目前 不处理白色和透明
+     */
+    public static boolean ignorePixel(@NonNull PixelUnit pixel) {
+        // 不处理白色和透明
+        return pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT;
+    }
+
+
     /**
      * @param bitmap
      * @param unit 图片像素化时的像素单元长度
