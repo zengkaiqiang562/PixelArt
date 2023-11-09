@@ -91,7 +91,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         gestureDetector.setIsLongpressEnabled(false); // 禁止长按，因为长按事件触发后，onScroll 不会再回调
         scaleGestureDetector = new ScaleGestureDetector(context, this);
         AssetManager assetManager = context.getAssets();
-        String assetFilePath = "images/cartoon/01.png";
+        String assetFilePath = "images/logo_1.png";
         try {
             InputStream inputStream = assetManager.open(assetFilePath);
             BitmapFactory.Options options = new BitmapFactory.Options();

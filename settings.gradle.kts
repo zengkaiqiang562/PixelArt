@@ -19,3 +19,9 @@ dependencyResolutionManagement {
 rootProject.name = "PixelArt"
 include(":app")
 include(":MPChartLib")
+include(":banner")
+include(":magicindicator")
+include(":refresh-layout-kernel")
+include(":refresh-drawable-paint")
+include(":refresh-footer-classics")
+include(":refresh-header-classics")

@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+
+android {
+  compileSdkVersion 33
+
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion 33
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+}
+
+dependencies {
+  implementation 'androidx.viewpager:viewpager:1.0.0'
+}

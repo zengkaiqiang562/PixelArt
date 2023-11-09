@@ -203,7 +203,7 @@ public class PixelHelper {
             number++;
         }
 
-        LogUtils.e(TAG, "--> getAllPixels()  numberMap=" + numberMap);
+        LogUtils.e(TAG, "--> getAllPixels()  numberMap.size=" + numberMap.size());
 
         return new PixelList(adjoinMap, colorMap, numberMap, pixels, unit, unit, bitmapWidth, bitmapHeight);
     }

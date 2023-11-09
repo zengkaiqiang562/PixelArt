@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.blankj.utilcode.util.ConvertUtils;
+import com.gyf.immersionbar.ImmersionBar;
 import com.project_m1142.app.base.manage.ContextManager;
 import com.project_m1142.app.base.utils.LogUtils;
 
@@ -39,8 +41,12 @@ public abstract class BaseFragment extends Fragment {
 
     protected abstract String tag();
     protected abstract View getRoot(LayoutInflater inflater, ViewGroup container);
+    protected abstract View stubBar();
     protected abstract void initView(View view, Bundle savedInstanceState);
     protected void handleMessage(@NonNull Message msg) {}
+
+    /** 重写此方法可在 Tab 切换时重新加载数据 */
+    public void reload() {}
 
     public String fmTAG() {
         return tag() + "#" + hashCode();
@@ -56,7 +62,7 @@ public abstract class BaseFragment extends Fragment {
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         TAG = tag();
         LogUtils.e(TAG, "--> onAttach() context=" + context);
@@ -92,8 +98,27 @@ public abstract class BaseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         LogUtils.e(TAG, "--> onViewCreated()");
+        initBar();
+        fillStatusbar(stubBar());
         initView(view, savedInstanceState);
         isViewCreated = true;
+    }
+
+    protected void initBar() {
+        ImmersionBar.with(this)/*.transparentNavigationBar()*/.transparentStatusBar().statusBarDarkFont(true).init();
+    }
+
+    private void fillStatusbar(@Nullable View stubBar) {
+        if (stubBar != null) {
+            int statusBarHeight = ImmersionBar.getStatusBarHeight(this);
+            int dp44 = ConvertUtils.dp2px(44);
+            if (statusBarHeight < dp44) {
+                statusBarHeight = dp44;
+            }
+            ViewGroup.LayoutParams layoutParams = stubBar.getLayoutParams();
+            layoutParams.height = statusBarHeight;
+            stubBar.setLayoutParams(layoutParams);
+        }
     }
 
     @Override
