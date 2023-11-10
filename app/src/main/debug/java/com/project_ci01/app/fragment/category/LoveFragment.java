@@ -5,6 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.project_ci01.app.banner.MultiBannerAdapter;
 import com.project_m1142.app.base.view.BaseFragment;
 import com.project_m1142.app.databinding.FragmentLoveBinding;
 
@@ -25,11 +28,13 @@ public class LoveFragment extends BaseFragment {
 
     @Override
     protected View stubBar() {
-        return binding.stubBar;
+        return null;
     }
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-
+        // 必须设置后才能嵌套滑动
+        binding.loveRv.setLayoutManager(new LinearLayoutManager(activity));
+        binding.loveRv.setAdapter(new MultiBannerAdapter());
     }
 }

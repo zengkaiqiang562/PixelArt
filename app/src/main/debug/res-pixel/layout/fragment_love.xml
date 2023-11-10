@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.scwang.smart.refresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_700">
+    android:background="@color/teal_700"
+    app:srlEnableLoadMore="false"
+    app:srlEnableRefresh="false">
 
-    <View
-        android:id="@+id/stub_bar"
-        android:layout_width="0dp"
-        android:layout_height="44dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- 必须  SmartRefreshLayout 作为根布局才能支持 CoordinatorLayout + ViewPager + RecyclerView
+        的嵌套滑动，并设置 srlEnableLoadMore=false 且 srlEnableRefresh="false"
+        否则会因为刷新/加载导致无法滑动，除非实现了刷新/加载的功能
+    -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/love_rv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stub_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.scwang.smart.refresh.layout.SmartRefreshLayout>

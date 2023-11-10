@@ -44,7 +44,8 @@
                     tools:background="@color/black"
                     app:banner_radius="5dp"
                     app:banner_auto_loop="true"
-                    app:banner_infinite_loop="true"/>
+                    app:banner_infinite_loop="true"
+                    app:banner_indicator_radius="5dp"/>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 

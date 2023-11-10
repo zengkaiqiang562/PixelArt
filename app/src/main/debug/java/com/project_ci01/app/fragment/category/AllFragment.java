@@ -33,6 +33,7 @@ public class AllFragment extends BaseFragment {
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
+        // 必须设置后才能嵌套滑动
         binding.allRv.setLayoutManager(new LinearLayoutManager(activity));
         binding.allRv.setAdapter(new MultiBannerAdapter());
     }

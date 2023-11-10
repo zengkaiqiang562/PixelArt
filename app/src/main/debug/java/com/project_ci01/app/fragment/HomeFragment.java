@@ -16,6 +16,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.project_ci01.app.banner.DailyBannerItem;
 import com.project_ci01.app.banner.IBannerItem;
 import com.project_ci01.app.banner.MultiBannerAdapter;
@@ -100,6 +103,14 @@ public class HomeFragment extends BaseFragment {
         bannerAdapter.setDatas(bannerItems);
     }
 
+    private void initIndicator() {
+        CommonNavigator navigator = new CommonNavigator(getActivity());
+//        navigator.setAdjustMode(true); // Tab 固定，宽度平分
+        IndicatorAdapter indicatorAdapter = new IndicatorAdapter();
+        navigator.setAdapter(indicatorAdapter);
+        binding.indicator.setNavigator(navigator);
+    }
+
     private void initViewPager() {
         fragments.clear();
         fragments.add(new AllFragment());
@@ -129,13 +140,6 @@ public class HomeFragment extends BaseFragment {
                 binding.indicator.onPageScrollStateChanged(state);
             }
         });
-    }
-
-    private void initIndicator() {
-        CommonNavigator navigator = new CommonNavigator(getActivity());
-        IndicatorAdapter indicatorAdapter = new IndicatorAdapter();
-        navigator.setAdapter(indicatorAdapter);
-        binding.indicator.setNavigator(navigator);
     }
 
 
@@ -179,12 +183,14 @@ public class HomeFragment extends BaseFragment {
 
         @Override
         public IPagerTitleView getTitleView(Context context, int index) {
-            BadgePagerTitleView badgePagerTitleView = new BadgePagerTitleView(context);
+//            BadgePagerTitleView badgePagerTitleView = new BadgePagerTitleView(context);
 
             ScaleTransitionPagerTitleView scaleTransitionPagerTitleView = new ScaleTransitionPagerTitleView(context);
             scaleTransitionPagerTitleView.setMinScale(0.94f);
             scaleTransitionPagerTitleView.setText(CatTab.values()[index].tabName);
             scaleTransitionPagerTitleView.setTextSize(18);
+            int titleWidth = (int) (ScreenUtils.getScreenWidth() * 1f / CatTab.values().length);
+            scaleTransitionPagerTitleView.setWidth(titleWidth); // 设置每个 Title 的宽度
 
             scaleTransitionPagerTitleView.setNormalColor(ContextCompat.getColor(context, R.color.black));
             scaleTransitionPagerTitleView.setSelectedColor(ContextCompat.getColor(context, R.color.purple_200));
@@ -205,24 +211,25 @@ public class HomeFragment extends BaseFragment {
 
             indicatorTitleMap.put(index, scaleTransitionPagerTitleView);
 
-            badgePagerTitleView.setInnerPagerTitleView(scaleTransitionPagerTitleView);
-
-            // setup badge
-            if (index == 1) {
-                TextView badgeTextView = (TextView) LayoutInflater.from(context).inflate(R.layout.view_indicator_badge, null);
-
-                //TODO test
-                badgeTextView.setText(String.valueOf(23));
-
-                badgePagerTitleView.setBadgeView(badgeTextView);
-                badgePagerTitleView.setXBadgeRule(new BadgeRule(BadgeAnchor.RIGHT, 0));
-                badgePagerTitleView.setYBadgeRule(new BadgeRule(BadgeAnchor.TOP, 0));
-            }
-
-            // cancel badge when click tab, default true
-            badgePagerTitleView.setAutoCancelBadge(true);
-
-            return badgePagerTitleView;
+//            badgePagerTitleView.setInnerPagerTitleView(scaleTransitionPagerTitleView);
+//
+//            // setup badge
+//            if (index == 1) {
+//                TextView badgeTextView = (TextView) LayoutInflater.from(context).inflate(R.layout.view_indicator_badge, null);
+//
+//                //TODO test
+//                badgeTextView.setText(String.valueOf(23));
+//
+//                badgePagerTitleView.setBadgeView(badgeTextView);
+//                badgePagerTitleView.setXBadgeRule(new BadgeRule(BadgeAnchor.RIGHT, 0));
+//                badgePagerTitleView.setYBadgeRule(new BadgeRule(BadgeAnchor.TOP, 0));
+//            }
+//
+//            // cancel badge when click tab, default true
+//            badgePagerTitleView.setAutoCancelBadge(true);
+//
+//            return badgePagerTitleView;
+            return scaleTransitionPagerTitleView;
         }
 
         @Override

@@ -56,13 +56,13 @@ public class MultiBannerAdapter extends BannerAdapter<IBannerItem, BaseHolder<IB
                 return;
             }
 
-            RoundedCornersTransformation transformation =
-                    new RoundedCornersTransformation(ConvertUtils.dp2px(8), 0, RoundedCornersTransformation.CornerType.TOP);
+//            RoundedCornersTransformation transformation =
+//                    new RoundedCornersTransformation(ConvertUtils.dp2px(8), 0, RoundedCornersTransformation.CornerType.TOP);
             RequestOptions options = new RequestOptions()
                     .format(DecodeFormat.PREFER_RGB_565)
 //                    .error(R.drawable.icon_live_item_default)
 //                    .placeholder(R.drawable.icon_live_item_default)
-                    .transform(new CenterCrop(), transformation);
+                    .transform(new CenterCrop()/*, transformation*/);
 
             Glide.with(getContext())
                     .asDrawable()

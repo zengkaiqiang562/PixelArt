@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.project_m1142.app.base.utils.BitmapUtils;
 import com.project_m1142.app.base.utils.LogUtils;
 
 import java.io.IOException;
@@ -242,7 +243,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 if (selColor == pixel.color) { // 选中颜色的部分高亮
                     bgPaint.setColor(Color.GRAY);
                 } else {
-                    bgPaint.setColor(Color.LTGRAY);
+//                    bgPaint.setColor(Color.LTGRAY);
+                    bgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
                 }
 
                 canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框

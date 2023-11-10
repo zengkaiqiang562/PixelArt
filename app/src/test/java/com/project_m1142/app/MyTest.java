@@ -55,4 +55,12 @@ public class MyTest {
         String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
         System.out.println("hexColor="+hexColor);
     }
+
+    @Test
+    public void test4() {// 去掉文件后缀
+        String str = "image1.xxx.png";
+        System.out.println("str="+str);
+        String result = Pattern.compile("\\.[a-zA-Z0-9_]+$").matcher(str).replaceAll("");
+        System.out.println("result="+result);
+    }
 }
