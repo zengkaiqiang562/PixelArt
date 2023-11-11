@@ -57,7 +57,7 @@ public class BitmapUtils {
         hsv[1] = 0f; // 灰色图
         LogUtils.e("zkq", "--> hsv[2]=" + hsv[2]);
 //        hsv[2] = hsv[2] * 50f; // 让黑色变浅
-        hsv[2] = 0.2f; // 让黑色变浅  [0,1] 变化，值越小越黑
+//        hsv[2] = 0.2f; // 让黑色变浅  [0,1] 变化，值越小越黑
         int newColor = Color.HSVToColor(hsv);
 //        if (newColor != Color.WHITE) {
 //            LogUtils.e("zkq", "-->  newColor="
@@ -67,8 +67,9 @@ public class BitmapUtils {
 //                    (byte) Color.blue(newColor)}));
 //        }
 
-//        return Color.argb(Math.round(Color.alpha(newColor) * 0.7f), Color.red(newColor), Color.green(newColor), Color.blue(newColor));
-        return newColor;
+        // 因为设置了 alpha，所以 drawColorBitmap 和 drawNumberBitmap 之前要加一层白色，避免 alpha 透过看到原图
+        return Color.argb(Math.round(Color.alpha(newColor) * 0.3f), Color.red(newColor), Color.green(newColor), Color.blue(newColor));
+//        return newColor;
 
     }
 
