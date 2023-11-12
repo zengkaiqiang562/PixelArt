@@ -24,14 +24,16 @@ public class BitmapUtils {
         return Color.argb(alpha, grey, grey, grey);
     }
 
+    private static final float[] hsv = new float[3];
+
     /**
      * 转灰度
      */
     public static int convertGrey(int color) {
-        byte alpha = (byte) (color >>> 24);
-        byte red = (byte) ((color >> 16) & 0xFF);
-        byte green = (byte) ((color >> 8) & 0xFF);
-        byte blue = (byte) (color & 0xFF);
+//        byte alpha = (byte) (color >>> 24);
+//        byte red = (byte) ((color >> 16) & 0xFF);
+//        byte green = (byte) ((color >> 8) & 0xFF);
+//        byte blue = (byte) (color & 0xFF);
 
         /*
         ConversionFactor = 255 / (NumberOfShades - 1)
@@ -51,14 +53,13 @@ public class BitmapUtils {
 //        return Color.argb(alpha, grey, grey, grey);
 //        return Color.argb(alpha, 255 - grey, 255 - grey, 255 - grey); // 反转
 
-        float[] hsv = new float[3];
+//        float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
 //        hsv = new float[]{0f, 0f, hsv[2] * 1.1f};
         hsv[1] = 0f; // 灰色图
-        LogUtils.e("zkq", "--> hsv[2]=" + hsv[2]);
 //        hsv[2] = hsv[2] * 50f; // 让黑色变浅
 //        hsv[2] = 0.2f; // 让黑色变浅  [0,1] 变化，值越小越黑
-        int newColor = Color.HSVToColor(hsv);
+//        int newColor = Color.HSVToColor(hsv);
 //        if (newColor != Color.WHITE) {
 //            LogUtils.e("zkq", "-->  newColor="
 //                    + "#" + Hex.bytesToStringUppercase(new byte[]{(byte) Color.alpha(newColor),
@@ -68,8 +69,8 @@ public class BitmapUtils {
 //        }
 
         // 因为设置了 alpha，所以 drawColorBitmap 和 drawNumberBitmap 之前要加一层白色，避免 alpha 透过看到原图
-        return Color.argb(Math.round(Color.alpha(newColor) * 0.3f), Color.red(newColor), Color.green(newColor), Color.blue(newColor));
-//        return newColor;
+//        return Color.argb(Math.round(Color.alpha(newColor) * 0.3f), Color.red(newColor), Color.green(newColor), Color.blue(newColor));
+        return Color.HSVToColor(hsv);
 
     }
 

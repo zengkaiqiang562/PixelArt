@@ -96,6 +96,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         scaleGestureDetector = new ScaleGestureDetector(context, this);
         AssetManager assetManager = context.getAssets();
         String assetFilePath = "images/logo_1.png";
+//        String assetFilePath = "images/cartoon/01.png";
         try {
             InputStream inputStream = assetManager.open(assetFilePath);
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -142,7 +143,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        LogUtils.e(TAG, "--> onDraw()  pixelList=" + pixelList);
+//        LogUtils.e(TAG, "--> onDraw()  pixelList=" + pixelList);
 
         if (pixelList == null) {
             return;
@@ -160,21 +161,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             drawRegion = new Region();
         }
         drawRegion.set((int) drawLeft, (int) drawTop, (int) (drawLeft + pixelList.originWidth * pixelUnit), (int) (drawTop + pixelList.originHeight * pixelUnit));
-        drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop);
-        drawMaskBitmap(canvas, pixelUnit, drawLeft, drawTop);
-        drawNumberBitmap(canvas, pixelUnit, drawLeft, drawTop);
-        lastPixelUnit = pixelUnit;
-    }
 
-    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制填色图
-        if (colorPaint == null) {
-            colorPaint = new Paint();
-            colorPaint.setStyle(Paint.Style.FILL);
-            colorPaint.setAntiAlias(true);
-        }
-        if (colorRectF == null) {
-            colorRectF = new RectF();
-        }
 
         for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
             Integer color = entry.getKey();
@@ -186,18 +173,39 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 if (PixelHelper.ignorePixel(pixel)) {
                     continue;
                 }
-                float left = drawLeft + pixel.x * pixelUnit;
-                float right = left + pixelUnit;
-                float top = drawTop + pixel.y * pixelUnit;
-                float bottom = top + pixelUnit;
-                colorRectF.set(left, top, right, bottom);
-                colorPaint.setColor(color);
-                canvas.drawRect(colorRectF, colorPaint);
+                drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop, pixel);
+//                drawMaskBitmap(canvas, pixelUnit, drawLeft, drawTop, pixel);
+                drawNumberBitmap(canvas, pixelUnit, drawLeft, drawTop, number, pixel);
             }
         }
+
+        lastPixelUnit = pixelUnit;
     }
 
-    private void drawMaskBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制遮罩
+    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, PixelUnit pixel) { // 绘制填色图
+        if (colorPaint == null) {
+            colorPaint = new Paint();
+            colorPaint.setStyle(Paint.Style.FILL);
+            colorPaint.setAntiAlias(true);
+        }
+        if (colorRectF == null) {
+            colorRectF = new RectF();
+        }
+
+        if (!pixel.enableDraw) { // 不需要绘制的像素点不绘制
+            return;
+        }
+
+        float left = drawLeft + pixel.x * pixelUnit;
+        float right = left + pixelUnit;
+        float top = drawTop + pixel.y * pixelUnit;
+        float bottom = top + pixelUnit;
+        colorRectF.set(left, top, right, bottom);
+        colorPaint.setColor(pixel.color);
+        canvas.drawRect(colorRectF, colorPaint);
+    }
+
+    private void drawMaskBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, PixelUnit pixel) { // 绘制遮罩
         if (maskPaint == null) {
             maskPaint = new Paint();
             maskPaint.setStyle(Paint.Style.FILL);
@@ -208,31 +216,18 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             maskRectF = new RectF();
         }
 
-        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
-            Integer color = entry.getKey();
-            String number = pixelList.numberMap.get(color);
-            if (TextUtils.isEmpty(number)) {
-                continue;
-            }
-            for (PixelUnit pixel : entry.getValue()) {
-                if (PixelHelper.ignorePixel(pixel)) {
-                    continue;
-                }
-                if (pixel.enableDraw) { // 需要绘制的像素点不再遮罩
-                    continue;
-                }
-                float left = drawLeft + pixel.x * pixelUnit;
-                float right = left + pixelUnit;
-                float top = drawTop + pixel.y * pixelUnit;
-                float bottom = top + pixelUnit;
-                maskRectF.set(left, top, right, bottom);
-//                maskPaint.setColor(color);
-                canvas.drawRect(maskRectF, maskPaint);
-            }
+        if (pixel.enableDraw) { // 需要绘制的像素点不再遮罩
+            return;
         }
+        float left = drawLeft + pixel.x * pixelUnit;
+        float right = left + pixelUnit;
+        float top = drawTop + pixel.y * pixelUnit;
+        float bottom = top + pixelUnit;
+        maskRectF.set(left, top, right, bottom);
+        canvas.drawRect(maskRectF, maskPaint);
     }
 
-    private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制数字图
+    private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, String number, PixelUnit pixel) { // 绘制数字图
         if (borderPaint == null) {
             borderPaint = new Paint();
             borderPaint.setStyle(Paint.Style.STROKE);
@@ -260,42 +255,32 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             numberRectF = new RectF();
         }
 
-        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
-            Integer color = entry.getKey();
-            String number = pixelList.numberMap.get(color);
-            if (TextUtils.isEmpty(number)) {
-                continue;
-            }
-            for (PixelUnit pixel : entry.getValue()) {
-                if (PixelHelper.ignorePixel(pixel)) {
-                    continue;
-                }
-                if (pixel.enableDraw) { // 需要绘制的像素点不再用数字遮盖
-                    continue;
-                }
-                float left = drawLeft + pixel.x * pixelUnit;
-                float right = left + pixelUnit;
-                float top = drawTop + pixel.y * pixelUnit;
-                float bottom = top + pixelUnit;
-                numberRectF.set(left, top, right, bottom);
-
-                if (selColor == pixel.color) { // 选中颜色的部分高亮
-                    bgPaint.setColor(Color.GRAY);
-                    numberPaint.setFakeBoldText(true);
-                } else {
-//                    bgPaint.setColor(Color.LTGRAY);
-                    bgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
-                    numberPaint.setFakeBoldText(false);
-                }
-
-                canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框
-                canvas.drawRect(numberRectF, borderPaint); // 画数字像素单元的背景
-                numberPaint.setTextSize(pixelUnit * 0.5f);
-                Paint.FontMetrics fontMetrics = numberPaint.getFontMetrics();
-                float fontHeight = fontMetrics.ascent - fontMetrics.descent;
-                canvas.drawText(number, numberRectF.centerX(), numberRectF.centerY() - fontHeight / 2, numberPaint);  // 画数字像素单元的内容数字
-            }
+        if (pixel.enableDraw) { // 需要绘制的像素点不再用数字遮盖
+            return;
         }
+        float left = drawLeft + pixel.x * pixelUnit;
+        float right = left + pixelUnit;
+        float top = drawTop + pixel.y * pixelUnit;
+        float bottom = top + pixelUnit;
+        numberRectF.set(left, top, right, bottom);
+
+        if (selColor == pixel.color) { // 选中颜色的部分高亮
+            bgPaint.setColor(Color.GRAY);
+            bgPaint.setAlpha(255);
+            numberPaint.setFakeBoldText(true);
+        } else {
+//                    bgPaint.setColor(Color.LTGRAY);
+            bgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
+            bgPaint.setAlpha((int) (255 * 0.3f));
+            numberPaint.setFakeBoldText(false);
+        }
+
+        canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框
+        canvas.drawRect(numberRectF, borderPaint); // 画数字像素单元的背景
+        numberPaint.setTextSize(pixelUnit * 0.5f);
+        Paint.FontMetrics fontMetrics = numberPaint.getFontMetrics();
+        float fontHeight = fontMetrics.ascent - fontMetrics.descent;
+        canvas.drawText(number, numberRectF.centerX(), numberRectF.centerY() - fontHeight / 2, numberPaint);  // 画数字像素单元的内容数字
     }
 
     /**
