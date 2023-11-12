@@ -55,10 +55,13 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private Paint borderPaint; // 像素边框画笔
     private Paint bgPaint; // 像素背景画笔
     private Paint colorPaint; // 填色画笔
+
+    private Paint maskPaint; // 遮罩画笔
     /*========== 画笔 ==========*/
 
     private RectF colorRectF; // 填色像素单元
     private RectF numberRectF; // 数字像素单元
+    private RectF maskRectF; // 遮罩像素单元
 
     private PixelList pixelList;
     private float drawLeft; // 绘图的左上角的 x
@@ -158,6 +161,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
         drawRegion.set((int) drawLeft, (int) drawTop, (int) (drawLeft + pixelList.originWidth * pixelUnit), (int) (drawTop + pixelList.originHeight * pixelUnit));
         drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop);
+        drawMaskBitmap(canvas, pixelUnit, drawLeft, drawTop);
         drawNumberBitmap(canvas, pixelUnit, drawLeft, drawTop);
         lastPixelUnit = pixelUnit;
     }
@@ -193,6 +197,41 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
     }
 
+    private void drawMaskBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制遮罩
+        if (maskPaint == null) {
+            maskPaint = new Paint();
+            maskPaint.setStyle(Paint.Style.FILL);
+            maskPaint.setAntiAlias(true);
+            maskPaint.setColor(Color.WHITE);
+        }
+        if (maskRectF == null) {
+            maskRectF = new RectF();
+        }
+
+        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+            Integer color = entry.getKey();
+            String number = pixelList.numberMap.get(color);
+            if (TextUtils.isEmpty(number)) {
+                continue;
+            }
+            for (PixelUnit pixel : entry.getValue()) {
+                if (PixelHelper.ignorePixel(pixel)) {
+                    continue;
+                }
+                if (pixel.enableDraw) { // 需要绘制的像素点不再遮罩
+                    continue;
+                }
+                float left = drawLeft + pixel.x * pixelUnit;
+                float right = left + pixelUnit;
+                float top = drawTop + pixel.y * pixelUnit;
+                float bottom = top + pixelUnit;
+                maskRectF.set(left, top, right, bottom);
+//                maskPaint.setColor(color);
+                canvas.drawRect(maskRectF, maskPaint);
+            }
+        }
+    }
+
     private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop) { // 绘制数字图
         if (borderPaint == null) {
             borderPaint = new Paint();
@@ -213,7 +252,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             numberPaint = new Paint();
             numberPaint.setStyle(Paint.Style.FILL);
             numberPaint.setAntiAlias(true);
-            numberPaint.setColor(Color.WHITE);
+            numberPaint.setColor(Color.BLACK);
             numberPaint.setTextAlign(Paint.Align.CENTER);
         }
 
@@ -242,9 +281,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
                 if (selColor == pixel.color) { // 选中颜色的部分高亮
                     bgPaint.setColor(Color.GRAY);
+                    numberPaint.setFakeBoldText(true);
                 } else {
 //                    bgPaint.setColor(Color.LTGRAY);
                     bgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
+                    numberPaint.setFakeBoldText(false);
                 }
 
                 canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框
