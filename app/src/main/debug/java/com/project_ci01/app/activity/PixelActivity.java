@@ -1,10 +1,13 @@
 package com.project_ci01.app.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.project_ci01.app.config.IConfig;
+import com.project_ci01.app.dao.ImageEntity;
 import com.project_ci01.app.pixel.Props;
 import com.project_m1142.app.base.view.BaseActivity;
 import com.project_m1142.app.databinding.ActivityPixelBinding;
@@ -12,6 +15,8 @@ import com.project_m1142.app.databinding.ActivityPixelBinding;
 public class PixelActivity extends BaseActivity {
 
     ActivityPixelBinding binding;
+
+    private ImageEntity entity;
 
     @Override
     protected String tag() {
@@ -33,6 +38,19 @@ public class PixelActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        init(getIntent());
+    }
+
+    private void init(Intent intent) {
+
+        if (intent != null) {
+            entity = intent.getParcelableExtra(IConfig.KEY_IMAGE_ENTITY);
+        }
+
+        if (entity != null) {
+            binding.viewPixel.setImageEntity(entity);
+        }
+
         binding.btnBucket.setOnClickListener(v -> {
             binding.viewPixel.setProps(Props.BUCKET);
         });
@@ -48,5 +66,11 @@ public class PixelActivity extends BaseActivity {
         binding.btnTip.setOnClickListener(v -> {
             binding.viewPixel.centerUndrawPixel();
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding.viewPixel.release();
     }
 }

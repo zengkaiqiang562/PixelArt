@@ -3,10 +3,10 @@ package com.project_m1142.app.ui;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
 // import androidx.appcompat.app.AppCompatDelegate;
 // import androidx.work.Configuration;
 
+import com.project_ci01.app.pixel.PixelManager;
 import com.project_m1142.app.base.BaseApplication;
 import com.project_m1142.app.base.manage.ContextManager;
 import com.project_m1142.app.base.manage.LifecyclerManager;
@@ -45,6 +45,8 @@ public class MyApplication extends BaseApplication/*  implements Configuration.P
 
             }
         });
+
+        PixelManager.getInstance().loadLocalImages();
     }
 
     // @NonNull

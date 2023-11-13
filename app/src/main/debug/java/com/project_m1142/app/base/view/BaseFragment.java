@@ -35,7 +35,7 @@ public abstract class BaseFragment extends Fragment {
     /**
      * @return 返回 true 表示可以跳转UI，避免快速重复点击
      */
-    protected boolean isTurning() {
+    protected boolean canTurn() {
         return !turning && (turning = true);
     }
 

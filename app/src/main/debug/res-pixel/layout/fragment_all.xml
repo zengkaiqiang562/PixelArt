@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:srlEnableLoadMore="false"
-    app:srlEnableRefresh="false"
-    android:background="@color/purple_700">
+    app:srlEnableRefresh="false">
 
     <!-- 必须  SmartRefreshLayout 作为根布局才能支持 CoordinatorLayout + ViewPager + RecyclerView
         的嵌套滑动，并设置 srlEnableLoadMore=false 且 srlEnableRefresh="false"

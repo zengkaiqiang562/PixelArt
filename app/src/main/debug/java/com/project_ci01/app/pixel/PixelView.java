@@ -10,6 +10,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,8 +26,12 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.project_ci01.app.dao.ImageDbManager;
+import com.project_ci01.app.dao.ImageEntity;
 import com.project_m1142.app.base.utils.BitmapUtils;
+import com.project_m1142.app.base.utils.FileUtils;
 import com.project_m1142.app.base.utils.LogUtils;
+import com.project_m1142.app.base.utils.MyTimeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,6 +84,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private Props props = Props.NONE; // 默认不使用道具
 
+    private ImageEntity entity;
+
+    private StoreHandler storeHandler;
+    private HandlerThread storeHandlerThread;
+
     public PixelView(Context context) {
         this(context, null);
     }
@@ -94,23 +108,23 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         gestureDetector.setOnDoubleTapListener(this);
         gestureDetector.setIsLongpressEnabled(false); // 禁止长按，因为长按事件触发后，onScroll 不会再回调
         scaleGestureDetector = new ScaleGestureDetector(context, this);
-        AssetManager assetManager = context.getAssets();
-        String assetFilePath = "images/logo_1.png";
-//        String assetFilePath = "images/cartoon/01.png";
-        try {
-            InputStream inputStream = assetManager.open(assetFilePath);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inMutable = true;
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, options);
-            LogUtils.e(TAG, "--> init()  bitmap=" + bitmap);
-            if (bitmap != null) {
-            LogUtils.e(TAG, "--> init()  bitmap.isMutable=" + bitmap.isMutable());
-                pixelList = PixelHelper.getAllPixels(bitmap, 30); // 每个像素点扩大30倍（即原图扩大30倍）
-            }
 
-        } catch (IOException e) {
-            Log.e(TAG, "--> init()  assetManager.open Failed !!!   assetFilePath=" + assetFilePath);
-        }
+        // storeHandler
+        storeHandlerThread = new HandlerThread("thread_store");
+        storeHandlerThread.start();
+        storeHandler = new StoreHandler(storeHandlerThread.getLooper());
+    }
+
+    public void release() {
+        storeHandler.removeCallbacksAndMessages(null);
+        storeHandlerThread.quitSafely();
+        storeHandler = null;
+        storeHandlerThread = null;
+    }
+
+    public void setImageEntity(@NonNull ImageEntity entity) {
+        this.entity = entity;
+        pixelList = PixelManager.getInstance().getPixelList(entity);
     }
 
     @Override
@@ -180,6 +194,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
 
         lastPixelUnit = pixelUnit;
+
+        // 更新存储
+        if (storeHandler != null) {
+            storeHandler.sendStoreMsg();
+        }
     }
 
     private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, PixelUnit pixel) { // 绘制填色图
@@ -646,4 +665,74 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         LogUtils.e(TAG, "--> OnScaleGestureListener onScaleEnd()");
     }
     /*--------------------------- ScaleGestureDetector.OnScaleGestureListener  end -----------------------------*/
+
+
+    private class StoreHandler extends Handler {
+
+        static final int MSG_STORE = 100;
+
+        StoreHandler(Looper looper) {
+            super(looper);
+        }
+
+        void sendStoreMsg() {
+            if (hasMessages(MSG_STORE)) {
+                removeMessages(MSG_STORE);
+            }
+            sendEmptyMessageDelayed(MSG_STORE, 500); // 500ms 没有绘制操作更新一次
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if (msg.what == MSG_STORE) {
+                if (pixelList == null || entity == null) {
+                    return;
+                }
+                long startTs = SystemClock.elapsedRealtime();
+
+                // 更新数据库
+                int[] countResult = new int[2];
+                countDrawnPixels(countResult);
+                entity.completed = countResult[0] == countResult[1];
+                if (countResult[1] > 0) { // 如果从来没绘制过像素点就不更新 colorTime
+                    entity.colorTime = System.currentTimeMillis();
+                }
+                ImageDbManager.getInstance().updateImage(entity);
+
+                // 更新 pixelList
+                FileUtils.writeObject(pixelList, entity.pixelsObjPath, true); // 存在时删除重新创建
+
+                // 更新 colorImage
+                PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
+                long duration = SystemClock.elapsedRealtime() - startTs;
+                LogUtils.e(TAG, "--> MSG_STORE  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
+            }
+        }
+    }
+
+    /**
+     * @param result
+     * result[0] 总像素点个数（去除白色和透明色）
+     * result[1] 已绘制像素点个数（去除白色和透明色）
+     */
+    private void countDrawnPixels(int[] result) {
+        if (pixelList == null) {
+            return;
+        }
+        int total = 0; // 总像素点（去除白色和透明色）
+        int drawn = 0; // 已绘制像素点（去除白色和透明色）
+        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+            for (PixelUnit pixel : entry.getValue()) {
+                if (PixelHelper.ignorePixel(pixel)) {
+                    continue;
+                }
+                ++total;
+                if (pixel.enableDraw) {
+                    ++drawn;
+                }
+            }
+        }
+        result[0] = total;
+        result[1] = drawn;
+    }
 }

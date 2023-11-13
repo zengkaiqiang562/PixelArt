@@ -1,10 +1,11 @@
 package com.project_ci01.app.pixel;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PixelList {
+public class PixelList implements Serializable {
 
     public Map<Integer, List<PixelUnit>> colorMap; // 相同颜色的像素点分类
     public Map<Integer, String> numberMap; // 相同颜色对应的数字

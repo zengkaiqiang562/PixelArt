@@ -4,16 +4,18 @@ import android.graphics.Color;
 
 import com.google.android.gms.common.util.Hex;
 
-public class PixelUnit {
-    int x;
-    int y;
+import java.io.Serializable;
+
+public class PixelUnit implements Serializable {
+    short x;
+    short y;
     int color; // ColorInt
 
     boolean enableDraw; // 是否绘制
 
     public PixelUnit(int x, int y, int color, boolean enableDraw) {
-        this.x = x;
-        this.y = y;
+        this.x = (short) x;
+        this.y = (short) y;
         this.color = color;
         this.enableDraw = enableDraw;
     }
