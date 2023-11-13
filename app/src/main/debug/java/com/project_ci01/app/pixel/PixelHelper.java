@@ -72,115 +72,121 @@ public class PixelHelper {
                 // 添加到总集合
                 pixels.add(pixel);
 
+
                 // 添加到按颜色分类的集合
-                List<PixelUnit> colorPixels = colorMap.get(color);
-                if (colorPixels == null) {
-                    colorPixels = new ArrayList<>();
-                    colorMap.put(color, colorPixels);
+                if (color != Color.WHITE && color != Color.TRANSPARENT) { // 不处理白色和透明
+                    List<PixelUnit> colorPixels = colorMap.get(color);
+                    if (colorPixels == null) {
+                        colorPixels = new ArrayList<>();
+                        colorMap.put(color, colorPixels);
+                    }
+                    colorPixels.add(pixel);
                 }
-                colorPixels.add(pixel);
+
 
                 // 相邻同色像素点放一起
-                boolean adjoinL = false; // 是否左邻同色
-                if ((x - 1) >= 0) { // 存在 左 邻像素点
-                    int indexL = (x-1) * bitmapHeight + y;
-                    PixelUnit pixelL = pixels.get(indexL);
-                    if (color == pixelL.color) { // 左邻同色
-                        adjoinL = true;
-                        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
-                        if (adjoinOuters != null) {
-                            for (List<PixelUnit> adjoinInners : adjoinOuters) {
-                                if (adjoinInners.contains(pixelL) && !adjoinInners.contains(pixel)) {
-                                    adjoinInners.add(pixel); // 存入相邻集
-                                    break;
+                if (color != Color.WHITE && color != Color.TRANSPARENT) { // 不处理白色和透明
+                    boolean adjoinL = false; // 是否左邻同色
+                    if ((x - 1) >= 0) { // 存在 左 邻像素点
+                        int indexL = (x-1) * bitmapHeight + y;
+                        PixelUnit pixelL = pixels.get(indexL);
+                        if (color == pixelL.color) { // 左邻同色
+                            adjoinL = true;
+                            List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
+                            if (adjoinOuters != null) {
+                                for (List<PixelUnit> adjoinInners : adjoinOuters) {
+                                    if (adjoinInners.contains(pixelL) && !adjoinInners.contains(pixel)) {
+                                        adjoinInners.add(pixel); // 存入相邻集
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                boolean adjoinLT = false; // 是否 左上 邻同色
-                if ((x - 1) >= 0 && (y - 1) >= 0) { // 存在 左上 邻像素点
-                    int indexLT = (x-1) * bitmapHeight + (y-1);
-                    PixelUnit pixelLT = pixels.get(indexLT);
-                    if (color == pixelLT.color) { // 左上 邻同色
-                        adjoinLT = true;
-                        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
-                        if (adjoinOuters != null) {
-                            for (List<PixelUnit> adjoinInners : adjoinOuters) {
-                                if (adjoinInners.contains(pixelLT) && !adjoinInners.contains(pixel)) {
-                                    adjoinInners.add(pixel); // 存入相邻集
-                                    break;
+                    boolean adjoinLT = false; // 是否 左上 邻同色
+                    if ((x - 1) >= 0 && (y - 1) >= 0) { // 存在 左上 邻像素点
+                        int indexLT = (x-1) * bitmapHeight + (y-1);
+                        PixelUnit pixelLT = pixels.get(indexLT);
+                        if (color == pixelLT.color) { // 左上 邻同色
+                            adjoinLT = true;
+                            List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
+                            if (adjoinOuters != null) {
+                                for (List<PixelUnit> adjoinInners : adjoinOuters) {
+                                    if (adjoinInners.contains(pixelLT) && !adjoinInners.contains(pixel)) {
+                                        adjoinInners.add(pixel); // 存入相邻集
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                boolean adjoinT = false; // 是否 上 邻同色
-                if ((y - 1) >= 0) { // 存在 上 邻像素点
-                    int indexT = x * bitmapHeight + (y-1);
-                    PixelUnit pixelT = pixels.get(indexT);
-                    if (color == pixelT.color) { // 上 邻同色
-                        adjoinT = true;
-                        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
-                        if (adjoinOuters != null) {
-                            for (List<PixelUnit> adjoinInners : adjoinOuters) {
-                                if (adjoinInners.contains(pixelT) && !adjoinInners.contains(pixel)) {
-                                    adjoinInners.add(pixel); // 存入相邻集
-                                    break;
+                    boolean adjoinT = false; // 是否 上 邻同色
+                    if ((y - 1) >= 0) { // 存在 上 邻像素点
+                        int indexT = x * bitmapHeight + (y-1);
+                        PixelUnit pixelT = pixels.get(indexT);
+                        if (color == pixelT.color) { // 上 邻同色
+                            adjoinT = true;
+                            List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
+                            if (adjoinOuters != null) {
+                                for (List<PixelUnit> adjoinInners : adjoinOuters) {
+                                    if (adjoinInners.contains(pixelT) && !adjoinInners.contains(pixel)) {
+                                        adjoinInners.add(pixel); // 存入相邻集
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                boolean adjoinLB = false; // 是否 左下 邻同色
-                if ((x - 1) >= 0 && (y + 1) < bitmapHeight) { // 存在 左下 邻像素点
-                    int indexLB = (x-1) * bitmapHeight + (y+1);
-                    PixelUnit pixelLB = pixels.get(indexLB);
-                    if (color == pixelLB.color) { // 上 邻同色
-                        adjoinLB = true;
-                        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
-                        if (adjoinOuters != null) {
-                            for (List<PixelUnit> adjoinInners : adjoinOuters) {
-                                if (adjoinInners.contains(pixelLB) && !adjoinInners.contains(pixel)) {
-                                    adjoinInners.add(pixel); // 存入相邻集
-                                    break;
+                    boolean adjoinLB = false; // 是否 左下 邻同色
+                    if ((x - 1) >= 0 && (y + 1) < bitmapHeight) { // 存在 左下 邻像素点
+                        int indexLB = (x-1) * bitmapHeight + (y+1);
+                        PixelUnit pixelLB = pixels.get(indexLB);
+                        if (color == pixelLB.color) { // 上 邻同色
+                            adjoinLB = true;
+                            List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
+                            if (adjoinOuters != null) {
+                                for (List<PixelUnit> adjoinInners : adjoinOuters) {
+                                    if (adjoinInners.contains(pixelLB) && !adjoinInners.contains(pixel)) {
+                                        adjoinInners.add(pixel); // 存入相邻集
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                // 1. 如果左下邻和左上邻都同色，可能存在 左下 和 左上 不在同一个相邻组的情况，此时需要合并相邻组
-                // 2. 如果左下邻和上邻都同色，可能存在 左下 和 上 不在同一个相邻组的情况，此时需要合并相邻组
-                if (adjoinLB && (adjoinLT || adjoinT)) {
-                    List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
-                    if (adjoinOuters != null) {
-                        List<PixelUnit> newAdjoinInners = new ArrayList<>();
-                        for (int i = adjoinOuters.size() - 1; i >= 0; i--) {
-                            List<PixelUnit> adjoinInners = adjoinOuters.get(i);
-                            if (adjoinInners.contains(pixel)) {
-                                newAdjoinInners.addAll(adjoinInners);
-                                newAdjoinInners.remove(pixel); // 先移除，最后添加，不然可能 newAdjoinInners 有多个 pixel
-                                adjoinOuters.remove(i);
+                    // 1. 如果左下邻和左上邻都同色，可能存在 左下 和 左上 不在同一个相邻组的情况，此时需要合并相邻组
+                    // 2. 如果左下邻和上邻都同色，可能存在 左下 和 上 不在同一个相邻组的情况，此时需要合并相邻组
+                    if (adjoinLB && (adjoinLT || adjoinT)) {
+                        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color);
+                        if (adjoinOuters != null) {
+                            List<PixelUnit> newAdjoinInners = new ArrayList<>();
+                            for (int i = adjoinOuters.size() - 1; i >= 0; i--) {
+                                List<PixelUnit> adjoinInners = adjoinOuters.get(i);
+                                if (adjoinInners.contains(pixel)) {
+                                    newAdjoinInners.addAll(adjoinInners);
+                                    newAdjoinInners.remove(pixel); // 先移除，最后添加，不然可能 newAdjoinInners 有多个 pixel
+                                    adjoinOuters.remove(i);
+                                }
                             }
+                            newAdjoinInners.add(pixel);
+                            adjoinOuters.add(newAdjoinInners);
                         }
-                        newAdjoinInners.add(pixel);
-                        adjoinOuters.add(newAdjoinInners);
                     }
-                }
 
-                if (!adjoinL && !adjoinLT && !adjoinT && !adjoinLB) { // 不存在相邻，则创建一个新的相邻组
-                    List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color); // 同颜色的所有相邻组的集合
-                    if (adjoinOuters == null) {
-                        adjoinOuters = new ArrayList<>();
-                        adjoinMap.put(color, adjoinOuters);
+                    if (!adjoinL && !adjoinLT && !adjoinT && !adjoinLB) { // 不存在相邻，则创建一个新的相邻组
+                        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(color); // 同颜色的所有相邻组的集合
+                        if (adjoinOuters == null) {
+                            adjoinOuters = new ArrayList<>();
+                            adjoinMap.put(color, adjoinOuters);
+                        }
+                        List<PixelUnit> adjoinInners = new ArrayList<>(); // 新的相邻组
+                        adjoinInners.add(pixel);
+                        adjoinOuters.add(adjoinInners);
                     }
-                    List<PixelUnit> adjoinInners = new ArrayList<>(); // 新的相邻组
-                    adjoinInners.add(pixel);
-                    adjoinOuters.add(adjoinInners);
                 }
             }
         }
