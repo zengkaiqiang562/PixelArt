@@ -114,9 +114,9 @@ public class HomeFragment extends BaseFragment {
     private void initViewPager() {
         fragments.clear();
         fragments.add(new AllFragment());
-        fragments.add(new FoodFragment());
-        fragments.add(new CartoonFragment());
         fragments.add(new LoveFragment());
+        fragments.add(new CartoonFragment());
+        fragments.add(new FoodFragment());
         pagerAdapter = new CategoryPagerAdapter(getChildFragmentManager());
         binding.viewPager.setAdapter(pagerAdapter);
         binding.viewPager.setOffscreenPageLimit(fragments.size() - 1);
