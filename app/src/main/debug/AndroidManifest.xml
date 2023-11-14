@@ -50,6 +50,8 @@
             </intent-filter>-->
         </activity>
 
+        <activity android:name="com.project_ci01.app.activity.CompleteActivity"
+            android:screenOrientation="portrait"/>
 
 
         <!--======================================-->

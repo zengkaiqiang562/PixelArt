@@ -671,6 +671,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
         static final int MSG_STORE = 100;
 
+        int[] lastCountResult;
+
         StoreHandler(Looper looper) {
             super(looper);
         }
@@ -679,7 +681,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             if (hasMessages(MSG_STORE)) {
                 removeMessages(MSG_STORE);
             }
-            sendEmptyMessageDelayed(MSG_STORE, 500); // 500ms 没有绘制操作更新一次
+            sendEmptyMessageDelayed(MSG_STORE, 200); // 200ms 没有绘制操作更新一次
         }
 
         @Override
@@ -690,9 +692,23 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 }
                 long startTs = SystemClock.elapsedRealtime();
 
-                // 更新数据库
+
                 int[] countResult = new int[2];
                 countDrawnPixels(countResult);
+
+                if (lastCountResult == null) { // 第一次 onDraw 时不更新
+                    LogUtils.e(TAG, "--> MSG_STORE  First onDraw !!!");
+                    lastCountResult = countResult;
+                    return;
+                }
+
+                if (lastCountResult[0] == countResult[0] && lastCountResult[1] == countResult[1]) {
+                    // 只是平移或缩放，没有像素点被填色，此时不更新
+                    LogUtils.e(TAG, "--> MSG_STORE  NO Pixel has been Drawn !!!");
+                    return;
+                }
+
+                // 更新数据库
                 entity.completed = countResult[0] == countResult[1];
                 if (countResult[1] > 0) { // 如果从来没绘制过像素点就不更新 colorTime
                     entity.colorTime = System.currentTimeMillis();
@@ -704,35 +720,38 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
                 // 更新 colorImage
                 PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
+
+                lastCountResult = countResult;
+
                 long duration = SystemClock.elapsedRealtime() - startTs;
                 LogUtils.e(TAG, "--> MSG_STORE  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
             }
         }
-    }
 
-    /**
-     * @param result
-     * result[0] 总像素点个数（去除白色和透明色）
-     * result[1] 已绘制像素点个数（去除白色和透明色）
-     */
-    private void countDrawnPixels(int[] result) {
-        if (pixelList == null) {
-            return;
-        }
-        int total = 0; // 总像素点（去除白色和透明色）
-        int drawn = 0; // 已绘制像素点（去除白色和透明色）
-        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
-            for (PixelUnit pixel : entry.getValue()) {
-                if (PixelHelper.ignorePixel(pixel)) {
-                    continue;
-                }
-                ++total;
-                if (pixel.enableDraw) {
-                    ++drawn;
+        /**
+         * @param result
+         * result[0] 总像素点个数（去除白色和透明色）
+         * result[1] 已绘制像素点个数（去除白色和透明色）
+         */
+        private void countDrawnPixels(int[] result) {
+            if (pixelList == null) {
+                return;
+            }
+            int total = 0; // 总像素点（去除白色和透明色）
+            int drawn = 0; // 已绘制像素点（去除白色和透明色）
+            for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+                for (PixelUnit pixel : entry.getValue()) {
+                    if (PixelHelper.ignorePixel(pixel)) {
+                        continue;
+                    }
+                    ++total;
+                    if (pixel.enableDraw) {
+                        ++drawn;
+                    }
                 }
             }
+            result[0] = total;
+            result[1] = drawn;
         }
-        result[0] = total;
-        result[1] = drawn;
     }
 }

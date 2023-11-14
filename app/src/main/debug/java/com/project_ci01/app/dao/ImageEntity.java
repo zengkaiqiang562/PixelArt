@@ -120,6 +120,18 @@ public class ImageEntity implements Parcelable {
         return storeDir.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "ImageEntity{" +
+                "colorTime=" + colorTime +
+                ", fileName='" + fileName + '\'' +
+                ", fromType='" + fromType + '\'' +
+                ", category='" + category + '\'' +
+                ", storeDir='" + storeDir + '\'' +
+                ", completed=" + completed +
+                '}';
+    }
+
     public boolean inProgress() {
         return colorTime > 0 && !completed; // 填色时间大于0 且未完成，就在进行中
     }

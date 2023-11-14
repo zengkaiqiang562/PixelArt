@@ -4,8 +4,12 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
+import com.project_m1142.app.base.common.CompleteCallback;
 import com.project_m1142.app.base.utils.LogUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageDbManager {
@@ -17,6 +21,8 @@ public class ImageDbManager {
     private final ImageDbHandler dbHandler;
 
     private final ImageDao imageDao;
+
+    private final List<OnImageDbChangedListener> onImageDbChangedListeners = new ArrayList<>();
 
     public static ImageDbManager getInstance() {
         if(instance == null) {
@@ -44,6 +50,8 @@ public class ImageDbManager {
         dbHandler.post(() -> {
             long result = imageDao.addImage(entity);
             LogUtils.e(TAG, "-->  addImage()  result=" + result);
+
+            mainHandler.post(this::notifyOnDbChanged);
         });
     }
 
@@ -51,6 +59,7 @@ public class ImageDbManager {
         dbHandler.post(() -> {
             int result = imageDao.deleteImage(entity);
             LogUtils.e(TAG, "-->  deleteImage()  result=" + result);
+            mainHandler.post(this::notifyOnDbChanged);
         });
     }
 
@@ -58,6 +67,7 @@ public class ImageDbManager {
         dbHandler.post(() -> {
             int result = imageDao.deleteImage(entities);
             LogUtils.e(TAG, "-->  deleteImages()  result=" + result);
+            mainHandler.post(this::notifyOnDbChanged);
         });
     }
 
@@ -65,6 +75,7 @@ public class ImageDbManager {
         dbHandler.post(() -> {
             int result = imageDao.deleteAll();
             LogUtils.e(TAG, "-->  deleteAll()  result=" + result);
+            mainHandler.post(this::notifyOnDbChanged);
         });
     }
 
@@ -87,6 +98,7 @@ public class ImageDbManager {
                         tmp.completed = entity.completed;
                         int result = imageDao.updateImage(tmp);
                         LogUtils.e(TAG, "-->  updateImage()  result=" + result);
+                        mainHandler.post(this::notifyOnDbChanged);
                     }
                 }
             } else {
@@ -112,6 +124,7 @@ public class ImageDbManager {
                     tmp.completed = entity.completed;
                     int result = imageDao.updateImage(tmp);
                     LogUtils.e(TAG, "-->  updateImage()  result=" + result);
+                    mainHandler.post(this::notifyOnDbChanged);
                 }
             }
         } else {
@@ -208,6 +221,31 @@ public class ImageDbManager {
         });
     }
 
+    // 判断是否存在匹配 storeDir 的记录
+    public int countByStoreDirSync(String storeDir) {
+        int count = imageDao.countByStoreDir(storeDir);
+        LogUtils.e(TAG, "-->  countByStoreDir()  count=" + count);
+        return count;
+    }
+
+    /**
+     * int[0] -> countCompleted
+     * int[1] -> countInProgress
+     */
+    public void countInProgressAndCompleted(CompleteCallback<int[]> callback) {
+        dbHandler.post(() -> {
+            int countCompleted = imageDao.countCompleted();
+            int countInProgress = imageDao.countInProgress();
+            LogUtils.e(TAG, "-->  countInProgressAndCompleted()  countCompleted=" + countCompleted + "  countInProgress=" + countInProgress);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onCompleted(new int[]{countCompleted, countInProgress});
+                }
+            });
+        });
+    }
+
+
     // 判断某段时间是否有记录
     public void countByTimeRange(long startTime, long endCTime, QueryCountCallback callback) {
         dbHandler.post(() -> {
@@ -249,5 +287,25 @@ public class ImageDbManager {
 
     public interface QueryCountCallback {
         void onSuccess(int count);
+    }
+
+    public interface OnImageDbChangedListener {
+        void onImageDbChanged(); // 数据库发生了变化
+    }
+
+    public void addOnDbChangedListener(@NonNull OnImageDbChangedListener listener) {
+        if (!onImageDbChangedListeners.contains(listener)) {
+            onImageDbChangedListeners.add(listener);
+        }
+    }
+
+    public void removeOnDbChangedListener(@NonNull OnImageDbChangedListener listener) {
+        onImageDbChangedListeners.remove(listener);
+    }
+
+    private void notifyOnDbChanged() {
+        for (OnImageDbChangedListener listener : onImageDbChangedListeners) {
+            listener.onImageDbChanged();
+        }
     }
 }

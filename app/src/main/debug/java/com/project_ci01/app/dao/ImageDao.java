@@ -40,14 +40,23 @@ public interface ImageDao {
     @Query("select * from table_image where category= :category")
     List<ImageEntity> queryByCategory(String category);
 
-    @Query("select * from table_image where completed= 1")
+    @Query("select * from table_image where completed= 1 order by colorTime desc")
     List<ImageEntity> queryCompleted();
 
-    @Query("select * from table_image where completed= 0 and colorTime > 0")
+    @Query("select * from table_image where completed= 0 and colorTime > 0  order by colorTime desc")
     List<ImageEntity> queryInProgress();
 
     @Query("select count(*) from table_image")
     int countImage();
+
+    @Query("select count(*) from table_image where storeDir= :storeDir")
+    int countByStoreDir(String storeDir);
+
+    @Query("select count(*) from table_image where completed= 1")
+    int countCompleted();
+
+    @Query("select count(*) from table_image where completed= 0 and colorTime > 0")
+    int countInProgress();
 
     @Query("select count(*) from table_image where createTime >= :startCreateTime and createTime <= :endCreateTime")
     int countByCreateTimeRange(long startCreateTime, long endCreateTime);

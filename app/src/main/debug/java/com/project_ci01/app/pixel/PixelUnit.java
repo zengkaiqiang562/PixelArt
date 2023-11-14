@@ -6,12 +6,20 @@ import com.google.android.gms.common.util.Hex;
 
 import java.io.Serializable;
 
+/**
+ * 因为实体类实现了 Serializable 接口，但没有定义 序列化id（serialVersionUID）的值，
+ * 系统会根据类的修饰符、实现接口、定义的方法以及属性等信息计算出 serialVersionUID，
+ * 所以，在以后版本迭代时，PixelUnit 的程序结构（包括成员的访问修饰符）都不能变，
+ * 否则无法将本地保存的对象文件反序列回来，会报错：
+ * java.io.InvalidClassException:<包名>;
+ * local class incompatible: stream classdesc serialVersionUID = xxx,local class serialVersionUID = xxx
+ */
 public class PixelUnit implements Serializable {
-    short x;
-    short y;
-    int color; // ColorInt
+    public short x;
+    public short y;
+    public int color; // ColorInt
 
-    boolean enableDraw; // 是否绘制
+    public boolean enableDraw; // 是否绘制
 
     public PixelUnit(int x, int y, int color, boolean enableDraw) {
         this.x = (short) x;

@@ -5,6 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 因为实体类实现了 Serializable 接口，但没有定义 序列化id（serialVersionUID）的值，
+ * 系统会根据类的修饰符、实现接口、定义的方法以及属性等信息计算出 serialVersionUID，
+ * 所以，在以后版本迭代时，PixelUnit 的程序结构（包括成员的访问修饰符）都不能变，
+ * 否则无法将本地保存的对象文件反序列回来，会报错：
+ * java.io.InvalidClassException:<包名>;
+ * local class incompatible: stream classdesc serialVersionUID = xxx,local class serialVersionUID = xxx
+ */
 public class PixelList implements Serializable {
 
     public Map<Integer, List<PixelUnit>> colorMap; // 相同颜色的像素点分类

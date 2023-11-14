@@ -154,7 +154,9 @@ public class PixelManager {
             writeColorImage(entity.colorImagePath, pixelList, false); // 文件存在时不处理
 
             //save to database
-            ImageDbManager.getInstance().updateImage(entity);
+            if (ImageDbManager.getInstance().countByStoreDirSync(entity.storeDir) == 0) { // 不存在时才添加
+                ImageDbManager.getInstance().addImage(entity);
+            }
 
         } catch (IOException e) {
             Log.e(TAG, "--> parseLocal()  Failed!!! e=" + e);
