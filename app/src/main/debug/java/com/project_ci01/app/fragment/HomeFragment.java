@@ -147,8 +147,7 @@ public class HomeFragment extends BaseFragment {
         ALL("All"),
         LOVE("Love"),
         CARTOON("Cartoon"),
-        FOOD("Food"),
-        ;
+        FOOD("Food");
         final String tabName;
 
         CatTab(String tabName) {

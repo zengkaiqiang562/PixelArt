@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MyTest {
@@ -62,5 +63,20 @@ public class MyTest {
         System.out.println("str="+str);
         String result = Pattern.compile("\\.[a-zA-Z0-9_]+$").matcher(str).replaceAll("");
         System.out.println("result="+result);
+    }
+
+    @Test
+    public void test5() {
+        String str = "images/daily/202311/01.png";
+        String result = str.substring(str.lastIndexOf("/") + 1);
+//        String result = Pattern.compile("\\.[a-zA-Z0-9_]+$").matcher(str).replaceAll("");
+        System.out.println("result="+result);
+    }
+
+    @Test
+    public void test6() {
+        long tsDate = TimeUtils.string2Millis("20231101", "yyyyMMdd");
+        String fitDate = TimeUtils.millis2String(tsDate, "yyyyMMdd HH:mm:ss");
+        System.out.println("fitDate="+fitDate);
     }
 }

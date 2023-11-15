@@ -4,7 +4,8 @@ public enum Category {
     UNKNOWN("unknown"),
     LOVE("love"),
     CARTOON("cartoon"),
-    FOOD("food");
+    FOOD("food"),
+    DAILY("daily");
 
     public final String catName;
 

@@ -94,7 +94,7 @@ public class AllFragment extends BaseFragment implements OnItemClickListener<Hom
     }
 
     public void update() {
-        ImageDbManager.getInstance().queryAll(entities -> {
+        ImageDbManager.getInstance().queryAllInHome(entities -> {
             if (ContextManager.isSurvival(activity) && adapter != null) {
                 adapter.setDatasAndNotify(entities);
             }

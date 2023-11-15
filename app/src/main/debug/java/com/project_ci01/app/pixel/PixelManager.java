@@ -22,13 +22,12 @@ import com.project_ci01.app.dao.FromType;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntity;
 import com.project_m1142.app.base.manage.LifecyclerManager;
-import com.project_m1142.app.base.utils.BitmapUtils;
 import com.project_m1142.app.base.utils.FileUtils;
 import com.project_m1142.app.base.utils.LogUtils;
 import com.project_m1142.app.base.utils.MyTimeUtils;
+import com.project_m1142.app.base.utils.StringUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
 
 public class PixelManager {
     private static final String TAG = "PixelManager";
@@ -86,53 +84,98 @@ public class PixelManager {
 
 
     public String storeDir(String fromType, String category, String fileName) {
-        String noSuffixFileName = Pattern.compile("\\.[a-zA-Z0-9_]+$").matcher(fileName).replaceAll("");
-        return context.getCacheDir() + File.separator + fromType + File.separator + category + File.separator + noSuffixFileName;
+//        String noSuffixFileName = Pattern.compile("\\.[a-zA-Z0-9_]+$").matcher(fileName).replaceAll("");
+        return context.getCacheDir() + File.separator + fromType + File.separator + category + File.separator + StringUtils.trimSuffix(fileName);
     }
 
     public void loadLocalImages() {
         sFixExecutor.submit(() -> {
-            long startTs = SystemClock.elapsedRealtime();
-            try {
-                InputStream inputStream = assetManager.open("info.json");
-                Gson gson = new Gson();
-                LocalInfo localInfo = gson.fromJson(new InputStreamReader(inputStream), LocalInfo.class);
-
-                for (LocalCat cat : localInfo.cats) {
-                    for (String fileName : cat.images) {
-
-                        String category = Category.convert(cat.category).catName;
-                        String fromType = FromType.LOCAL.typeName;
-                        File storeDir = new File(storeDir(fromType, category, fileName));
-
-                        if (!storeDir.exists()) {
-                            boolean result = storeDir.mkdirs();
-                            LogUtils.e(TAG, "--> loadLocalImages() storeDir.mkdirs  result=" + result);
-                        }
-
-                        sFixExecutor.execute(() -> {
-                            parseLocal(cat.folder, fileName, fromType, category);
-                        });
-                    }
-                }
-
-            } catch (IOException e) {
-                Log.e(TAG, "--> loadLocalImages()  Failed!!! e=" + e);
-                e.printStackTrace();
-            }
-            long duration = SystemClock.elapsedRealtime() - startTs;
-            LogUtils.e(TAG, "--> loadLocalImages()  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
+//            long startTs = SystemClock.elapsedRealtime();
+//
+//            long duration = SystemClock.elapsedRealtime() - startTs;
+//            LogUtils.e(TAG, "--> loadLocalImages()  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
+            loadLocalHomeImages();
+            loadLocalDailyImages();
         });
     }
 
-    private void parseLocal(String folder, String fileName, String fromType, String category) {
+    private void loadLocalHomeImages() {
+        try {
+            InputStream inputStream = assetManager.open("home.json");
+            Gson gson = new Gson();
+            LocalInfo localInfo = gson.fromJson(new InputStreamReader(inputStream), LocalInfo.class);
+
+            for (LocalCat cat : localInfo.cats) {
+                for (String fileName : cat.images) {
+
+                    String category = Category.convert(cat.category).catName;
+                    String fromType = FromType.LOCAL.typeName;
+                    String storeDir = context.getCacheDir() + File.separator
+                            + fromType + File.separator + category + File.separator
+                            + StringUtils.trimSuffix(fileName);
+                    File storeDirFile = new File(storeDir);
+
+                    if (!storeDirFile.exists()) {
+                        boolean result = storeDirFile.mkdirs();
+                        LogUtils.e(TAG, "--> loadLocalHomeImages() storeDir.mkdirs  result=" + result);
+                    }
+
+                    sFixExecutor.execute(() -> {
+                        ImageEntity entity = new ImageEntity(context, System.currentTimeMillis(), fileName, fromType, category);
+                        String assetFile = cat.folder + fileName;
+                        parse(entity, assetFile);
+                    });
+                }
+            }
+
+        } catch (IOException e) {
+            Log.e(TAG, "--> loadLocalHomeImages()  Failed!!! e=" + e);
+            e.printStackTrace();
+        }
+    }
+
+    private void loadLocalDailyImages() {
+        try {
+            InputStream inputStream = assetManager.open("daily.json");
+            Gson gson = new Gson();
+            DailyInfo dailyInfo = gson.fromJson(new InputStreamReader(inputStream), DailyInfo.class);
+
+            for (DailyMonth month : dailyInfo.months) {
+                for (DailyImage image : month.images) {
+
+                    String category = Category.DAILY.catName;
+                    String fromType = FromType.LOCAL.typeName;
+                    String fileName = image.path.substring(image.path.lastIndexOf("/") + 1);
+                    String storeDir = context.getCacheDir() + File.separator
+                            + fromType + File.separator + category + File.separator + month.month + File.separator
+                            + StringUtils.trimSuffix(fileName);
+                    File storeDirFile = new File(storeDir);
+
+                    if (!storeDirFile.exists()) {
+                        boolean result = storeDirFile.mkdirs();
+                        LogUtils.e(TAG, "--> loadLocalDailyImages() storeDir.mkdirs  result=" + result);
+                    }
+
+                    long createTime = TimeUtils.string2Millis(image.date, "yyyyMMdd");
+
+                    sFixExecutor.execute(() -> {
+                        ImageEntity entity = new ImageEntity(context, createTime, fileName, fromType, category, month.month);
+                        String assetFile = image.path;
+                        parse(entity, assetFile);
+                    });
+                }
+            }
+
+        } catch (IOException e) {
+            Log.e(TAG, "--> loadLocalDailyImages()  Failed!!! e=" + e);
+            e.printStackTrace();
+        }
+    }
+
+    private void parse(ImageEntity entity, String assetFile) {
         long startTs = SystemClock.elapsedRealtime();
-
-        ImageEntity entity = new ImageEntity(System.currentTimeMillis(), fileName, fromType, category);
-
         try {
             // originImage
-            String assetFile = folder + fileName;
             InputStream inputStream = assetManager.open(assetFile);
             File originImage = new File(entity.originImagePath);
             if (!originImage.exists()) {
@@ -144,7 +187,7 @@ public class PixelManager {
             options.inMutable = true;
             Bitmap bitmap = BitmapFactory.decodeFile(entity.originImagePath, options);
             if (bitmap == null) {
-                LogUtils.e(TAG, "--> loadLocalImages() bitmap == null!!!  assetFile=" + assetFile);
+                LogUtils.e(TAG, "--> parse() bitmap == null!!!  assetFile=" + assetFile);
                 return;
             }
             PixelList pixelList = getAllPixels(bitmap, 5);
@@ -159,11 +202,11 @@ public class PixelManager {
             }
 
         } catch (IOException e) {
-            Log.e(TAG, "--> parseLocal()  Failed!!! e=" + e);
+            Log.e(TAG, "--> parse()  Failed!!! e=" + e);
             e.printStackTrace();
         }
         long duration = SystemClock.elapsedRealtime() - startTs;
-        LogUtils.e(TAG, "--> parseLocal()  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
+        LogUtils.e(TAG, "--> parse()  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
     }
 
     public void writeColorImage(String colorImagePath, @NonNull PixelList pixelList, boolean delIfExist) {
@@ -390,7 +433,7 @@ public class PixelManager {
         return new PixelList(adjoinMap, colorMap, numberMap, pixels, unit, unit, bitmapWidth, bitmapHeight);
     }
 
-    /*==================================================*/
+    /*======================== Home ==========================*/
 
     public static class LocalInfo {
         public List<LocalCat> cats;
@@ -409,6 +452,22 @@ public class PixelManager {
                     ", images=" + images +
                     '}';
         }
+    }
+
+    /*========================= Daily =========================*/
+
+    public static class DailyInfo {
+        public List<DailyMonth> months;
+    }
+
+    public static class DailyMonth {
+        public String month;
+        public List<DailyImage> images;
+    }
+
+    public static class DailyImage {
+        public String date;
+        public String path;
     }
 }
 

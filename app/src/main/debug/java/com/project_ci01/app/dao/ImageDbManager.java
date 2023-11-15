@@ -159,6 +159,18 @@ public class ImageDbManager {
         });
     }
 
+    public void queryAllInHome(QueryImageCallback callback) {
+        dbHandler.post(() -> {
+            List<ImageEntity> entities = imageDao.queryAllInHome();
+            LogUtils.e(TAG, "-->  queryAllInHome()  entities=" + entities);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onSuccess(entities);
+                }
+            });
+        });
+    }
+
     public void queryByFromType(String fromType, QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntity> entities = imageDao.queryByFromType(fromType);

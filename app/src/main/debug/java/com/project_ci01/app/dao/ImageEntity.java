@@ -1,5 +1,6 @@
 package com.project_ci01.app.dao;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,6 +10,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.project_ci01.app.pixel.PixelManager;
+import com.project_m1142.app.base.utils.StringUtils;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -54,24 +56,40 @@ public class ImageEntity implements Parcelable {
         this.completed = completed;
     }
 
+    // for Home
     @Ignore
-    private ImageEntity(long createTime, long colorTime, String fileName, String netUrl, String fromType, String category, boolean completed) {
+    public ImageEntity(Context context, long createTime, String fileName, String fromType, String category) {
         this.createTime = createTime;
-        this.colorTime = colorTime;
+        this.colorTime = 0;
         this.fileName = fileName;
-        this.netUrl = netUrl;
+        this.netUrl = null;
         this.fromType = fromType;
         this.category = category;
-        this.storeDir = PixelManager.getInstance().storeDir(fromType, category, fileName);
+        this.storeDir = context.getCacheDir() + File.separator
+                + fromType + File.separator + category + File.separator
+                + StringUtils.trimSuffix(fileName);
         this.originImagePath = storeDir + File.separator + fileName;
         this.colorImagePath = storeDir + File.separator + "color_image";
         this.pixelsObjPath = storeDir + File.separator + "pixel_list";
-        this.completed = completed;
+        this.completed = false;
     }
 
+    // for daily
     @Ignore
-    public ImageEntity(long createTime, String fileName, String fromType, String category) {
-        this(createTime, 0, fileName, null, fromType, category, false);
+    public ImageEntity(Context context, long createTime, String fileName, String fromType, String category, String dateOfMonth) {
+        this.createTime = createTime;
+        this.colorTime = 0;
+        this.fileName = fileName;
+        this.netUrl = null;
+        this.fromType = fromType;
+        this.category = category;
+        this.storeDir = context.getCacheDir() + File.separator
+                + fromType + File.separator + category + File.separator + dateOfMonth + File.separator
+                + StringUtils.trimSuffix(fileName);
+        this.originImagePath = storeDir + File.separator + fileName;
+        this.colorImagePath = storeDir + File.separator + "color_image";
+        this.pixelsObjPath = storeDir + File.separator + "pixel_list";
+        this.completed = false;
     }
 
     @Ignore

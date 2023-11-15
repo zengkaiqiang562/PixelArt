@@ -12,6 +12,10 @@ public class StringUtils {
         return Pattern.compile("^\"|\"$").matcher(src).replaceAll("");
     }
 
+    public static String trimSuffix(String fileName) {// 去掉文件后缀
+        return Pattern.compile("\\.[a-zA-Z0-9_]+$").matcher(fileName).replaceAll("");
+    }
+
     public static String getString(@StringRes int resId) {
         return LifecyclerManager.INSTANCE.getApplication().getString(resId);
     }

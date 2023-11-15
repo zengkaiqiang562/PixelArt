@@ -1,0 +1,38 @@
+{
+  "months": [
+    {
+      "month": "202311",
+      "images": [
+        {"date": "20231101", "path": "images/daily/202311/01.png"},
+        {"date": "20231102", "path": "images/daily/202311/02.png"},
+        {"date": "20231103", "path": "images/daily/202311/03.png"},
+        {"date": "20231104", "path": "images/daily/202311/04.png"},
+        {"date": "20231105", "path": "images/daily/202311/05.png"},
+        {"date": "20231106", "path": "images/daily/202311/06.png"},
+        {"date": "20231107", "path": "images/daily/202311/07.png"},
+        {"date": "20231108", "path": "images/daily/202311/08.png"},
+        {"date": "20231109", "path": "images/daily/202311/09.png"},
+        {"date": "20231110", "path": "images/daily/202311/10.png"},
+        {"date": "20231111", "path": "images/daily/202311/11.png"},
+        {"date": "20231112", "path": "images/daily/202311/12.png"},
+        {"date": "20231113", "path": "images/daily/202311/13.png"},
+        {"date": "20231114", "path": "images/daily/202311/14.png"},
+        {"date": "20231115", "path": "images/daily/202311/15.png"},
+        {"date": "20231116", "path": "images/daily/202311/16.png"},
+        {"date": "20231117", "path": "images/daily/202311/17.png"},
+        {"date": "20231118", "path": "images/daily/202311/18.png"},
+        {"date": "20231119", "path": "images/daily/202311/19.png"},
+        {"date": "20231120", "path": "images/daily/202311/20.png"},
+        {"date": "20231121", "path": "images/daily/202311/21.png"},
+        {"date": "20231122", "path": "images/daily/202311/22.png"},
+        {"date": "20231123", "path": "images/daily/202311/23.png"},
+        {"date": "20231124", "path": "images/daily/202311/24.png"},
+        {"date": "20231125", "path": "images/daily/202311/25.png"},
+        {"date": "20231126", "path": "images/daily/202311/26.png"},
+        {"date": "20231127", "path": "images/daily/202311/27.png"},
+        {"date": "20231128", "path": "images/daily/202311/28.png"},
+        {"date": "20231129", "path": "images/daily/202311/29.png"}
+      ]
+    }
+  ]
+}

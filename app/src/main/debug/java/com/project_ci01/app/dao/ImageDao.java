@@ -26,7 +26,10 @@ public interface ImageDao {
     int updateImage(ImageEntity image); //
 
     @Query("select * from table_image order by createTime desc")
-    List<ImageEntity> queryAll();
+    List<ImageEntity> queryAll(); // 包含 daily
+
+    @Query("select * from table_image where category in ('love', 'cartoon', 'food') order by createTime desc")
+    List<ImageEntity> queryAllInHome(); // 排除 daily
 
     @Query("select * from table_image where createTime= :createTime")
     List<ImageEntity> queryByCreateTime(long createTime);
@@ -34,10 +37,10 @@ public interface ImageDao {
     @Query("select * from table_image where storeDir= :storeDir")
     List<ImageEntity> queryByStoreDir(String storeDir);
 
-    @Query("select * from table_image where fromType= :fromType")
+    @Query("select * from table_image where fromType= :fromType order by createTime desc")
     List<ImageEntity> queryByFromType(String fromType);
 
-    @Query("select * from table_image where category= :category")
+    @Query("select * from table_image where category= :category order by createTime desc")
     List<ImageEntity> queryByCategory(String category);
 
     @Query("select * from table_image where completed= 1 order by colorTime desc")
