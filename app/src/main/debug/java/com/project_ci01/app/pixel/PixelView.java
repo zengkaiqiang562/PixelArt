@@ -694,7 +694,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
 
                 int[] countResult = new int[2];
-                countDrawnPixels(countResult);
+                PixelHelper.countDrawnPixels(pixelList, countResult);
 
                 if (lastCountResult == null) { // 第一次 onDraw 时不更新
                     LogUtils.e(TAG, "--> MSG_STORE  First onDraw !!!");
@@ -726,32 +726,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 long duration = SystemClock.elapsedRealtime() - startTs;
                 LogUtils.e(TAG, "--> MSG_STORE  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
             }
-        }
-
-        /**
-         * @param result
-         * result[0] 总像素点个数（去除白色和透明色）
-         * result[1] 已绘制像素点个数（去除白色和透明色）
-         */
-        private void countDrawnPixels(int[] result) {
-            if (pixelList == null) {
-                return;
-            }
-            int total = 0; // 总像素点（去除白色和透明色）
-            int drawn = 0; // 已绘制像素点（去除白色和透明色）
-            for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
-                for (PixelUnit pixel : entry.getValue()) {
-                    if (PixelHelper.ignorePixel(pixel)) {
-                        continue;
-                    }
-                    ++total;
-                    if (pixel.enableDraw) {
-                        ++drawn;
-                    }
-                }
-            }
-            result[0] = total;
-            result[1] = drawn;
         }
     }
 }

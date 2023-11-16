@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.project_ci01.app.activity.PixelActivity;
-import com.project_ci01.app.adapter.HomeImageAdapter;
+import com.project_ci01.app.adapter.DailyImageAdapter;
+import com.project_ci01.app.adapter.daily.IDailyItem;
+import com.project_ci01.app.adapter.daily.ImageDailyItem;
+import com.project_ci01.app.adapter.mine.IMineItem;
 import com.project_ci01.app.banner.DailyBannerItem;
 import com.project_ci01.app.banner.IBannerItem;
 import com.project_ci01.app.banner.MultiBannerAdapter;
@@ -27,21 +30,22 @@ import com.project_m1142.app.R;
 import com.project_m1142.app.base.manage.ContextManager;
 import com.project_m1142.app.base.utils.LogUtils;
 import com.project_m1142.app.base.view.BaseFragment;
-import com.project_m1142.app.base.view.recyclerview.OnItemClickListener;
 import com.project_m1142.app.databinding.FragmentDailyBinding;
+import com.sunfusheng.GroupRecyclerViewAdapter;
+import com.sunfusheng.StickyHeaderDecoration;
 import com.youth.banner.indicator.CircleIndicator;
 import com.youth.banner.listener.OnBannerListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DailyFragment extends BaseFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder>, ImageDbManager.OnImageDbChangedListener {
+public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdapter.OnItemClickListener<IDailyItem>, ImageDbManager.OnImageDbChangedListener {
 
     private FragmentDailyBinding binding;
 
     private MultiBannerAdapter bannerAdapter;
 
-    private HomeImageAdapter adapter;
+    private DailyImageAdapter adapter;
     
     @Override
     protected String tag() {
@@ -75,7 +79,7 @@ public class DailyFragment extends BaseFragment implements OnItemClickListener<H
     protected void initView(View view, Bundle savedInstanceState) {
         initBanner();
         initRecyclerView();
-        update();
+        update(true);
     }
 
     private void initBanner() {
@@ -99,38 +103,92 @@ public class DailyFragment extends BaseFragment implements OnItemClickListener<H
     }
 
     private void initRecyclerView() {
-        binding.dailyRv.setLayoutManager(new GridLayoutManager(activity, 2));
-        binding.dailyRv.setAdapter(adapter = new HomeImageAdapter(this, activity));
-        binding.dailyRv.addItemDecoration(new RecyclerView.ItemDecoration() {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 2);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (adapter == null) {
+                    return 1;
+                }
+
+                List<List<IDailyItem>> groups = adapter.getGroups();
+                if (groups == null || groups.isEmpty() || position >= adapter.getItemCount()) {
+                    return 1;
+                }
+
+                int groupPosition = adapter.getGroupPosition(position);
+                int childPosition = adapter.getGroupChildPosition(groupPosition, position);
+                IDailyItem item = adapter.getItem(groupPosition, childPosition);
+
+                int type = item.type();
+                if (type == IDailyItem.TYPE_HEADER) {
+                    return 2; // empty item 占 2 个item的位置，即独占一行
+                } else {
+                    return 1;
+                }
+            }
+        });
+        binding.dailyRv.setLayoutManager(gridLayoutManager);
+        adapter = new DailyImageAdapter(activity);
+        adapter.setOnItemClickListener(this);
+        binding.dailyRv.setAdapter(adapter);
+        binding.dailyRv.addItemDecoration(new StickyHeaderDecoration() {
             final int dp16 = ConvertUtils.dp2px(16);
             final int dp20 = ConvertUtils.dp2px(20);
 
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
 
-                outRect.left = 0;
-                outRect.right = 0;
-                outRect.top = 0;
-
-                if (parent.getChildLayoutPosition(view) % 2 == 0) {
-                    outRect.left = dp20;
-                    outRect.right = dp16 / 2;
+                if (adapter == null || adapter.getGroups() == null || adapter.getGroups().isEmpty()) {
+                    outRect.set(0, 0, 0, 0);
+                    return;
                 }
-                if (parent.getChildLayoutPosition(view) % 2 == 1) {
-                    outRect.left = dp16 / 2;
-                    outRect.right = dp20;
+
+                GridLayoutManager.LayoutParams layoutParams = (GridLayoutManager.LayoutParams) view.getLayoutParams();
+                int spanIndex = layoutParams.getSpanIndex();
+                int spanSize = layoutParams.getSpanSize();
+
+                int position = parent.getChildLayoutPosition(view);
+                int groupPosition = adapter.getGroupPosition(position);
+                int childPosition = adapter.getGroupChildPosition(groupPosition, position);
+                if (groupPosition == -1 || childPosition == -1) {
+                    outRect.set(0, 0, 0, 0);
+                    return;
+                }
+                IDailyItem item = adapter.getItem(groupPosition, childPosition);
+                int type = item.type();
+
+                if (spanSize == 2 && type == IDailyItem.TYPE_HEADER) { // view 为 header item
+                    outRect.set(0, 0, 0, 0);
+                    return;
+                }
+
+                if (spanSize == 1 && spanIndex == 0) { // view 为左侧的 image item
+                    outRect.set(dp20, 0, dp16 / 2, 0);
+                    return;
+                }
+
+                if (spanSize == 1 && spanIndex == 1) { // view 为右侧的 image item
+                    outRect.set(dp16 / 2, 0, dp20, 0);
                 }
             }
         });
     }
 
-    public void update() {
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    public void update(boolean reset) {
         ImageDbManager.getInstance().queryByCategory(Category.DAILY.catName, entities -> {
             if (ContextManager.isSurvival(activity) && adapter != null) {
-                adapter.setDatasAndNotify(entities);
+                adapter.setImageEntities(entities, reset);
             }
         });
     }
+
+
 
     @Override
     public void onImageDbChanged() {
@@ -138,9 +196,22 @@ public class DailyFragment extends BaseFragment implements OnItemClickListener<H
     }
 
     @Override
-    public void onItemClick(int item, HomeImageAdapter.HomeImageHolder holder) {
-        if (holder.entity != null) {
-            startPixelActivity(holder.entity);
+    public void onItemClick(GroupRecyclerViewAdapter groupAdapter, IDailyItem data, int groupPosition, int childPosition) {
+
+        if (groupAdapter.isHeader(groupPosition, childPosition)) {
+            if (adapter.isExpand(groupPosition)) {
+                adapter.collapseGroup(groupPosition, true);
+            } else {
+                adapter.expandGroup(groupPosition, true);
+            }
+
+            // withAnim == true 时
+            adapter.updateItem(groupPosition, childPosition, adapter.getItem(groupPosition, childPosition));
+            return;
+        }
+
+        if (data instanceof ImageDailyItem) {
+            startPixelActivity(((ImageDailyItem) data).entity);
         }
     }
 
@@ -166,7 +237,7 @@ public class DailyFragment extends BaseFragment implements OnItemClickListener<H
     @Override
     protected void handleMessage(@NonNull Message msg) {
         if (msg.what == MSG_UPDATE_DAILY) {
-            update();
+            update(false);
         }
     }
 }

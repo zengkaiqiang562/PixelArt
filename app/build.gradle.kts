@@ -150,6 +150,7 @@ dependencies {
     add("implementation", project(":refresh-layout-kernel"))
     add("implementation", project(":refresh-footer-classics"))
     add("implementation", project(":refresh-header-classics"))
+    add("implementation", project(":GroupRecyclerViewAdapter"))
 
     // add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:2.0.2")
 

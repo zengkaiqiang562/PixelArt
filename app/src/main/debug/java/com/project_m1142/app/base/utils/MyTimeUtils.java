@@ -178,6 +178,16 @@ public class MyTimeUtils {
     }
 
     /**
+     * 是否是当月
+     */
+    public static boolean isCurrentMonth(long time) {
+        Calendar nowCalendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        return calendar.get(Calendar.MONTH) == nowCalendar.get(Calendar.MONTH);
+    }
+
+    /**
      * @return 判断 参数时间 time 是否在 1 小时内
      */
     public static boolean isInOneHour(long time) {

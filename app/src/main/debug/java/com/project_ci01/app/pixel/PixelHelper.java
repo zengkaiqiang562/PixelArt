@@ -16,6 +16,29 @@ import java.util.Map;
 public class PixelHelper {
     private static final String TAG = "PixelHelper";
 
+    /**
+     * @param result
+     * result[0] 总像素点个数（去除白色和透明色）
+     * result[1] 已绘制像素点个数（去除白色和透明色）
+     */
+    public static void countDrawnPixels(@NonNull PixelList pixelList, int[] result) {
+        int total = 0; // 总像素点（去除白色和透明色）
+        int drawn = 0; // 已绘制像素点（去除白色和透明色）
+        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+            for (PixelUnit pixel : entry.getValue()) {
+                if (PixelHelper.ignorePixel(pixel)) {
+                    continue;
+                }
+                ++total;
+                if (pixel.enableDraw) {
+                    ++drawn;
+                }
+            }
+        }
+        result[0] = total;
+        result[1] = drawn;
+    }
+
 
     /**
      *

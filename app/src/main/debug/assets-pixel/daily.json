@@ -33,6 +33,33 @@
         {"date": "20231128", "path": "images/daily/202311/28.png"},
         {"date": "20231129", "path": "images/daily/202311/29.png"}
       ]
+    },
+    {
+      "month": "202310",
+      "images": [
+        {"date": "20231021", "path": "images/daily/202310/30.png"},
+        {"date": "20231022", "path": "images/daily/202310/31.png"},
+        {"date": "20231023", "path": "images/daily/202310/32.png"},
+        {"date": "20231024", "path": "images/daily/202310/33.png"},
+        {"date": "20231025", "path": "images/daily/202310/34.png"},
+        {"date": "20231026", "path": "images/daily/202310/35.png"},
+        {"date": "20231027", "path": "images/daily/202310/36.png"},
+        {"date": "20231028", "path": "images/daily/202310/37.png"},
+        {"date": "20231029", "path": "images/daily/202310/38.png"},
+        {"date": "20231030", "path": "images/daily/202310/39.png"},
+        {"date": "20231031", "path": "images/daily/202310/40.png"}
+      ]
+    },
+    {
+      "month": "202009",
+      "images": [
+        {"date": "20200901", "path": "images/daily/202009/34.png"},
+        {"date": "20200902", "path": "images/daily/202009/77.png"},
+        {"date": "20200903", "path": "images/daily/202009/82.png"},
+        {"date": "20200904", "path": "images/daily/202009/86.png"},
+        {"date": "20200905", "path": "images/daily/202009/88.png"},
+        {"date": "20200906", "path": "images/daily/202009/90.png"}
+      ]
     }
   ]
 }
