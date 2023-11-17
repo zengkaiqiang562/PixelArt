@@ -133,7 +133,7 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
 
         long timeForMonth = headerItem.entities.get(0).createTime;
         if (MyTimeUtils.isCurrentMonth(timeForMonth)) {
-            String fitMonth = TimeUtils.millis2String(timeForMonth, "MMMM");
+            String fitMonth = MyTimeUtils.millis2String(timeForMonth, "MMMM", Locale.ENGLISH);
             holder.setText(R.id.month, fitMonth);
         } else {
             holder.setText(R.id.month, headerItem.month);
