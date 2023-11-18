@@ -1,6 +1,7 @@
 package com.project_ci01.app.fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +16,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.fragment.mine.CompletedFragment;
 import com.project_ci01.app.fragment.mine.InProgressFragment;
-import com.project_ci01.app.indicator.ScaleTransitionPagerTitleView;
+import com.project_ci01.app.indicator.MyNavigator;
+import com.project_ci01.app.indicator.MyPagerIndicator;
+import com.project_ci01.app.indicator.MyPagerTitleView;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.utils.LogUtils;
@@ -46,7 +50,7 @@ public class MineFragment extends BaseFragment {
 
     private MinePagerAdapter pagerAdapter;
 
-    private final Map<Integer, ScaleTransitionPagerTitleView> indicatorTitleMap = new HashMap<>();
+    private final Map<Integer, MyPagerTitleView> indicatorTitleMap = new HashMap<>();
     
     @Override
     protected String tag() {
@@ -71,7 +75,9 @@ public class MineFragment extends BaseFragment {
     }
 
     private void initIndicator() {
-        CommonNavigator navigator = new CommonNavigator(getActivity());
+        MyNavigator navigator = new MyNavigator(getActivity());
+        navigator.setTitleTextSpace(ConvertUtils.dp2px(20));
+        navigator.setIndicatorOnTop(true);
 //        navigator.setAdjustMode(true); // Tab 固定，宽度平分
         IndicatorAdapter indicatorAdapter = new IndicatorAdapter();
         navigator.setAdapter(indicatorAdapter);
@@ -162,18 +168,19 @@ public class MineFragment extends BaseFragment {
         public IPagerTitleView getTitleView(Context context, int index) {
 //            BadgePagerTitleView badgePagerTitleView = new BadgePagerTitleView(context);
 
-            ScaleTransitionPagerTitleView scaleTransitionPagerTitleView = new ScaleTransitionPagerTitleView(context);
-            scaleTransitionPagerTitleView.setMinScale(0.94f);
-            scaleTransitionPagerTitleView.setText(MineTab.values()[index].tabName);
-            scaleTransitionPagerTitleView.setTextSize(18);
-            int titleWidth = (int) (ScreenUtils.getScreenWidth() * 1f / MineTab.values().length);
-            scaleTransitionPagerTitleView.setWidth(titleWidth); // 设置每个 Title 的宽度
+            MyPagerTitleView myPagerTitleView = new MyPagerTitleView(context);
+            myPagerTitleView.setMinWidth(ConvertUtils.dp2px(130));
+            myPagerTitleView.setMinScale(0.94f);
+            myPagerTitleView.setText(MineTab.values()[index].tabName);
+            myPagerTitleView.setTextSize(16);
+//            int titleWidth = (int) (ScreenUtils.getScreenWidth() * 1f / MineTab.values().length);
+//            myPagerTitleView.setWidth(titleWidth); // 设置每个 Title 的宽度
 
-            scaleTransitionPagerTitleView.setNormalColor(ContextCompat.getColor(context, R.color.black));
-            scaleTransitionPagerTitleView.setSelectedColor(ContextCompat.getColor(context, R.color.purple_200));
+            myPagerTitleView.setNormalColor(Color.parseColor("#FF9D9A9B"));
+            myPagerTitleView.setSelectedColor(ContextCompat.getColor(context, R.color.black_2e2a2b));
 //            scaleTransitionPagerTitleView.setNormalFontResId(R.font.pingfang_medium);
 //            scaleTransitionPagerTitleView.setSelectFontResId(R.font.pingfang_bold);
-            scaleTransitionPagerTitleView.setOnClickListener(new View.OnClickListener() {
+            myPagerTitleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int currentItem = binding.viewPager.getCurrentItem();
@@ -186,27 +193,28 @@ public class MineFragment extends BaseFragment {
                 }
             });
 
-            indicatorTitleMap.put(index, scaleTransitionPagerTitleView);
+            indicatorTitleMap.put(index, myPagerTitleView);
 
-            return scaleTransitionPagerTitleView;
+            return myPagerTitleView;
         }
 
         @Override
         public IPagerIndicator getIndicator(Context context) {
-            LinePagerIndicator indicator = new LinePagerIndicator(context);
-//            indicator.setMode(LinePagerIndicator.MODE_WRAP_CONTENT);
-            indicator.setMode(LinePagerIndicator.MODE_EXACTLY);
-            indicator.setLineWidth(UIUtil.dip2px(context, 12));
-            indicator.setStartInterpolator(new AccelerateInterpolator());
-            indicator.setEndInterpolator(new DecelerateInterpolator(1.6f));
-//            indicator.setXOffset(UIUtil.dip2px(context, 12));
-            indicator.setYOffset(UIUtil.dip2px(context, 6));
-            int lineHeight = UIUtil.dip2px(context, 3);
-            indicator.setLineHeight(lineHeight);
-            indicator.setRoundRadius(lineHeight / 2f);
-            int colorBlack = ContextCompat.getColor(context, R.color.black);
-            indicator.setColors(colorBlack, colorBlack, colorBlack);
-            return indicator;
+//            LinePagerIndicator indicator = new LinePagerIndicator(context);
+////            indicator.setMode(LinePagerIndicator.MODE_WRAP_CONTENT);
+//            indicator.setMode(LinePagerIndicator.MODE_EXACTLY);
+//            indicator.setLineWidth(UIUtil.dip2px(context, 12));
+//            indicator.setStartInterpolator(new AccelerateInterpolator());
+//            indicator.setEndInterpolator(new DecelerateInterpolator(1.6f));
+////            indicator.setXOffset(UIUtil.dip2px(context, 12));
+//            indicator.setYOffset(UIUtil.dip2px(context, 6));
+//            int lineHeight = UIUtil.dip2px(context, 3);
+//            indicator.setLineHeight(lineHeight);
+//            indicator.setRoundRadius(lineHeight / 2f);
+//            int colorBlack = ContextCompat.getColor(context, R.color.black);
+//            indicator.setColors(colorBlack, colorBlack, colorBlack);
+//            return indicator;
+            return new MyPagerIndicator(context);
         }
     }
 }

@@ -24,7 +24,8 @@
         android:requestLegacyExternalStorage="true"
         android:resizeableActivity="false">
 
-        <activity android:name="com.project_ci01.app.activity.StartActivity"
+        <!--<activity android:name="com.project_ci01.app.activity.StartActivity"-->
+        <activity android:name="com.project_ci01.app.activity.MainActivity"
             android:theme="@style/StartStyle"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:exported="true"
@@ -39,9 +40,9 @@
         <activity android:name="com.project_ci01.app.activity.PrivacyActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name="com.project_ci01.app.activity.MainActivity"
+        <!--<activity android:name="com.project_ci01.app.activity.MainActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"/>-->
 
 
         <activity android:name="com.project_ci01.app.activity.PixelActivity"

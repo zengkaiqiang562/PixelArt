@@ -32,7 +32,9 @@ import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.databinding.FragmentDailyBinding;
 import com.sunfusheng.GroupRecyclerViewAdapter;
 import com.sunfusheng.StickyHeaderDecoration;
+import com.youth.banner.config.IndicatorConfig;
 import com.youth.banner.indicator.CircleIndicator;
+import com.youth.banner.indicator.RectangleIndicator;
 import com.youth.banner.listener.OnBannerListener;
 
 import java.util.ArrayList;
@@ -86,18 +88,29 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
         bannerAdapter = new MultiBannerAdapter();
         binding.banner.setAdapter(bannerAdapter);
         binding.banner.setIntercept(false);
-        binding.banner.setIndicator(new CircleIndicator(activity));
+        binding.banner.setIndicator(new RectangleIndicator(activity));
+        binding.banner.setIndicatorNormalWidth(ConvertUtils.dp2px(8));
+        binding.banner.setIndicatorSelectedWidth(ConvertUtils.dp2px(8));
+        binding.banner.setIndicatorSpace(ConvertUtils.dp2px(8));
+        IndicatorConfig.Margins margins = new IndicatorConfig.Margins();
+        margins.bottomMargin = ConvertUtils.dp2px(32);
+        binding.banner.setIndicatorMargins(margins);
         binding.banner.setOnBannerListener(new OnBannerListener<IBannerItem>() {
             @Override
-            public void onBannerClick(IBannerItem item, int position) {
+            public void onBannerClick(RecyclerView.ViewHolder holder, IBannerItem item, int position) {
                 LogUtils.e(TAG, "--> onBannerClick()  item=" + item + "  position=" + position);
+                if (holder instanceof MultiBannerAdapter.DailyHolder) {
+                    ImageEntity entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
+                    if (entity != null) {
+                        startPixelActivity(entity);
+                    }
+                }
             }
         });
 
         List<IBannerItem> bannerItems = new ArrayList<>();
-        bannerItems.add(new DailyBannerItem(R.drawable.image1));
-        bannerItems.add(new DailyBannerItem(R.drawable.image2));
-        bannerItems.add(new DailyBannerItem(R.drawable.image3));
+        bannerItems.add(new DailyBannerItem());
+        bannerItems.add(new DailyBannerItem());
         bannerAdapter.setDatas(bannerItems);
     }
 

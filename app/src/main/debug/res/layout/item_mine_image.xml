@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="14dp"
     tools:layout_width="162dp"
+    android:background="@drawable/home_card"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout

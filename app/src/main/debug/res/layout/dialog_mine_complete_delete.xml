@@ -21,7 +21,7 @@
             android:layout_height="256dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="34dp"
-            android:background="@color/purple_200"
+            android:background="@drawable/bg_dialog_recolor"
             >
 
             <TextView
@@ -40,7 +40,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="28dp"
                 android:layout_centerHorizontal="true"
-                android:background="@color/teal_200"
+                android:background="@drawable/delete_dialog_button"
                 android:text="Delete"
                 android:textSize="18sp"
                 android:textColor="@color/white"
@@ -54,7 +54,7 @@
             android:layout_height="120dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:src="@color/teal_200"
+            android:src="@drawable/delete_dialog_icon"
             />
 
         <ImageView
@@ -63,7 +63,7 @@
             android:layout_height="34dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:src="@color/teal_200"
+            android:src="@drawable/pop_close"
             />
 
     </RelativeLayout>

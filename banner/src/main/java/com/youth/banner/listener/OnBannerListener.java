@@ -1,5 +1,7 @@
 package com.youth.banner.listener;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 public interface OnBannerListener<T> {
 
     /**
@@ -8,6 +10,6 @@ public interface OnBannerListener<T> {
      * @param data     数据实体
      * @param position 当前位置
      */
-    void onBannerClick(T data, int position);
+    void onBannerClick(RecyclerView.ViewHolder holder, T data, int position);
 
 }

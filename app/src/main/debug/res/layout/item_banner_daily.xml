@@ -1,17 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="192dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/home_banner_bc"
+    tools:layout_marginStart="12dp"
+    tools:layout_marginEnd="12dp"
+    >
+    
+    <TextView
+        android:id="@+id/today"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="33dp"
+        android:text="Today,"
+        android:textSize="24sp"
+        android:textColor="@color/black_2e2a2b"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/today"
+        app:layout_constraintTop_toBottomOf="@id/today"
+        android:layout_marginTop="4dp"
+        tools:text="October 18"
+        android:textSize="18sp"
+        android:textColor="@color/black_2e2a2b"
+        />
+    
+    <TextView
+        android:id="@+id/color_now"
+        android:layout_width="92dp"
+        android:layout_height="32dp"
+        app:layout_constraintStart_toStartOf="@id/today"
+        app:layout_constraintTop_toBottomOf="@id/date"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_color_now"
+        android:text="Color Now"
+        android:textColor="#FFFFB06A"
+        android:textSize="14sp"
+        android:gravity="center"
+        />
 
     <ImageView
         android:id="@+id/image_daily"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="96dp"
+        android:layout_height="102dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="43dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

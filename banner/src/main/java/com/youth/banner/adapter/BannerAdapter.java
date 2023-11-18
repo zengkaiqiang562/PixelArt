@@ -68,7 +68,7 @@ public abstract class BannerAdapter<T, VH extends RecyclerView.ViewHolder> exten
         holder.itemView.setTag(R.id.banner_pos_key, real);
         onBindView(holder, mDatas.get(real), real, getRealCount());
         if (mOnBannerListener != null) {
-            holder.itemView.setOnClickListener(view -> mOnBannerListener.onBannerClick(data, real));
+            holder.itemView.setOnClickListener(view -> mOnBannerListener.onBannerClick(holder, data, real));
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class BannerAdapter<T, VH extends RecyclerView.ViewHolder> exten
             if (mOnBannerListener != null) {
                 T data = (T) vh.itemView.getTag(R.id.banner_data_key);
                 int real = (int) vh.itemView.getTag(R.id.banner_pos_key);
-                mOnBannerListener.onBannerClick(data, real);
+                mOnBannerListener.onBannerClick(vh, data, real);
             }
         });
         return vh;

@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="14dp"
     tools:layout_width="162dp"
+    android:background="@drawable/home_card"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
+        
         <ImageView
             android:id="@+id/image"
             android:layout_width="0dp"
@@ -27,6 +28,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/new_tag"
+            android:layout_width="48dp"
+            android:layout_height="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/new_flag"
+            android:text="New"
+            android:textSize="12sp"
+            android:textColor="@color/black_2e2a2b"
+            android:gravity="center_vertical|end"
+            android:paddingEnd="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

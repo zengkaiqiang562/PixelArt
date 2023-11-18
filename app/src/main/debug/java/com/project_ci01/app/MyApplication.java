@@ -26,10 +26,11 @@ public class MyApplication extends BaseApplication {
                     return; // 如果热启动之前是在请求权限，则直接返回到之前的界面即可
                 }
 
-                Activity homeActivity = ContextManager.INSTANCE.peekActivity(MainActivity.class);
-                if (homeActivity != null) {
-                    homeActivity.startActivity(new Intent(homeActivity, StartActivity.class));
-                }
+                // TODO test
+//                Activity homeActivity = ContextManager.INSTANCE.peekActivity(MainActivity.class);
+//                if (homeActivity != null) {
+//                    homeActivity.startActivity(new Intent(homeActivity, StartActivity.class));
+//                }
             }
 
             @Override

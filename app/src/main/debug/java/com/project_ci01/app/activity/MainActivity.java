@@ -108,9 +108,9 @@ public class MainActivity extends BaseActivity {
         binding.menuDailyIcon.setSelected(false);
         binding.menuMineIcon.setSelected(false);
 
-        binding.menuHomeText.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.menuDailyText.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.menuMineText.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.menuHomeText.setTextColor(ContextCompat.getColor(this, R.color.grey_9d9a9b));
+        binding.menuDailyText.setTextColor(ContextCompat.getColor(this, R.color.grey_9d9a9b));
+        binding.menuMineText.setTextColor(ContextCompat.getColor(this, R.color.grey_9d9a9b));
     }
 
     private void setBottomMenu(BottomMenu bottomMenu) {
@@ -123,15 +123,15 @@ public class MainActivity extends BaseActivity {
         switch (bottomMenu) {
             case HOME:
                 binding.menuHomeIcon.setSelected(true);
-                binding.menuHomeText.setTextColor(ContextCompat.getColor(this, R.color.teal_200));
+                binding.menuHomeText.setTextColor(ContextCompat.getColor(this, R.color.black_2e3234));
                 break;
             case DAILY:
                 binding.menuDailyIcon.setSelected(true);
-                binding.menuDailyText.setTextColor(ContextCompat.getColor(this, R.color.teal_200));
+                binding.menuDailyText.setTextColor(ContextCompat.getColor(this, R.color.black_2e3234));
                 break;
             case MINE:
                 binding.menuMineIcon.setSelected(true);
-                binding.menuMineText.setTextColor(ContextCompat.getColor(this, R.color.teal_200));
+                binding.menuMineText.setTextColor(ContextCompat.getColor(this, R.color.black_2e3234));
                 break;
         }
     }

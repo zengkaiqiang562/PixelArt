@@ -125,7 +125,7 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
 
         HeaderDailyItem headerItem = (HeaderDailyItem) item;
 
-        holder.setImageDrawable(R.id.arrow, isExpand(groupPosition) ? new ColorDrawable(Color.BLACK) : new ColorDrawable(Color.RED));
+        holder.setImageResource(R.id.arrow, isExpand(groupPosition) ? R.drawable.daily_down : R.drawable.daily_up);
 
         long timeForMonth = headerItem.entities.get(0).createTime;
         if (MyTimeUtils.isCurrentMonth(timeForMonth)) {

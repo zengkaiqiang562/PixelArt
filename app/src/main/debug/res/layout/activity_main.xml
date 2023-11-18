@@ -26,26 +26,26 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_menu"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="88dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/black"
+        android:background="@drawable/tab_bc"
         >
 
         <ImageView
             android:id="@+id/menu_home_icon"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/menu_daily_icon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/menu_home_text"
             app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.7"
+            app:layout_constraintVertical_bias="0.13"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             android:layout_marginStart="36dp"
-            android:src="@color/white"
+            android:src="@drawable/selector_tab_home"
             />
 
         <TextView
@@ -59,7 +59,7 @@
             android:layout_marginTop="5dp"
             android:text="Home"
             android:textSize="11sp"
-            android:textColor="@color/white"
+            android:textColor="@color/black_2e3234"
             />
 
         <View
@@ -75,15 +75,15 @@
         <!--===================-->
         <ImageView
             android:id="@+id/menu_daily_icon"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/menu_home_icon"
             app:layout_constraintEnd_toStartOf="@id/menu_mine_icon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/menu_daily_text"
             app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.7"
-            android:src="@color/white"
+            app:layout_constraintVertical_bias="0.13"
+            android:src="@drawable/selector_tab_daily"
             />
 
         <TextView
@@ -97,7 +97,7 @@
             android:layout_marginTop="5dp"
             android:text="Daily"
             android:textSize="11sp"
-            android:textColor="@color/white"
+            android:textColor="@color/black_2e3234"
             />
 
         <View
@@ -112,16 +112,16 @@
         <!--==================-->
         <ImageView
             android:id="@+id/menu_mine_icon"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/menu_daily_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/menu_mine_text"
             app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.7"
+            app:layout_constraintVertical_bias="0.13"
             android:layout_marginEnd="36dp"
-            android:src="@color/white"
+            android:src="@drawable/selector_tab_mine"
             />
 
         <TextView
@@ -135,7 +135,7 @@
             android:layout_marginTop="5dp"
             android:text="Mine"
             android:textSize="11sp"
-            android:textColor="@color/white"
+            android:textColor="@color/black_2e3234"
             />
 
         <View

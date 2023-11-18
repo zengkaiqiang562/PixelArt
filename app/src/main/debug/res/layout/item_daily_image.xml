@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="14dp"
     tools:layout_width="162dp"
+    android:background="@drawable/home_card"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +29,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             />
-        
+
         <TextView
             android:id="@+id/day"
             android:layout_width="48dp"
@@ -37,13 +38,13 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="8dp"
             android:layout_marginStart="12dp"
-            android:background="@color/teal_200"
+            android:background="@drawable/daily_flag"
             android:textSize="12sp"
             android:textColor="#FF2E2A2B"
             tools:text="30"
             android:gravity="center"
             />
-
+        
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

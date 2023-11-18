@@ -1,57 +1,65 @@
 package com.project_ci01.app.fragment;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.ConvertUtils;
+import com.project_ci01.app.activity.PixelActivity;
 import com.project_ci01.app.banner.DailyBannerItem;
 import com.project_ci01.app.banner.IBannerItem;
 import com.project_ci01.app.banner.MultiBannerAdapter;
+import com.project_ci01.app.indicator.MyNavigator;
+import com.project_ci01.app.indicator.MyPagerIndicator;
+import com.project_ci01.app.config.IConfig;
+import com.project_ci01.app.dao.ImageDbManager;
+import com.project_ci01.app.dao.ImageEntity;
 import com.project_ci01.app.fragment.category.AllFragment;
 import com.project_ci01.app.fragment.category.CartoonFragment;
 import com.project_ci01.app.fragment.category.FoodFragment;
 import com.project_ci01.app.fragment.category.LoveFragment;
-import com.project_ci01.app.indicator.ScaleTransitionPagerTitleView;
+import com.project_ci01.app.indicator.MyPagerTitleView;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.databinding.FragmentHomeBinding;
-import com.youth.banner.indicator.CircleIndicator;
+import com.youth.banner.config.IndicatorConfig;
+import com.youth.banner.indicator.RectangleIndicator;
 import com.youth.banner.listener.OnBannerListener;
 
-import net.lucode.hackware.magicindicator.buildins.UIUtil;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment implements ImageDbManager.OnImageDbChangedListener {
 
     private FragmentHomeBinding binding;
 
     private final List<BaseFragment> fragments = new ArrayList<>();
     private CategoryPagerAdapter pagerAdapter;
 
-    private final Map<Integer, ScaleTransitionPagerTitleView> indicatorTitleMap = new HashMap<>();
+    private final Map<Integer, MyPagerTitleView> indicatorTitleMap = new HashMap<>();
     private MultiBannerAdapter bannerAdapter;
 
     @Override
@@ -71,6 +79,19 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ImageDbManager.getInstance().addOnDbChangedListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ImageDbManager.getInstance().removeOnDbChangedListener(this);
+    }
+
+
+    @Override
     protected void initView(View view, Bundle savedInstanceState) {
         initBanner();
         initIndicator();
@@ -82,23 +103,36 @@ public class HomeFragment extends BaseFragment {
         bannerAdapter = new MultiBannerAdapter();
         binding.banner.setAdapter(bannerAdapter);
         binding.banner.setIntercept(false);
-        binding.banner.setIndicator(new CircleIndicator(activity));
+        binding.banner.setIndicator(new RectangleIndicator(activity));
+        binding.banner.setIndicatorNormalWidth(ConvertUtils.dp2px(8));
+        binding.banner.setIndicatorSelectedWidth(ConvertUtils.dp2px(8));
+        binding.banner.setIndicatorSpace(ConvertUtils.dp2px(8));
+        IndicatorConfig.Margins margins = new IndicatorConfig.Margins();
+        margins.bottomMargin = ConvertUtils.dp2px(32);
+        binding.banner.setIndicatorMargins(margins);
         binding.banner.setOnBannerListener(new OnBannerListener<IBannerItem>() {
             @Override
-            public void onBannerClick(IBannerItem item, int position) {
+            public void onBannerClick(RecyclerView.ViewHolder holder,  IBannerItem item, int position) {
                 LogUtils.e(TAG, "--> onBannerClick()  item=" + item + "  position=" + position);
+                if (holder instanceof MultiBannerAdapter.DailyHolder) {
+                    ImageEntity entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
+                    if (entity != null) {
+                        startPixelActivity(entity);
+                    }
+                }
             }
         });
 
         List<IBannerItem> bannerItems = new ArrayList<>();
-        bannerItems.add(new DailyBannerItem(R.drawable.image1));
-        bannerItems.add(new DailyBannerItem(R.drawable.image2));
-        bannerItems.add(new DailyBannerItem(R.drawable.image3));
+        bannerItems.add(new DailyBannerItem());
+        bannerItems.add(new DailyBannerItem());
         bannerAdapter.setDatas(bannerItems);
     }
 
     private void initIndicator() {
-        CommonNavigator navigator = new CommonNavigator(getActivity());
+        MyNavigator navigator = new MyNavigator(getActivity());
+        navigator.setIndicatorOnTop(true);
+        navigator.setTitleTextSpace(ConvertUtils.dp2px(18));
 //        navigator.setAdjustMode(true); // Tab 固定，宽度平分
         IndicatorAdapter indicatorAdapter = new IndicatorAdapter();
         navigator.setAdapter(indicatorAdapter);
@@ -134,6 +168,21 @@ public class HomeFragment extends BaseFragment {
                 binding.indicator.onPageScrollStateChanged(state);
             }
         });
+    }
+
+    @Override
+    public void onImageDbChanged() {
+        if (bannerAdapter != null) {
+            bannerAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void startPixelActivity(@NonNull ImageEntity entity) {
+        if (canTurn()) {
+            Intent intent = new Intent(activity, PixelActivity.class);
+            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
+            activity.startActivityForResult(intent, IConfig.REQUEST_PIXEL_ACTIVITY);
+        }
     }
 
 
@@ -178,18 +227,19 @@ public class HomeFragment extends BaseFragment {
         public IPagerTitleView getTitleView(Context context, int index) {
 //            BadgePagerTitleView badgePagerTitleView = new BadgePagerTitleView(context);
 
-            ScaleTransitionPagerTitleView scaleTransitionPagerTitleView = new ScaleTransitionPagerTitleView(context);
-            scaleTransitionPagerTitleView.setMinScale(0.94f);
-            scaleTransitionPagerTitleView.setText(CatTab.values()[index].tabName);
-            scaleTransitionPagerTitleView.setTextSize(18);
-            int titleWidth = (int) (ScreenUtils.getScreenWidth() * 1f / CatTab.values().length);
-            scaleTransitionPagerTitleView.setWidth(titleWidth); // 设置每个 Title 的宽度
+            MyPagerTitleView myPagerTitleView = new MyPagerTitleView(context);
+            myPagerTitleView.setMinWidth(ConvertUtils.dp2px(68));
+            myPagerTitleView.setMinScale(0.94f);
+            myPagerTitleView.setText(CatTab.values()[index].tabName);
+            myPagerTitleView.setTextSize(16);
+//            int titleWidth = (int) (ScreenUtils.getScreenWidth() * 1f / CatTab.values().length);
 
-            scaleTransitionPagerTitleView.setNormalColor(ContextCompat.getColor(context, R.color.black));
-            scaleTransitionPagerTitleView.setSelectedColor(ContextCompat.getColor(context, R.color.purple_200));
+
+            myPagerTitleView.setNormalColor(Color.parseColor("#FF9D9A9B"));
+            myPagerTitleView.setSelectedColor(ContextCompat.getColor(context, R.color.black_2e2a2b));
 //            scaleTransitionPagerTitleView.setNormalFontResId(R.font.pingfang_medium);
 //            scaleTransitionPagerTitleView.setSelectFontResId(R.font.pingfang_bold);
-            scaleTransitionPagerTitleView.setOnClickListener(new View.OnClickListener() {
+            myPagerTitleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int currentItem = binding.viewPager.getCurrentItem();
@@ -202,7 +252,7 @@ public class HomeFragment extends BaseFragment {
                 }
             });
 
-            indicatorTitleMap.put(index, scaleTransitionPagerTitleView);
+            indicatorTitleMap.put(index, myPagerTitleView);
 
 //            badgePagerTitleView.setInnerPagerTitleView(scaleTransitionPagerTitleView);
 //
@@ -222,25 +272,26 @@ public class HomeFragment extends BaseFragment {
 //            badgePagerTitleView.setAutoCancelBadge(true);
 //
 //            return badgePagerTitleView;
-            return scaleTransitionPagerTitleView;
+            return myPagerTitleView;
         }
 
         @Override
         public IPagerIndicator getIndicator(Context context) {
-            LinePagerIndicator indicator = new LinePagerIndicator(context);
-//            indicator.setMode(LinePagerIndicator.MODE_WRAP_CONTENT);
-            indicator.setMode(LinePagerIndicator.MODE_EXACTLY);
-            indicator.setLineWidth(UIUtil.dip2px(context, 12));
-            indicator.setStartInterpolator(new AccelerateInterpolator());
-            indicator.setEndInterpolator(new DecelerateInterpolator(1.6f));
-//            indicator.setXOffset(UIUtil.dip2px(context, 12));
-            indicator.setYOffset(UIUtil.dip2px(context, 6));
-            int lineHeight = UIUtil.dip2px(context, 3);
-            indicator.setLineHeight(lineHeight);
-            indicator.setRoundRadius(lineHeight / 2f);
-            int colorBlack = ContextCompat.getColor(context, R.color.black);
-            indicator.setColors(colorBlack, colorBlack, colorBlack);
-            return indicator;
+//            LinePagerIndicator indicator = new LinePagerIndicator(context);
+////            indicator.setMode(LinePagerIndicator.MODE_WRAP_CONTENT);
+//            indicator.setMode(LinePagerIndicator.MODE_EXACTLY);
+//            indicator.setLineWidth(UIUtil.dip2px(context, 12));
+//            indicator.setStartInterpolator(new AccelerateInterpolator());
+//            indicator.setEndInterpolator(new DecelerateInterpolator(1.6f));
+////            indicator.setXOffset(UIUtil.dip2px(context, 12));
+//            indicator.setYOffset(UIUtil.dip2px(context, 6));
+//            int lineHeight = UIUtil.dip2px(context, 3);
+//            indicator.setLineHeight(lineHeight);
+//            indicator.setRoundRadius(lineHeight / 2f);
+//            int colorBlack = ContextCompat.getColor(context, R.color.black);
+//            indicator.setColors(colorBlack, colorBlack, colorBlack);
+//            return indicator;
+            return new MyPagerIndicator(context);
         }
 
 //        @Override

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/home_bc">
 
     <View
         android:id="@+id/stub_bar"
@@ -22,11 +23,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         >
 
+        <!-- app:elevation="0dp" 去掉 AppBarLayout 的底部阴影 -->
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            app:elevation="0dp"
+            android:background="@android:color/transparent">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/toolbarLayout"
@@ -39,20 +42,27 @@
                 <com.youth.banner.Banner
                     android:id="@+id/banner"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    tools:background="@color/black"
-                    app:banner_radius="5dp"
+                    android:layout_height="192dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
                     app:banner_auto_loop="true"
                     app:banner_infinite_loop="true"
-                    app:banner_indicator_radius="5dp"/>
+                    app:banner_indicator_height="4dp"
+                    app:banner_indicator_normal_color="@color/white"
+                    app:banner_indicator_selected_color="#FFFF588A"
+                    app:banner_indicator_radius="2dp" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
             <net.lucode.hackware.magicindicator.MagicIndicator
                 android:id="@+id/indicator"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="36dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="5dp"
                 app:layout_collapseMode="pin"
+                android:background="@color/white"
                 app:layout_scrollFlags="exitUntilCollapsed|enterAlways|enterAlwaysCollapsed"/>
 
             <!--<LinearLayout
@@ -202,6 +212,8 @@
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingTop="20dp"
+            android:background="@color/white"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

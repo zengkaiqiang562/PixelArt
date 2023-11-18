@@ -10,7 +10,10 @@
 
 
     <color name="black_33">#FF333333</color>
+    <color name="black_2e3234">#FF2E3234</color>
+    <color name="black_2e2a2b">#FF2E2A2B</color>
     <color name="alpha_99_33">#99333333</color>
     <color name="grey_f3">#FFF3F3F3</color>
+    <color name="grey_9d9a9b">#FF9D9A9B</color>
 
 </resources>
