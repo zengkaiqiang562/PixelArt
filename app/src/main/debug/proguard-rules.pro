@@ -20,9 +20,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.project_m1142.app.dao.TestHistoryEntity { *; }
--keep class com.project_m1142.app.wifi.ext.dao.WifiEntity { *; }
--keep class com.project_m1142.app.base.bean.** { *; }
+-keep class com.project_ci01.app.dao.ImageEntity { *; }
+-keep class com.project_ci01.app.base.bean.** { *; }
 
 
 

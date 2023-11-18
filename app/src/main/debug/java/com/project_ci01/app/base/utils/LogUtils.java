@@ -21,13 +21,13 @@ public class LogUtils {
 
     public static void d(String message) {
         if (DEBUG) {
-            Log.d("M1142", message);
+            Log.d("CI01", message);
         }
     }
 
     public static void e(String message) {
         if (DEBUG) {
-            Log.e("M1142", message);
+            Log.e("CI01", message);
         }
     }
 }

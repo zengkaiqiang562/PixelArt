@@ -118,9 +118,9 @@ android {
 
     sourceSets {
         getByName("main") {
-            assets.setSrcDirs(listOf(deployExt.assetsPath, "src/main/debug/assets-pixel", "src/main/debug/assets-demo"))
+            assets.setSrcDirs(listOf(deployExt.assetsPath))
             java.setSrcDirs(listOf(deployExt.javaPath))
-            res.setSrcDirs(listOf(deployExt.resPath, "src/main/debug/res-base", "src/main/debug/res-pixel", "src/main/debug/res-demo"))
+            res.setSrcDirs(listOf(deployExt.resPath, "src/main/debug/res-base", "src/main/debug/res-demo"))
             manifest.srcFile(deployExt.manifestPath)
         }
     }
