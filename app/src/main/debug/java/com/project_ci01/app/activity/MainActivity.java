@@ -9,15 +9,15 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.project_ci01.app.adapter.MainPagerAdapter;
+import com.project_ci01.app.databinding.ActivityMainBinding;
 import com.project_ci01.app.fragment.DailyFragment;
 import com.project_ci01.app.fragment.HomeFragment;
 import com.project_ci01.app.fragment.MineFragment;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.manage.ContextManager;
-import com.project_m1142.app.base.utils.LogUtils;
-import com.project_m1142.app.base.view.BaseActivity;
-import com.project_m1142.app.base.view.BaseFragment;
-import com.project_m1142.app.databinding.ActivityMainBinding;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.manage.ContextManager;
+import com.project_ci01.app.base.utils.LogUtils;
+import com.project_ci01.app.base.view.BaseActivity;
+import com.project_ci01.app.base.view.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.project_m1142.app.base.manage.LifecyclerManager;
+import com.project_ci01.app.base.manage.LifecyclerManager;
 
 
 @Database(entities = {ImageEntity.class}, version = 1, exportSchema = false)

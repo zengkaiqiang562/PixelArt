@@ -17,19 +17,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.blankj.utilcode.util.ScreenUtils;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.fragment.category.AllFragment;
-import com.project_ci01.app.fragment.category.CartoonFragment;
-import com.project_ci01.app.fragment.category.FoodFragment;
-import com.project_ci01.app.fragment.category.LoveFragment;
 import com.project_ci01.app.fragment.mine.CompletedFragment;
 import com.project_ci01.app.fragment.mine.InProgressFragment;
 import com.project_ci01.app.indicator.ScaleTransitionPagerTitleView;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.common.CompleteCallback;
-import com.project_m1142.app.base.manage.ContextManager;
-import com.project_m1142.app.base.utils.LogUtils;
-import com.project_m1142.app.base.view.BaseFragment;
-import com.project_m1142.app.databinding.FragmentMineBinding;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.manage.ContextManager;
+import com.project_ci01.app.base.utils.LogUtils;
+import com.project_ci01.app.base.view.BaseFragment;
+import com.project_ci01.app.databinding.FragmentMineBinding;
 
 import net.lucode.hackware.magicindicator.buildins.UIUtil;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;

@@ -9,11 +9,9 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.project_ci01.app.pixel.PixelManager;
-import com.project_m1142.app.base.utils.StringUtils;
+import com.project_ci01.app.base.utils.StringUtils;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 @Entity(tableName = "table_image")
 public class ImageEntity implements Parcelable {

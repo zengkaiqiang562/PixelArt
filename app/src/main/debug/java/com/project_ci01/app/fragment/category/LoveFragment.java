@@ -20,10 +20,10 @@ import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.base.manage.ContextManager;
-import com.project_m1142.app.base.view.BaseFragment;
-import com.project_m1142.app.base.view.recyclerview.OnItemClickListener;
-import com.project_m1142.app.databinding.FragmentLoveBinding;
+import com.project_ci01.app.base.manage.ContextManager;
+import com.project_ci01.app.base.view.BaseFragment;
+import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
+import com.project_ci01.app.databinding.FragmentLoveBinding;
 
 public class LoveFragment extends BaseFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder>, ImageDbManager.OnImageDbChangedListener {
 

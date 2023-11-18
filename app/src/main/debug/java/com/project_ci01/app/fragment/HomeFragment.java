@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -16,8 +15,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.project_ci01.app.banner.DailyBannerItem;
 import com.project_ci01.app.banner.IBannerItem;
@@ -27,11 +24,11 @@ import com.project_ci01.app.fragment.category.CartoonFragment;
 import com.project_ci01.app.fragment.category.FoodFragment;
 import com.project_ci01.app.fragment.category.LoveFragment;
 import com.project_ci01.app.indicator.ScaleTransitionPagerTitleView;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.manage.ContextManager;
-import com.project_m1142.app.base.utils.LogUtils;
-import com.project_m1142.app.base.view.BaseFragment;
-import com.project_m1142.app.databinding.FragmentHomeBinding;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.manage.ContextManager;
+import com.project_ci01.app.base.utils.LogUtils;
+import com.project_ci01.app.base.view.BaseFragment;
+import com.project_ci01.app.databinding.FragmentHomeBinding;
 import com.youth.banner.indicator.CircleIndicator;
 import com.youth.banner.listener.OnBannerListener;
 
@@ -41,9 +38,6 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNav
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeAnchor;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgePagerTitleView;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeRule;
 
 import java.util.ArrayList;
 import java.util.HashMap;

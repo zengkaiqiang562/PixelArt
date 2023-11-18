@@ -2,9 +2,6 @@ package com.project_ci01.app.pixel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,7 +14,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -28,13 +24,11 @@ import androidx.annotation.Nullable;
 
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.base.utils.BitmapUtils;
-import com.project_m1142.app.base.utils.FileUtils;
-import com.project_m1142.app.base.utils.LogUtils;
-import com.project_m1142.app.base.utils.MyTimeUtils;
+import com.project_ci01.app.base.utils.BitmapUtils;
+import com.project_ci01.app.base.utils.FileUtils;
+import com.project_ci01.app.base.utils.LogUtils;
+import com.project_ci01.app.base.utils.MyTimeUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 

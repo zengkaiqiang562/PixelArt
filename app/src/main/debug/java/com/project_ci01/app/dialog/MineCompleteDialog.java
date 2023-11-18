@@ -5,8 +5,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.view.dialog.BaseDialog;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.view.dialog.BaseDialog;
 
 public class MineCompleteDialog extends BaseDialog {
 

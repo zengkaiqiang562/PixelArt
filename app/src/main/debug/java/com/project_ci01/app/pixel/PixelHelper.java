@@ -5,7 +5,7 @@ import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 
-import com.project_m1142.app.base.utils.LogUtils;
+import com.project_ci01.app.base.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/privacy_bc">
+
+    <ImageView
+        android:id="@+id/privacy_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="200dp"
+        android:src="@drawable/frist_logo"/>
+
+
+    <TextView
+        android:id="@+id/privacy_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/privacy_icon"
+        app:layout_constraintBottom_toTopOf="@id/privacy_content"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.7"
+        android:text="Welcome!"
+        android:textColor="#FF2E2A2B"
+        android:textSize="42sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/privacy_content"
+        android:layout_width="277dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/privacy_welcome"
+        app:layout_constraintBottom_toTopOf="@id/privacy_accept"
+        android:layout_marginTop="15dp"
+        android:lineSpacingExtra="3dp"
+        tools:text="@string/privacy_content"
+        android:textColor="#FF686566"
+        android:textSize="14sp"
+        android:gravity="center"
+        />
+
+
+    <TextView
+        android:id="@+id/privacy_accept"
+        android:layout_width="280dp"
+        android:layout_height="58dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.89"
+        android:background="@drawable/button_big"
+        android:text="Accept"
+        android:textColor="#FF2E2A2B"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,9 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,15 +15,13 @@ import com.project_ci01.app.adapter.daily.HeaderDailyItem;
 import com.project_ci01.app.adapter.daily.IDailyItem;
 import com.project_ci01.app.adapter.daily.ImageDailyItem;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.utils.LogUtils;
-import com.project_m1142.app.base.utils.MyTimeUtils;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.utils.MyTimeUtils;
 import com.sunfusheng.ExpandableGroupRecyclerViewAdapter;
 import com.sunfusheng.GroupAdapterUtils;
 import com.sunfusheng.GroupViewHolder;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

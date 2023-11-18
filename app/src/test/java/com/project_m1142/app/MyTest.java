@@ -1,19 +1,16 @@
 package com.project_m1142.app;
 
-import android.graphics.Color;
-
 import com.blankj.utilcode.constant.TimeConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.google.android.gms.common.util.Hex;
-import com.project_m1142.app.base.utils.MyTimeUtils;
+import com.project_ci01.app.base.utils.MyTimeUtils;
 
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MyTest {

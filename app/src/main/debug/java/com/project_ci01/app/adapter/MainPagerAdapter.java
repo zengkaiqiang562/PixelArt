@@ -4,9 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.project_m1142.app.base.view.BaseFragment;
+import com.project_ci01.app.base.view.BaseFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {

@@ -13,10 +13,10 @@ import com.project_ci01.app.adapter.mine.EmptyMineItem;
 import com.project_ci01.app.adapter.mine.IMineItem;
 import com.project_ci01.app.adapter.mine.ImageMineItem;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.view.recyclerview.BaseAdapter;
-import com.project_m1142.app.base.view.recyclerview.BaseHolder;
-import com.project_m1142.app.base.view.recyclerview.OnItemClickListener;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.view.recyclerview.BaseAdapter;
+import com.project_ci01.app.base.view.recyclerview.BaseHolder;
+import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 
 public class MineImageAdapter extends BaseAdapter<IMineItem, BaseHolder<IMineItem>> {
 

@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <application
-        android:name=".ui.MyApplication"
+        android:name="com.project_ci01.app.MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -24,8 +24,7 @@
         android:requestLegacyExternalStorage="true"
         android:resizeableActivity="false">
 
-
-        <activity android:name="com.project_ci01.app.activity.MainActivity"
+        <activity android:name="com.project_ci01.app.activity.StartActivity"
             android:theme="@style/StartStyle"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:exported="true"
@@ -37,78 +36,22 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.project_ci01.app.activity.PrivacyActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name="com.project_ci01.app.activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
+
 
         <activity android:name="com.project_ci01.app.activity.PixelActivity"
-            android:theme="@style/StartStyle"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:exported="true"
-            android:launchMode="singleTask">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
+            android:screenOrientation="portrait"/>
 
         <activity android:name="com.project_ci01.app.activity.CompleteActivity"
             android:screenOrientation="portrait"/>
 
 
         <!--======================================-->
-        <!--======================================-->
-        <!--======================================-->
-
-
-
-        <activity android:name=".ui.activity.StartActivity"
-            android:theme="@style/StartStyle"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:exported="true"
-            android:launchMode="singleTask">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
-
-        <activity android:name=".ui.activity.PrivacyActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.HomeActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
-
-        <activity android:name=".ui.activity.ConnectedReportActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.UnconnectReportActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.MineActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.AboutActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.WiFiActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.WifiConnectingActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.TestActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.TestHistoryActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.TestExecActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".ui.activity.TestResultActivity"
-            android:screenOrientation="portrait"/>
-
 
         <!--XXPermission-->
         <meta-data android:name="ScopedStorage" android:value="true" />

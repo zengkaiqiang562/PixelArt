@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.view.recyclerview.BaseAdapter;
-import com.project_m1142.app.base.view.recyclerview.BaseHolder;
-import com.project_m1142.app.base.view.recyclerview.OnItemClickListener;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.view.recyclerview.BaseAdapter;
+import com.project_ci01.app.base.view.recyclerview.BaseHolder;
+import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 
 public class HomeImageAdapter extends BaseAdapter<ImageEntity, HomeImageAdapter.HomeImageHolder> {
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pixel Art</string>
+    <string name="privacy_content">"Please read and accept our <u>Terms of Use</u> and <u>Privacy Policy</u>."</string>
+    <string name="privacy_terms_of_use">"Terms of Use"</string>
+    <string name="privacy_privacy_policy">"Privacy Policy"</string>
+</resources>

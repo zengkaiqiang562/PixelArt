@@ -1,8 +1,8 @@
 package com.project_ci01.app.dialog;
 
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.view.dialog.BaseDialog;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.view.dialog.BaseDialog;
 
 public class MineCompleteDeleteDialog extends BaseDialog {
 

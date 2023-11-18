@@ -3,18 +3,15 @@ package com.project_ci01.app.banner;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.blankj.utilcode.util.ConvertUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.request.RequestOptions;
-import com.project_m1142.app.R;
-import com.project_m1142.app.base.view.recyclerview.BaseHolder;
+import com.project_ci01.app.R;
+import com.project_ci01.app.base.view.recyclerview.BaseHolder;
 import com.youth.banner.adapter.BannerAdapter;
 import com.youth.banner.util.BannerUtils;
-
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class MultiBannerAdapter extends BannerAdapter<IBannerItem, BaseHolder<IBannerItem>> {
 
