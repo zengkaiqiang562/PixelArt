@@ -328,16 +328,11 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 if (pixelList == null) {
                     return;
                 }
-                for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
-                    for (PixelUnit pixel : entry.getValue()) {
-                        if (PixelHelper.ignorePixel(pixel)) {
-                            continue;
-                        }
-                        pixel.enableDraw = false; // reset
-                    }
-                }
+
+                PixelManager.resetDraw(pixelList);
+
                 // 更新 pixelList
-                FileUtils.writeObject(pixelList, entity.pixelsObjPath, true); // 存在时删除重新创建
+                FileUtils.writeObject(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
                 // 更新 colorImage
                 PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
                 // 更新数据库
@@ -364,16 +359,11 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 if (pixelList == null) {
                     return;
                 }
-                for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
-                    for (PixelUnit pixel : entry.getValue()) {
-                        if (PixelHelper.ignorePixel(pixel)) {
-                            continue;
-                        }
-                        pixel.enableDraw = false; // reset
-                    }
-                }
+
+                PixelManager.resetDraw(pixelList);
+
                 // 更新 pixelList
-                FileUtils.writeObject(pixelList, entity.pixelsObjPath, true); // 存在时删除重新创建
+                FileUtils.writeObject(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
                 // 更新 colorImage
                 PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
                 // 更新数据库

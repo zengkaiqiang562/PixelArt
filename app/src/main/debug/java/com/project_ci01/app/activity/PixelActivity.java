@@ -48,7 +48,9 @@ public class PixelActivity extends BaseActivity {
         }
 
         if (entity != null) {
-            binding.viewPixel.setImageEntity(entity);
+            uiHandler.post(() -> {
+                binding.viewPixel.setImageEntity(entity);
+            });
         }
 
         binding.btnBucket.setOnClickListener(v -> {

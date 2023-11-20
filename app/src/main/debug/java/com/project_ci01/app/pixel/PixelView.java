@@ -2,6 +2,7 @@ package com.project_ci01.app.pixel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -22,6 +23,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.common.util.Hex;
+import com.project_ci01.app.R;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntity;
 import com.project_ci01.app.base.utils.BitmapUtils;
@@ -29,6 +32,7 @@ import com.project_ci01.app.base.utils.FileUtils;
 import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,20 +57,18 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private float lastPixelUnit;
 
-    /*========== 画笔 ==========*/
-    private Paint numberPaint; // 数字画笔
-    private Paint borderPaint; // 像素边框画笔
-    private Paint bgPaint; // 像素背景画笔
-    private Paint colorPaint; // 填色画笔
+    private RectF colorRectF; // 填色像素单元在整个View中的位置
+    private Canvas unitColorCanvas; // 像素单元的颜色画布
 
-    private Paint maskPaint; // 遮罩画笔
-    /*========== 画笔 ==========*/
 
-    private RectF colorRectF; // 填色像素单元
-    private RectF numberRectF; // 数字像素单元
-    private RectF maskRectF; // 遮罩像素单元
+    private RectF numberRectF; // 数字像素单元在整个View中的位置
+    private Canvas unitNumberCanvas; // 像素单元的数字画布
+    private RectF unitNumberRectF;
+    private Paint unitNumberPaint; // 数字画笔
+    private Paint unitBorderPaint; // 像素边框画笔
+    private Paint unitBgPaint; // 像素背景画笔
 
-    private PixelList pixelList;
+
     private float drawLeft; // 绘图的左上角的 x
     private float drawTop; // 绘图的左上角的 y
 
@@ -79,6 +81,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private Props props = Props.NONE; // 默认不使用道具
 
     private ImageEntity entity;
+    private PixelList pixelList;
+    private Map<Integer, List<PixelUnit>> colorMap;
+    private Map<Integer, String> numberMap;
+    private final Map<String, Bitmap[]> bitmapMap = new HashMap<>();
+    private Map<Integer, List<List<PixelUnit>>> adjoinMap;
 
     private StoreHandler storeHandler;
     private HandlerThread storeHandlerThread;
@@ -118,7 +125,35 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     public void setImageEntity(@NonNull ImageEntity entity) {
         this.entity = entity;
+
+        long start = SystemClock.elapsedRealtime();
         pixelList = PixelManager.getInstance().getPixelList(entity);
+        if (pixelList != null) {
+            colorMap = PixelManager.getColorMap(pixelList);
+            numberMap = PixelManager.getNumberMap(pixelList, colorMap);
+//            bitmapMap = PixelManager.getBitmapMap(pixelList, colorMap, numberMap);
+            adjoinMap = PixelManager.getAdjoinMap(pixelList);
+            int colorCount = 0;
+            int allColorPixelCount = 0;
+            for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
+                colorCount++;
+                allColorPixelCount += entry.getValue().size();
+                int color = entry.getKey();
+                byte alpha = (byte) Color.alpha(color);
+                byte red = (byte) Color.red(color);
+                byte green = (byte) Color.green(color);
+                byte blue = (byte) Color.blue(color);
+                String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+                LogUtils.e(TAG, "--> setImageEntity()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
+            }
+            LogUtils.e(TAG, "--> setImageEntity()   colorCount=" + colorCount); // 颜色种类个数
+            LogUtils.e(TAG, "--> setImageEntity()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
+            LogUtils.e(TAG, "--> setImageEntity()   pixels.size=" + pixelList.pixels.size()); // 所有像素点个数
+        }
+
+        invalidate();
+        long duration = SystemClock.elapsedRealtime() - start;
+        LogUtils.e(TAG, "--> setImageEntity()   getPixelList  duration=" + duration);
     }
 
     @Override
@@ -152,6 +187,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 //        LogUtils.e(TAG, "--> onDraw()  pixelList=" + pixelList);
+        long start = SystemClock.elapsedRealtime();
 
         if (pixelList == null) {
             return;
@@ -171,9 +207,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         drawRegion.set((int) drawLeft, (int) drawTop, (int) (drawLeft + pixelList.originWidth * pixelUnit), (int) (drawTop + pixelList.originHeight * pixelUnit));
 
 
-        for (Map.Entry<Integer, List<PixelUnit>> entry : pixelList.colorMap.entrySet()) {
+        bitmapMap.clear(); // reset
+
+        for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
             Integer color = entry.getKey();
-            String number = pixelList.numberMap.get(color);
+            String number = numberMap.get(color);
             if (TextUtils.isEmpty(number)) {
                 continue;
             }
@@ -181,8 +219,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 if (PixelHelper.ignorePixel(pixel)) {
                     continue;
                 }
-                drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop, pixel);
-//                drawMaskBitmap(canvas, pixelUnit, drawLeft, drawTop, pixel);
+                drawColorBitmap(canvas, pixelUnit, drawLeft, drawTop, number, pixel);
                 drawNumberBitmap(canvas, pixelUnit, drawLeft, drawTop, number, pixel);
             }
         }
@@ -193,20 +230,19 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (storeHandler != null) {
             storeHandler.sendStoreMsg();
         }
+
+        long duration = SystemClock.elapsedRealtime() - start;
+        LogUtils.e(TAG, "--> onDraw()   duration=" + duration);
     }
 
-    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, PixelUnit pixel) { // 绘制填色图
-        if (colorPaint == null) {
-            colorPaint = new Paint();
-            colorPaint.setStyle(Paint.Style.FILL);
-            colorPaint.setAntiAlias(true);
-        }
-        if (colorRectF == null) {
-            colorRectF = new RectF();
-        }
+    private void drawColorBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, String number, PixelUnit pixel) { // 绘制填色图
 
         if (!pixel.enableDraw) { // 不需要绘制的像素点不绘制
             return;
+        }
+
+        if (colorRectF == null) {
+            colorRectF = new RectF();
         }
 
         float left = drawLeft + pixel.x * pixelUnit;
@@ -214,55 +250,22 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         float top = drawTop + pixel.y * pixelUnit;
         float bottom = top + pixelUnit;
         colorRectF.set(left, top, right, bottom);
-        colorPaint.setColor(pixel.color);
-        canvas.drawRect(colorRectF, colorPaint);
-    }
 
-    private void drawMaskBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, PixelUnit pixel) { // 绘制遮罩
-        if (maskPaint == null) {
-            maskPaint = new Paint();
-            maskPaint.setStyle(Paint.Style.FILL);
-            maskPaint.setAntiAlias(true);
-            maskPaint.setColor(Color.WHITE);
-        }
-        if (maskRectF == null) {
-            maskRectF = new RectF();
+        Bitmap[] bitmaps = bitmapMap.get(number);
+        if (bitmaps == null) {
+            bitmaps = new Bitmap[2];
+            bitmapMap.put(number, bitmaps);
         }
 
-        if (pixel.enableDraw) { // 需要绘制的像素点不再遮罩
-            return;
+        if (bitmaps[0] == null) {
+            bitmaps[0] = getColorBitmap(pixelUnit, pixel);
         }
-        float left = drawLeft + pixel.x * pixelUnit;
-        float right = left + pixelUnit;
-        float top = drawTop + pixel.y * pixelUnit;
-        float bottom = top + pixelUnit;
-        maskRectF.set(left, top, right, bottom);
-        canvas.drawRect(maskRectF, maskPaint);
+
+        canvas.drawBitmap(bitmaps[0], null, colorRectF, null);
     }
 
     private void drawNumberBitmap(@NonNull Canvas canvas, float pixelUnit, float drawLeft, float drawTop, String number, PixelUnit pixel) { // 绘制数字图
-        if (borderPaint == null) {
-            borderPaint = new Paint();
-            borderPaint.setStyle(Paint.Style.STROKE);
-            borderPaint.setAntiAlias(true);
-            borderPaint.setColor(Color.BLACK);
-            borderPaint.setStrokeWidth(0.1f);
-        }
 
-        if (bgPaint == null) {
-            bgPaint = new Paint();
-            bgPaint.setStyle(Paint.Style.FILL);
-            bgPaint.setAntiAlias(true);
-            bgPaint.setColor(Color.LTGRAY);
-        }
-
-        if (numberPaint == null) {
-            numberPaint = new Paint();
-            numberPaint.setStyle(Paint.Style.FILL);
-            numberPaint.setAntiAlias(true);
-            numberPaint.setColor(Color.BLACK);
-            numberPaint.setTextAlign(Paint.Align.CENTER);
-        }
 
         if (numberRectF == null) {
             numberRectF = new RectF();
@@ -277,23 +280,93 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         float bottom = top + pixelUnit;
         numberRectF.set(left, top, right, bottom);
 
-        if (selColor == pixel.color) { // 选中颜色的部分高亮
-            bgPaint.setColor(Color.GRAY);
-            bgPaint.setAlpha(255);
-            numberPaint.setFakeBoldText(true);
-        } else {
-//                    bgPaint.setColor(Color.LTGRAY);
-            bgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
-            bgPaint.setAlpha((int) (255 * 0.3f));
-            numberPaint.setFakeBoldText(false);
+
+        Bitmap[] bitmaps = bitmapMap.get(number);
+        if (bitmaps == null) {
+            bitmaps = new Bitmap[2];
+            bitmapMap.put(number, bitmaps);
         }
 
-        canvas.drawRect(numberRectF, bgPaint); // 画数字像素单元的边框
-        canvas.drawRect(numberRectF, borderPaint); // 画数字像素单元的背景
-        numberPaint.setTextSize(pixelUnit * 0.5f);
-        Paint.FontMetrics fontMetrics = numberPaint.getFontMetrics();
+        if (bitmaps[1] == null) {
+            bitmaps[1] = getNumberBitmap(pixelUnit, pixel, number);
+        }
+
+        canvas.drawBitmap(bitmaps[1], null, numberRectF, null);
+    }
+
+    private Bitmap getColorBitmap(float pixelUnit, PixelUnit pixel) {
+
+        if (unitColorCanvas == null) {
+            unitColorCanvas = new Canvas();
+        }
+
+        Bitmap colorBitmap = Bitmap.createBitmap((int) pixelUnit, (int) pixelUnit, Bitmap.Config.ARGB_8888);
+        unitColorCanvas.setBitmap(colorBitmap);
+        unitColorCanvas.drawColor(pixel.color);
+
+        unitColorCanvas.setBitmap(null);
+
+        return colorBitmap;
+    }
+
+    private Bitmap getNumberBitmap(float pixelUnit, PixelUnit pixel, String number) {
+
+        if (unitBorderPaint == null) {
+            unitBorderPaint = new Paint();
+            unitBorderPaint.setStyle(Paint.Style.STROKE);
+            unitBorderPaint.setAntiAlias(true);
+            unitBorderPaint.setColor(Color.BLACK);
+            unitBorderPaint.setStrokeWidth(0.1f);
+        }
+
+        if (unitBgPaint == null) {
+            unitBgPaint = new Paint();
+            unitBgPaint.setStyle(Paint.Style.FILL);
+            unitBgPaint.setAntiAlias(true);
+            unitBgPaint.setColor(Color.LTGRAY);
+        }
+
+        if (unitNumberPaint == null) {
+            unitNumberPaint = new Paint();
+            unitNumberPaint.setStyle(Paint.Style.FILL);
+            unitNumberPaint.setAntiAlias(true);
+            unitNumberPaint.setColor(Color.BLACK);
+            unitNumberPaint.setTextAlign(Paint.Align.CENTER);
+        }
+
+        if (unitNumberRectF == null) {
+            unitNumberRectF = new RectF();
+        }
+
+        if (unitNumberCanvas == null) {
+            unitNumberCanvas = new Canvas();
+        }
+
+        Bitmap numberBitmap = Bitmap.createBitmap((int) pixelUnit, (int) pixelUnit, Bitmap.Config.ARGB_8888);
+        unitNumberCanvas.setBitmap(numberBitmap);
+
+        unitNumberRectF.set(0, 0, numberBitmap.getWidth(), numberBitmap.getHeight());
+
+        if (selColor == pixel.color) { // 选中颜色的部分高亮
+            unitBgPaint.setColor(Color.GRAY);
+            unitBgPaint.setAlpha(255);
+            unitNumberPaint.setFakeBoldText(true);
+        } else {
+            unitBgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
+            unitBgPaint.setAlpha((int) (255 * 0.3f));
+            unitNumberPaint.setFakeBoldText(false);
+        }
+
+        unitNumberCanvas.drawRect(unitNumberRectF, unitBgPaint); // 画数字像素单元的边框
+        unitNumberCanvas.drawRect(unitNumberRectF, unitBorderPaint); // 画数字像素单元的背景
+        unitNumberPaint.setTextSize(pixelUnit * 0.5f);
+        Paint.FontMetrics fontMetrics = unitNumberPaint.getFontMetrics();
         float fontHeight = fontMetrics.ascent - fontMetrics.descent;
-        canvas.drawText(number, numberRectF.centerX(), numberRectF.centerY() - fontHeight / 2, numberPaint);  // 画数字像素单元的内容数字
+        unitNumberCanvas.drawText(number, unitNumberRectF.centerX(), unitNumberRectF.centerY() - fontHeight / 2, unitNumberPaint);  // 画数字像素单元的内容数字
+
+        unitNumberCanvas.setBitmap(null);
+
+        return numberBitmap;
     }
 
     /**
@@ -318,7 +391,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         int pixelIndex = row + column * pixelList.originHeight; // pixelList 集合是按列遍历的， 一列有 pixelList.originHeight 个像素
         LogUtils.e(TAG, "--> findPixel()  column=" + column + "  row=" + row+ "  pixelIndex=" + pixelIndex + "  pixelList.pixels.size=" + pixelList.pixels.size());
         PixelUnit pixelUnit = pixelList.pixels.get(pixelIndex);
-        String number = pixelList.numberMap.get(pixelUnit.color);
+        String number = numberMap.get(pixelUnit.color);
         LogUtils.e(TAG, "--> findPixel()  number=" + number + "  pixelUnit=" + pixelUnit);
         return pixelUnit;
     }
@@ -370,7 +443,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return;
         }
-        List<List<PixelUnit>> adjoinOuters = pixelList.adjoinMap.get(pixel.color);
+        List<List<PixelUnit>> adjoinOuters = adjoinMap.get(pixel.color);
         if (adjoinOuters == null) {
             return;
         }
@@ -406,7 +479,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             return;
         }
 
-        List<PixelUnit> pixels = pixelList.colorMap.get(pixel.color); // 同颜色的所有像素点
+        List<PixelUnit> pixels = colorMap.get(pixel.color); // 同颜色的所有像素点
         if (pixels == null) {
             return;
         }
@@ -435,11 +508,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             return;
         }
 
-        if (selColor == Color.WHITE || selColor == Color.TRANSPARENT) { // 不处理白色和透明
+        if (PixelHelper.ignoreColor(selColor)) { // 不处理白色和透明
             return;
         }
 
-        List<PixelUnit> pixels = pixelList.colorMap.get(selColor);
+        List<PixelUnit> pixels = colorMap.get(selColor);
         if (pixels == null) {
             return;
         }
@@ -710,7 +783,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 ImageDbManager.getInstance().updateImage(entity);
 
                 // 更新 pixelList
-                FileUtils.writeObject(pixelList, entity.pixelsObjPath, true); // 存在时删除重新创建
+                FileUtils.writeObject(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
 
                 // 更新 colorImage
                 PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
