@@ -79,11 +79,7 @@ public class PixelManager {
 
     @Nullable
     public PixelList getPixelList(@NonNull ImageEntity entity) {
-        Object obj = FileUtils.readObject(entity.pixelsObjPath);
-        if (obj instanceof PixelList) {
-            return (PixelList) obj;
-        }
-        return null;
+        return FileUtils.readObjectByZipJson(PixelList.class, entity.pixelsObjPath);
     }
 
 
@@ -198,7 +194,7 @@ public class PixelManager {
                     return;
                 }
                 pixelList = getAllPixels(bitmap, 5);
-                FileUtils.writeObject(pixelList, entity.pixelsObjPath);
+                FileUtils.writeObjectByZipJson(pixelList, entity.pixelsObjPath);
             }
 
 

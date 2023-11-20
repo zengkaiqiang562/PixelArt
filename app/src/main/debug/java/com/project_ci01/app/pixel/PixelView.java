@@ -783,7 +783,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 ImageDbManager.getInstance().updateImage(entity);
 
                 // 更新 pixelList
-                FileUtils.writeObject(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
+                FileUtils.writeObjectByZipJson(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
 
                 // 更新 colorImage
                 PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
