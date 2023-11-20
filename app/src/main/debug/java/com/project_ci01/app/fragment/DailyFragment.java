@@ -204,6 +204,9 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
 
     @Override
     public void onImageDbChanged() {
+        if (bannerAdapter != null) {
+            bannerAdapter.notifyDataSetChanged();
+        }
         sendUpdateDailyMsg();
     }
 
