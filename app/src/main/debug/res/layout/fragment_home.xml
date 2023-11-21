@@ -31,28 +31,19 @@
             app:elevation="0dp"
             android:background="@android:color/transparent">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/toolbarLayout"
+            <com.youth.banner.Banner
+                android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:fitsSystemWindows="true"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                <com.youth.banner.Banner
-                    android:id="@+id/banner"
-                    android:layout_width="match_parent"
-                    android:layout_height="192dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    app:banner_auto_loop="true"
-                    app:banner_infinite_loop="true"
-                    app:banner_indicator_height="4dp"
-                    app:banner_indicator_normal_color="@color/white"
-                    app:banner_indicator_selected_color="#FFFF588A"
-                    app:banner_indicator_radius="2dp" />
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+                android:layout_height="192dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                app:banner_auto_loop="true"
+                app:banner_infinite_loop="true"
+                app:banner_indicator_height="4dp"
+                app:banner_indicator_normal_color="@color/white"
+                app:banner_indicator_selected_color="#FFFF588A"
+                app:banner_indicator_radius="2dp"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"/>
 
             <net.lucode.hackware.magicindicator.MagicIndicator
                 android:id="@+id/indicator"
@@ -65,147 +56,6 @@
                 android:background="@color/white"
                 app:layout_scrollFlags="exitUntilCollapsed|enterAlways|enterAlwaysCollapsed"/>
 
-            <!--<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/dimenPaddingCommon"
-                android:orientation="vertical"
-                android:divider="@android:drawable/divider_horizontal_dark"
-                android:showDividers="beginning|end"
-                app:layout_scrollFlags="scroll">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/dimenPaddingCommon"
-                    android:paddingLeft="@dimen/dimenPaddingCommon"
-                    android:paddingRight="@dimen/dimenPaddingCommon"
-                    android:orientation="horizontal"
-                    android:background="@android:color/white">
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="18dp"
-                        android:background="@color/colorPrimary"/>
-                    <androidx.legacy.widget.Space
-                        android:layout_width="@dimen/dimenPaddingCommon"
-                        android:layout_height="wrap_content" />
-                    <TextView style="@style/AppTheme.Label"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@color/colorPrimary"
-                        android:text="特色菜肴"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="@dimen/dimenPaddingCommon"
-                    android:orientation="vertical"
-                    android:background="@android:color/white">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:orientation="horizontal">
-                        <FrameLayout
-                            android:id="@+id/cih_maintain"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:background="@mipmap/image_practice_repast_1">
-                            <TextView style="@style/AppTheme.Label.Title"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="但家香酥鸭"
-                                android:textColor="@android:color/white"
-                                android:background="#44000000"/>
-                        </FrameLayout>
-                        <androidx.legacy.widget.Space
-                            android:layout_width="@dimen/dimenPaddingDiminutive"
-                            android:layout_height="wrap_content" />
-                        <FrameLayout
-                            android:id="@+id/cih_homemaking"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:background="@mipmap/image_practice_repast_2">
-                            <TextView style="@style/AppTheme.Label.Title"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="香菇蒸鸟蛋"
-                                android:textColor="@android:color/white"
-                                android:background="#44000000"/>
-                        </FrameLayout>
-
-                    </LinearLayout>
-                    <androidx.legacy.widget.Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dimenPaddingDiminutive"/>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp">
-                        <FrameLayout
-                            android:id="@+id/cih_document"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:background="@mipmap/image_practice_repast_3">
-                            <TextView style="@style/AppTheme.Label.Title"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="花溪牛肉粉"
-                                android:textColor="@android:color/white"
-                                android:background="#44000000"/>
-                        </FrameLayout>
-                        <androidx.legacy.widget.Space
-                            android:layout_width="@dimen/dimenPaddingDiminutive"
-                            android:layout_height="wrap_content" />
-                        <FrameLayout
-                            android:id="@+id/cih_wiki"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:background="@mipmap/image_practice_repast_4">
-                            <TextView style="@style/AppTheme.Label.Title"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="破酥包"
-                                android:textColor="@android:color/white"
-                                android:background="#44000000"/>
-                        </FrameLayout>
-
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>-->
-            <!--<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorBackground"
-                android:orientation="vertical"
-                app:layout_collapseMode="pin"
-                app:layout_scrollFlags="exitUntilCollapsed|enterAlways|enterAlwaysCollapsed">
-                <View style="@style/AppTheme.Division"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/dimenPaddingCommon"
-                    android:tag="fixed"
-                    android:orientation="horizontal">
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="18dp"
-                        android:background="@color/colorPrimary"/>
-                    <androidx.legacy.widget.Space
-                        android:layout_width="@dimen/dimenPaddingCommon"
-                        android:layout_height="wrap_content" />
-                    <TextView style="@style/AppTheme.Label"
-                        android:id="@+id/target"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@color/colorPrimary"
-                        android:text="菜单列表"/>
-                </LinearLayout>
-                <View style="@style/AppTheme.Division"/>
-            </LinearLayout>-->
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.viewpager.widget.ViewPager

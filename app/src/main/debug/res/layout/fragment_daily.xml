@@ -30,28 +30,19 @@
             app:elevation="0dp"
             android:background="@android:color/transparent">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/toolbarLayout"
+            <com.youth.banner.Banner
+                android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:fitsSystemWindows="true"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                <com.youth.banner.Banner
-                    android:id="@+id/banner"
-                    android:layout_width="match_parent"
-                    android:layout_height="192dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    app:banner_auto_loop="true"
-                    app:banner_infinite_loop="true"
-                    app:banner_indicator_height="4dp"
-                    app:banner_indicator_normal_color="@color/white"
-                    app:banner_indicator_selected_color="#FFFF588A"
-                    app:banner_indicator_radius="2dp"/>
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+                android:layout_height="192dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                app:banner_auto_loop="true"
+                app:banner_infinite_loop="true"
+                app:banner_indicator_height="4dp"
+                app:banner_indicator_normal_color="@color/white"
+                app:banner_indicator_selected_color="#FFFF588A"
+                app:banner_indicator_radius="2dp"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"/>
 
             <!--<net.lucode.hackware.magicindicator.MagicIndicator
                 android:id="@+id/indicator"
