@@ -32,6 +32,8 @@ import com.project_ci01.app.base.utils.FileUtils;
 import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +92,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private StoreHandler storeHandler;
     private HandlerThread storeHandlerThread;
 
+    private OnPixelViewCallback callback;
+
+    private int countByBrush; // 单次通过笔刷上色的像素点个数
+    private int totalByBrush; // 单次可通过笔刷上色的像素点个数上线
+
     public PixelView(Context context) {
         this(context, null);
     }
@@ -131,8 +138,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (pixelList != null) {
             colorMap = PixelManager.getColorMap(pixelList);
             numberMap = PixelManager.getNumberMap(pixelList, colorMap);
-//            bitmapMap = PixelManager.getBitmapMap(pixelList, colorMap, numberMap);
             adjoinMap = PixelManager.getAdjoinMap(pixelList);
+            int[] result = PixelHelper.countDrawnPixels(pixelList);
+            totalByBrush = (int) (result[0] * 0.1); // 单次可通过笔刷上色的像素点个数上线 为总像素点个数的 10%
+            notifyInited();
             int colorCount = 0;
             int allColorPixelCount = 0;
             for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
@@ -407,6 +416,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (!pixel.enableDraw && (selColor == pixel.color || props == Props.BRUSH)) { // 未绘制，且 （匹配选中颜色 or 正在使用笔刷）时才能进行绘制
             pixel.enableDraw = true;
             invalidate();
+            if (swipeColor && props == Props.BRUSH) {
+                ++countByBrush; // 笔刷滑动上色时，累计数量
+                if (countByBrush == totalByBrush) {
+                    notifyPropsEnd(Props.BRUSH);
+                    props = Props.NONE;
+                    countByBrush = 0; // reset
+                }
+            }
             return true;
         }
         return false;
@@ -461,7 +478,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
         if (handle) {
             invalidate();
-            // TODO 消耗掉道具
+            notifyPropsEnd(Props.BUCKET);
             props = Props.NONE;
         }
     }
@@ -494,7 +511,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
         if (handle) {
             invalidate();
-            // TODO 消耗掉道具
+            notifyPropsEnd(Props.WAND);
             props = Props.NONE;
         }
     }
@@ -543,11 +560,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     }
 
 
-
-    /*===================== 对外提供的方法 =======================*/
-    public void setProps(@NonNull Props props) {
-        this.props = props;
-    }
 
 
     /*==================== 触摸事件 & 手势 ========================*/
@@ -667,11 +679,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return false;
         }
-        boolean invalid = false;
-        if (selColor != pixel.color) { // 选择当前绘制的颜色类别
-            selColor = pixel.color;
-            invalid = true;
-        }
+
+        boolean invalid = setSelColor(pixel.color);
+
         if (!pixel.enableDraw) { // 双击事件也进行绘制
             pixel.enableDraw = true;
             invalid = true;
@@ -760,8 +770,31 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 long startTs = SystemClock.elapsedRealtime();
 
 
-                int[] countResult = new int[2];
-                PixelHelper.countDrawnPixels(pixelList, countResult);
+                Map<Integer, int[]> mapResult = new HashMap<>();
+                int[] countResult = PixelHelper.countDrawnPixels(pixelList, mapResult);
+
+//                LogUtils.e(TAG, "--> MSG_STORE  countResult=" + Arrays.toString(countResult));
+//                for (Map.Entry<Integer, int[]> entry : mapResult.entrySet()) {
+//                    LogUtils.e(TAG, "--> MSG_STORE  color=" + entry.getKey() + ",  colorResult=" + Arrays.toString(entry.getValue()));
+//                }
+                // 计算状态，处理回调
+                List<Integer> colors = new ArrayList<>();
+                for (Map.Entry<Integer, int[]> entry : mapResult.entrySet()) {
+                    int color = entry.getKey();
+                    int[] colorResult = entry.getValue();
+                    if (colorResult[0] == colorResult[1]) { // 总个数 == 已填色个数时表示填色完毕
+                        colors.add(color);
+                    }
+                }
+                if (!colors.isEmpty()) {
+                    PixelView.this.post(() -> {
+                        notifyColorCompleted(colors);
+                    });
+                }
+                if (countResult[0] == countResult[1]) {
+                    PixelView.this.post(PixelView.this::notifyAllCompleted);
+                }
+
 
                 if (lastCountResult == null) { // 第一次 onDraw 时不更新
                     LogUtils.e(TAG, "--> MSG_STORE  First onDraw !!!");
@@ -788,11 +821,90 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 // 更新 colorImage
                 PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
 
+
                 lastCountResult = countResult;
 
                 long duration = SystemClock.elapsedRealtime() - startTs;
                 LogUtils.e(TAG, "--> MSG_STORE  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
             }
         }
+    }
+
+
+    /*=============================== public method ============================*/
+
+    public void setProps(@NonNull Props props) {
+        if (this.props == props) { // 相同不处理
+            return;
+        }
+        this.props = props;
+    }
+
+    public Map<Integer, List<PixelUnit>> getColorMap() {
+        return colorMap;
+    }
+
+    public Map<Integer, String> getNumberMap() {
+        return numberMap;
+    }
+
+    public PixelList getPixelList() {
+        return pixelList;
+    }
+
+    /**
+     * @return 是否绘制
+     */
+    public boolean setSelColor(int color) {
+        if (selColor != color) {
+            selColor = color;
+            notifySelColorChanged(selColor);
+            return true;
+        }
+        return false;
+    }
+
+    /*=============================== Callback ============================*/
+
+    public void setOnPixelViewCallback(OnPixelViewCallback callback) {
+        this.callback = callback;
+    }
+
+    private void notifyInited() {
+        if (callback != null) {
+            callback.onInited();
+        }
+    }
+
+    private void notifySelColorChanged(int selColor) {
+        if (callback != null) {
+            callback.onSelColorChanged(selColor);
+        }
+    }
+
+    private void notifyColorCompleted(@NonNull List<Integer> colors) {
+        if (callback != null) {
+            callback.onColorCompleted(colors);
+        }
+    }
+
+    private void notifyAllCompleted() {
+        if (callback != null) {
+            callback.onAllCompleted();
+        }
+    }
+
+    private void notifyPropsEnd(Props props) {
+        if (callback != null) {
+            callback.onPropsEnd(props);
+        }
+    }
+
+    public interface OnPixelViewCallback {
+        void onInited(); // 初始化完成
+        void onSelColorChanged(int selColor); // 选中颜色改变
+        void onColorCompleted(@NonNull List<Integer> colors); // 填色完毕的颜色集
+        void onAllCompleted(); // 全部填色完毕
+        void onPropsEnd(Props props); // 某种道具使用结束
     }
 }

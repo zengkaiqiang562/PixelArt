@@ -242,6 +242,8 @@ public class PixelManager {
         int pixelUnit = pixelList.stdUnitSize;
 
         List<PixelUnit> pixels = pixelList.pixels;
+        float[] hsv = new float[3];
+
         for (PixelUnit pixel : pixels) {
             if (PixelHelper.ignorePixel(pixel)) {
                 continue;
@@ -254,7 +256,6 @@ public class PixelManager {
             if (pixel.enableDraw) {
                 paint.setColor(pixel.color);
             } else {
-                float[] hsv = new float[3];
                 Color.colorToHSV(pixel.color, hsv);
                 hsv[1] = 0f;
                 paint.setColor(Color.HSVToColor(hsv));

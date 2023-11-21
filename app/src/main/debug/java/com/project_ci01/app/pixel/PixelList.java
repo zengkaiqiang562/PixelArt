@@ -41,6 +41,10 @@ public class PixelList implements Serializable {
                 '}';
     }
 
+    public int totalPixels() { // 总像素点个数
+        return originWidth * originHeight;
+    }
+
     public int stdWidth() {
         return originWidth * stdUnitSize;
     }

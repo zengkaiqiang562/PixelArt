@@ -17,27 +17,63 @@ public class PixelHelper {
     private static final String TAG = "PixelHelper";
 
     /**
-     * @param result
+     * @param mapResult
+     * Map<Integer, int[]> 某种颜色 Integer 的总像素点个数int[0] 和 已绘制个数 int[1]
+     *
+     * @return
      * result[0] 总像素点个数（去除白色和透明色）
      * result[1] 已绘制像素点个数（去除白色和透明色）
      */
-    public static void countDrawnPixels(@NonNull PixelList pixelList, int[] result) {
-        int total = 0; // 总像素点（去除白色和透明色）
-        int drawn = 0; // 已绘制像素点（去除白色和透明色）
+    public static int[] countDrawnPixels(@NonNull PixelList pixelList, @NonNull Map<Integer, int[]> mapResult) {
+        int[] result = new int[2];
+
+        mapResult.clear();
+
+        List<PixelUnit> pixels = pixelList.pixels;
+        for (PixelUnit pixel : pixels) {
+            int color = pixel.color;
+            if (PixelHelper.ignoreColor(color)) {
+                continue;
+            }
+
+            int[] colorResult = mapResult.get(color);
+            if (colorResult == null) {
+                colorResult = new int[2];
+                mapResult.put(color, colorResult);
+            }
+
+            ++result[0];
+            ++colorResult[0];
+            if (pixel.enableDraw) {
+                ++result[1];
+                ++colorResult[1];
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @return
+     * result[0] 总像素点个数（去除白色和透明色）
+     * result[1] 已绘制像素点个数（去除白色和透明色）
+     * Map<Integer, int[]> 某种颜色 Integer 的总像素点个数int[0] 和 已绘制个数 int[1]
+     */
+    public static int[] countDrawnPixels(@NonNull PixelList pixelList) {
+        int[] result = new int[2];
 
         List<PixelUnit> pixels = pixelList.pixels;
         for (PixelUnit pixel : pixels) {
             if (PixelHelper.ignorePixel(pixel)) {
                 continue;
             }
-            ++total;
+            ++result[0];
             if (pixel.enableDraw) {
-                ++drawn;
+                ++result[1];
             }
         }
 
-        result[0] = total;
-        result[1] = drawn;
+        return result;
     }
 
 
