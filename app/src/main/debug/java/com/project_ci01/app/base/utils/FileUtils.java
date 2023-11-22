@@ -3,8 +3,11 @@ package com.project_ci01.app.base.utils;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.project_ci01.app.pixel.PixelList;
 
 import org.apache.commons.codec.binary.Base64;
@@ -77,14 +80,32 @@ public class FileUtils {
         FileIOUtils.writeFileFromBytesByStream(filePath, encodeBase64);
     }
 
+    @Nullable
     public static <T> T readObjectByZipJson(Class<T> clazz, String filePath) {
         LogUtils.e(TAG, "--> readObjectByZipJson()  filePath=" + filePath);
         byte[] bytes = FileIOUtils.readFile2BytesByStream(filePath);
+        if (bytes == null) {
+            return null;
+        }
         byte[] decodeBase64 = Base64.decodeBase64(bytes);
         byte[] gzDecompress = GzipUtils.unzip(decodeBase64);
         String json = new String(gzDecompress, StandardCharsets.UTF_8);
         Gson gson = new Gson();
         return gson.fromJson(json, clazz);
+    }
+
+    @Nullable
+    public static <T> T readObjectByZipJson(TypeToken<T> typeOfT, String filePath) {
+        LogUtils.e(TAG, "--> readObjectByZipJson()  filePath=" + filePath);
+        byte[] bytes = FileIOUtils.readFile2BytesByStream(filePath);
+        if (bytes == null) {
+            return null;
+        }
+        byte[] decodeBase64 = Base64.decodeBase64(bytes);
+        byte[] gzDecompress = GzipUtils.unzip(decodeBase64);
+        String json = new String(gzDecompress, StandardCharsets.UTF_8);
+        Gson gson = new Gson();
+        return gson.fromJson(json, typeOfT);
     }
 
 

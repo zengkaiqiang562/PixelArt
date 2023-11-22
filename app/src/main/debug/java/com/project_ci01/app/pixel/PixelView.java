@@ -23,8 +23,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.util.Hex;
-import com.project_ci01.app.R;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntity;
 import com.project_ci01.app.base.utils.BitmapUtils;
@@ -33,7 +31,8 @@ import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,39 +129,80 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         storeHandlerThread = null;
     }
 
-    public void setImageEntity(@NonNull ImageEntity entity) {
+    public void loadPixels(@NonNull ImageEntity entity) {
         this.entity = entity;
-
+        storeHandler.sendLoadPixelsMsg();       
+    }
+    
+    private void loadPixelsInternal() { // called in HandlerThread
+        if (entity == null) {
+            return;
+        }
         long start = SystemClock.elapsedRealtime();
-        pixelList = PixelManager.getInstance().getPixelList(entity);
-        if (pixelList != null) {
-            colorMap = PixelManager.getColorMap(pixelList);
-            numberMap = PixelManager.getNumberMap(pixelList, colorMap);
-            adjoinMap = PixelManager.getAdjoinMap(pixelList);
-            int[] result = PixelHelper.countDrawnPixels(pixelList);
-            totalByBrush = (int) (result[0] * 0.1); // 单次可通过笔刷上色的像素点个数上线 为总像素点个数的 10%
-            notifyInited();
-            int colorCount = 0;
-            int allColorPixelCount = 0;
-            for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
-                colorCount++;
-                allColorPixelCount += entry.getValue().size();
-                int color = entry.getKey();
-                byte alpha = (byte) Color.alpha(color);
-                byte red = (byte) Color.red(color);
-                byte green = (byte) Color.green(color);
-                byte blue = (byte) Color.blue(color);
-                String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
-                LogUtils.e(TAG, "--> setImageEntity()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
+
+        PixelList tmpPixelList = PixelHelper.getPixelList(entity);
+        if (tmpPixelList == null) {
+            LogUtils.e(TAG, "--> loadPixelsInternal()   getPixelList  Failed!!!");
+            return;
+        }
+        LogUtils.e(TAG, "--> loadPixelsInternal()   getPixelList  duration=" + (SystemClock.elapsedRealtime() - start));
+
+        adjoinMap = PixelHelper.fetchAdjoinMapFromLocal(entity);
+        if (adjoinMap != null) {
+            List<PixelUnit> pixelsFromAdjoin = new ArrayList<>();
+            for (Map.Entry<Integer, List<List<PixelUnit>>> entry : adjoinMap.entrySet()) {
+                for (List<PixelUnit> pixels : entry.getValue()) {
+                    pixelsFromAdjoin.addAll(pixels);
+                }
             }
-            LogUtils.e(TAG, "--> setImageEntity()   colorCount=" + colorCount); // 颜色种类个数
-            LogUtils.e(TAG, "--> setImageEntity()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
-            LogUtils.e(TAG, "--> setImageEntity()   pixels.size=" + pixelList.pixels.size()); // 所有像素点个数
+            Collections.sort(pixelsFromAdjoin, (o1, o2) -> {
+                int value1 = o1.x * tmpPixelList.originHeight + o1.y;
+                int value2 = o2.x * tmpPixelList.originHeight + o2.y;
+                return value1 - value2;
+            });
+            if (pixelsFromAdjoin.size() == tmpPixelList.pixels.size()) {
+                LogUtils.e(TAG, "--> loadPixelsInternal()   pixelsFromAdjoin.size() == pixelList.pixels.size()");
+                tmpPixelList.pixels = pixelsFromAdjoin; // 使用 adjoinMap 中的像素集 进行操作
+            } else {
+                adjoinMap.clear();
+                adjoinMap = null;
+            }
         }
 
-        invalidate();
-        long duration = SystemClock.elapsedRealtime() - start;
-        LogUtils.e(TAG, "--> setImageEntity()   getPixelList  duration=" + duration);
+        if (adjoinMap == null) {
+            adjoinMap = PixelHelper.getAdjoinMap(tmpPixelList);
+            PixelHelper.storeAdjoinMap2Local(adjoinMap, entity);
+        }
+        LogUtils.e(TAG, "--> loadPixelsInternal()   getAdjoinMap  duration=" + (SystemClock.elapsedRealtime() - start));
+
+        colorMap = PixelHelper.getColorMap(tmpPixelList);
+        LogUtils.e(TAG, "--> loadPixelsInternal()   getColorMap  duration=" + (SystemClock.elapsedRealtime() - start));
+        numberMap = PixelHelper.getNumberMap(tmpPixelList, colorMap);
+        LogUtils.e(TAG, "--> loadPixelsInternal()   getNumberMap  duration=" + (SystemClock.elapsedRealtime() - start));
+        int[] result = PixelHelper.countDrawnPixels(tmpPixelList);
+        LogUtils.e(TAG, "--> loadPixelsInternal()   countDrawnPixels  duration=" + (SystemClock.elapsedRealtime() - start));
+        totalByBrush = (int) (result[0] * 0.1); // 单次可通过笔刷上色的像素点个数上线 为总像素点个数的 10%
+        post(this::notifyInited);
+//            int colorCount = 0;
+//            int allColorPixelCount = 0;
+//            for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
+//                colorCount++;
+//                allColorPixelCount += entry.getValue().size();
+//                int color = entry.getKey();
+//                byte alpha = (byte) Color.alpha(color);
+//                byte red = (byte) Color.red(color);
+//                byte green = (byte) Color.green(color);
+//                byte blue = (byte) Color.blue(color);
+//                String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+//                LogUtils.e(TAG, "--> setImageEntity()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
+//            }
+//            LogUtils.e(TAG, "--> setImageEntity()   colorCount=" + colorCount); // 颜色种类个数
+//            LogUtils.e(TAG, "--> setImageEntity()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
+//            LogUtils.e(TAG, "--> setImageEntity()   pixels.size=" + pixelList.pixels.size()); // 所有像素点个数
+
+        pixelList = tmpPixelList; // pixelList 必须最后赋值，保证子线程中的其他操作都处理完成，UI线程才能进行正常绘制
+        postInvalidate();
+        LogUtils.e(TAG, "--> loadPixelsInternal()   duration=" + (SystemClock.elapsedRealtime() - start));
     }
 
     @Override
@@ -747,6 +787,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private class StoreHandler extends Handler {
 
         static final int MSG_STORE = 100;
+        static final int MSG_LOAD_PIXELS = 101;
 
         int[] lastCountResult;
 
@@ -760,9 +801,20 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             }
             sendEmptyMessageDelayed(MSG_STORE, 200); // 200ms 没有绘制操作更新一次
         }
+        
+        void sendLoadPixelsMsg() {
+            if (hasMessages(MSG_LOAD_PIXELS)) {
+                removeMessages(MSG_LOAD_PIXELS);
+            }
+            sendEmptyMessage(MSG_LOAD_PIXELS);
+        }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
+            if (msg.what == MSG_LOAD_PIXELS) {
+                loadPixelsInternal();
+                return;
+            }
             if (msg.what == MSG_STORE) {
                 if (pixelList == null || entity == null) {
                     return;
@@ -819,8 +871,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 FileUtils.writeObjectByZipJson(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
 
                 // 更新 colorImage
-                PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
-
+                PixelHelper.writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
+                
+                // 更新 adjoinMap
+                PixelHelper.storeAdjoinMap2Local(adjoinMap, entity);
 
                 lastCountResult = countResult;
 

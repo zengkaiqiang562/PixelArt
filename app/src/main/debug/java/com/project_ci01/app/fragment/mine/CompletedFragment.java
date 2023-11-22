@@ -324,17 +324,17 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 long startTs = SystemClock.elapsedRealtime();
 
                 ImageEntity entity = (ImageEntity) msg.obj;
-                PixelList pixelList = PixelManager.getInstance().getPixelList(entity);
+                PixelList pixelList = PixelHelper.getPixelList(entity);
                 if (pixelList == null) {
                     return;
                 }
 
-                PixelManager.resetDraw(pixelList);
+                PixelHelper.resetDraw(pixelList);
 
                 // 更新 pixelList
                 FileUtils.writeObjectByZipJson(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
                 // 更新 colorImage
-                PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
+                PixelHelper.writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
                 // 更新数据库
                 entity.completed = false;
 //                entity.colorTime = 0; // colorTime 不变，否则就是删除了
@@ -355,17 +355,17 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 long startTs = SystemClock.elapsedRealtime();
 
                 ImageEntity entity = (ImageEntity) msg.obj;
-                PixelList pixelList = PixelManager.getInstance().getPixelList(entity);
+                PixelList pixelList = PixelHelper.getPixelList(entity);
                 if (pixelList == null) {
                     return;
                 }
 
-                PixelManager.resetDraw(pixelList);
+                PixelHelper.resetDraw(pixelList);
 
                 // 更新 pixelList
                 FileUtils.writeObjectByZipJson(pixelList, entity.pixelsObjPath); // 存在时删除重新创建
                 // 更新 colorImage
-                PixelManager.getInstance().writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
+                PixelHelper.writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
                 // 更新数据库
                 entity.completed = false;
                 entity.colorTime = 0; // reset

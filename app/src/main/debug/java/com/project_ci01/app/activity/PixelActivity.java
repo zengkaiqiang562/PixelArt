@@ -13,7 +13,6 @@ import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.ImageEntity;
-import com.project_ci01.app.pixel.PixelUnit;
 import com.project_ci01.app.pixel.PixelView;
 import com.project_ci01.app.pixel.Props;
 import com.project_ci01.app.base.view.BaseActivity;
@@ -65,9 +64,7 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
         binding.viewPixel.setOnPixelViewCallback(this);
 
         if (entity != null) {
-            uiHandler.post(() -> {
-                binding.viewPixel.setImageEntity(entity);
-            });
+            binding.viewPixel.loadPixels(entity);
         }
 
         binding.topBack.setOnClickListener(v -> {
@@ -117,6 +114,7 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
 
     @Override
     public void onInited() {
+        LogUtils.e(TAG, "--> onInited()");
         Map<Integer, String> numberMap = binding.viewPixel.getNumberMap();
         List<Map.Entry<Integer, String>> numberEntries = new ArrayList<>(numberMap.entrySet());
         Collections.sort(numberEntries, (o1, o2) -> { // number 小的排前面
