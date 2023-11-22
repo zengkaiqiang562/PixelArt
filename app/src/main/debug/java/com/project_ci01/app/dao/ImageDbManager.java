@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.project_ci01.app.base.common.CompleteCallback;
 import com.project_ci01.app.base.utils.LogUtils;
+import com.project_ci01.app.base.utils.MyTimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ImageDbManager {
         imageDao = imageDB.imageDao();
     }
 
-    public void addImage(ImageEntity entity) {
+    public void addImage(ImageEntityNew entity) {
         dbHandler.post(() -> {
             long result = imageDao.addImage(entity);
             LogUtils.e(TAG, "-->  addImage()  result=" + result);
@@ -55,46 +56,26 @@ public class ImageDbManager {
         });
     }
 
-    public void deleteImage(ImageEntity entity) {
-        dbHandler.post(() -> {
-            int result = imageDao.deleteImage(entity);
-            LogUtils.e(TAG, "-->  deleteImage()  result=" + result);
-            mainHandler.post(this::notifyOnDbChanged);
-        });
-    }
 
-    public void deleteImages(List<ImageEntity> entities) {
+    public void updateImage(ImageEntityNew entity) {
         dbHandler.post(() -> {
-            int result = imageDao.deleteImage(entities);
-            LogUtils.e(TAG, "-->  deleteImages()  result=" + result);
-            mainHandler.post(this::notifyOnDbChanged);
-        });
-    }
-
-    public void deleteAll() {
-        dbHandler.post(() -> {
-            int result = imageDao.deleteAll();
-            LogUtils.e(TAG, "-->  deleteAll()  result=" + result);
-            mainHandler.post(this::notifyOnDbChanged);
-        });
-    }
-
-
-    public void updateImage(ImageEntity entity) {
-        dbHandler.post(() -> {
-            List<ImageEntity> entities = queryByStoreDir(entity.storeDir);
+            List<ImageEntityNew> entities = queryByStoreDir(entity.storeDir);
             if (entities != null && !entities.isEmpty()) {
-                for (ImageEntity tmp : entities) {
+                for (ImageEntityNew tmp : entities) {
                     if (entity.storeDir.equals(tmp.storeDir)) {
-                        tmp.colorTime = entity.colorTime;
+                        tmp.createTime = entity.createTime;
+                        tmp.imageId = entity.imageId;
                         tmp.fileName = entity.fileName;
-                        tmp.netUrl = entity.netUrl;
-                        tmp.fromType = entity.fromType;
+                        tmp.description = entity.description;
+                        tmp.permission = entity.permission;
+                        tmp.display = entity.display;
                         tmp.category = entity.category;
+                        tmp.fromType = entity.fromType;
+                        tmp.filePath = entity.filePath;
                         tmp.storeDir = entity.storeDir;
-                        tmp.originImagePath = entity.originImagePath;
                         tmp.colorImagePath = entity.colorImagePath;
                         tmp.pixelsObjPath = entity.pixelsObjPath;
+                        tmp.colorTime = entity.colorTime;
                         tmp.completed = entity.completed;
                         int result = imageDao.updateImage(tmp);
                         LogUtils.e(TAG, "-->  updateImage()  result=" + result);
@@ -107,20 +88,24 @@ public class ImageDbManager {
         });
     }
 
-    public void updateImageSync(ImageEntity entity) {
-        List<ImageEntity> entities = queryByStoreDir(entity.storeDir);
+    public void updateImageSync(ImageEntityNew entity) {
+        List<ImageEntityNew> entities = queryByStoreDir(entity.storeDir);
         if (entities != null && !entities.isEmpty()) {
-            for (ImageEntity tmp : entities) {
+            for (ImageEntityNew tmp : entities) {
                 if (entity.storeDir.equals(tmp.storeDir)) {
-                    tmp.colorTime = entity.colorTime;
+                    tmp.createTime = entity.createTime;
+                    tmp.imageId = entity.imageId;
                     tmp.fileName = entity.fileName;
-                    tmp.netUrl = entity.netUrl;
-                    tmp.fromType = entity.fromType;
+                    tmp.description = entity.description;
+                    tmp.permission = entity.permission;
+                    tmp.display = entity.display;
                     tmp.category = entity.category;
+                    tmp.fromType = entity.fromType;
+                    tmp.filePath = entity.filePath;
                     tmp.storeDir = entity.storeDir;
-                    tmp.originImagePath = entity.originImagePath;
                     tmp.colorImagePath = entity.colorImagePath;
                     tmp.pixelsObjPath = entity.pixelsObjPath;
+                    tmp.colorTime = entity.colorTime;
                     tmp.completed = entity.completed;
                     int result = imageDao.updateImage(tmp);
                     LogUtils.e(TAG, "-->  updateImage()  result=" + result);
@@ -132,24 +117,18 @@ public class ImageDbManager {
         }
     }
 
-    private List<ImageEntity> queryByCreateTime(long createTime) {
-        List<ImageEntity> entities = imageDao.queryByCreateTime(createTime);
-        LogUtils.e(TAG, "-->  queryByCreateTime()  entities=" + entities);
-        return entities;
-    }
-
     /**
-     * storeDir 相同的 ImageEntity 视为同一个
+     * storeDir 相同的 ImageEntityNew 视为同一个
      */
-    private List<ImageEntity> queryByStoreDir(String storeDir) {
-        List<ImageEntity> entities = imageDao.queryByStoreDir(storeDir);
+    private List<ImageEntityNew> queryByStoreDir(String storeDir) {
+        List<ImageEntityNew> entities = imageDao.queryByStoreDir(storeDir);
         LogUtils.e(TAG, "-->  queryByStoreDir()  entities=" + entities);
         return entities;
     }
 
     public void queryAll(QueryImageCallback callback) {
         dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryAll();
+            List<ImageEntityNew> entities = imageDao.queryAll();
             LogUtils.e(TAG, "-->  queryAll()  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -159,9 +138,33 @@ public class ImageDbManager {
         });
     }
 
+    public void queryAllCategories(CompleteCallback<List<String>> callback) {
+        dbHandler.post(() -> {
+            List<String> categories = imageDao.queryAllCategories();
+            LogUtils.e(TAG, "-->  queryAllCategories()  categories=" + categories);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onCompleted(categories);
+                }
+            });
+        });
+    }
+
+    public void queryHomeCategories(CompleteCallback<List<String>> callback) {
+        dbHandler.post(() -> {
+            List<String> categories = imageDao.queryAllCategories();
+            LogUtils.e(TAG, "-->  queryHomeCategories()  categories=" + categories);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onCompleted(categories);
+                }
+            });
+        });
+    }
+
     public void queryAllInHome(QueryImageCallback callback) {
         dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryAllInHome();
+            List<ImageEntityNew> entities = imageDao.queryAllInHome(MyTimeUtils.getEndOfToday());
             LogUtils.e(TAG, "-->  queryAllInHome()  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -173,7 +176,7 @@ public class ImageDbManager {
 
     public void queryByFromType(String fromType, QueryImageCallback callback) {
         dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryByFromType(fromType);
+            List<ImageEntityNew> entities = imageDao.queryByFromType(fromType);
             LogUtils.e(TAG, "-->  queryByFromType()  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -185,8 +188,8 @@ public class ImageDbManager {
 
     public void queryByCategory(String category, QueryImageCallback callback) {
         dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryByCategory(category);
-            LogUtils.e(TAG, "-->  queryByCategory()  entities=" + entities);
+            List<ImageEntityNew> entities = imageDao.queryByCategory(category, MyTimeUtils.getEndOfToday());
+            LogUtils.e(TAG, "-->  queryByCategory()  category=" + category + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);
@@ -197,7 +200,7 @@ public class ImageDbManager {
 
     public void queryCompleted(QueryImageCallback callback) {
         dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryCompleted();
+            List<ImageEntityNew> entities = imageDao.queryCompleted();
             LogUtils.e(TAG, "-->  queryCompleted()  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -209,7 +212,7 @@ public class ImageDbManager {
 
     public void queryInProgress(QueryImageCallback callback) {
         dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryInProgress();
+            List<ImageEntityNew> entities = imageDao.queryInProgress();
             LogUtils.e(TAG, "-->  queryInProgress()  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -258,32 +261,6 @@ public class ImageDbManager {
     }
 
 
-    // 判断某段时间是否有记录
-    public void countByTimeRange(long startTime, long endCTime, QueryCountCallback callback) {
-        dbHandler.post(() -> {
-            int count = imageDao.countByCreateTimeRange(startTime, endCTime);
-            LogUtils.e(TAG, "-->  countByTimeRange()  count=" + count);
-            mainHandler.post(() -> {
-                if (callback != null) {
-                    callback.onSuccess(count);
-                }
-            });
-        });
-    }
-
-
-    // 获取某段时间的所有记录
-    public void queryByTimeRange(long startTime, long endCTime, QueryImageCallback callback) {
-        dbHandler.post(() -> {
-            List<ImageEntity> entities = imageDao.queryByCreateTimeRange(startTime, endCTime);
-            LogUtils.e(TAG, "-->  queryByTimeRange()  entities=" + entities);
-            mainHandler.post(() -> {
-                if (callback != null) {
-                    callback.onSuccess(entities);
-                }
-            });
-        });
-    }
 
 
     private static class ImageDbHandler extends Handler {
@@ -294,7 +271,7 @@ public class ImageDbManager {
     }
 
     public interface QueryImageCallback {
-        void onSuccess(List<ImageEntity> entities);
+        void onSuccess(List<ImageEntityNew> entities);
     }
 
     public interface QueryCountCallback {

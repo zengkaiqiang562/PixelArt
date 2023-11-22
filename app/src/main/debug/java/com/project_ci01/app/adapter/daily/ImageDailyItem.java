@@ -1,12 +1,12 @@
 package com.project_ci01.app.adapter.daily;
 
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 
 public class ImageDailyItem implements IDailyItem {
 
-    public ImageEntity entity;
+    public ImageEntityNew entity;
 
-    public ImageDailyItem(ImageEntity entity) {
+    public ImageDailyItem(ImageEntityNew entity) {
         this.entity = entity;
     }
 

@@ -24,7 +24,7 @@ import com.project_ci01.app.banner.MultiBannerAdapter;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.utils.LogUtils;
@@ -100,7 +100,7 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
             public void onBannerClick(RecyclerView.ViewHolder holder, IBannerItem item, int position) {
                 LogUtils.e(TAG, "--> onBannerClick()  item=" + item + "  position=" + position);
                 if (holder instanceof MultiBannerAdapter.DailyHolder) {
-                    ImageEntity entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
+                    ImageEntityNew entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
                     if (entity != null) {
                         startPixelActivity(entity);
                     }
@@ -230,7 +230,7 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
         }
     }
 
-    private void startPixelActivity(@NonNull ImageEntity entity) {
+    private void startPixelActivity(@NonNull ImageEntityNew entity) {
         if (canTurn()) {
             Intent intent = new Intent(activity, PixelActivity.class);
             intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);

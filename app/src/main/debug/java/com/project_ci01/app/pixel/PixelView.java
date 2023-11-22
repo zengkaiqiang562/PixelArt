@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.utils.BitmapUtils;
 import com.project_ci01.app.base.utils.FileUtils;
 import com.project_ci01.app.base.utils.LogUtils;
@@ -81,7 +81,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private Props props = Props.NONE; // 默认不使用道具
 
-    private ImageEntity entity;
+    private ImageEntityNew entity;
     private PixelList pixelList;
     private Map<Integer, List<PixelUnit>> colorMap;
     private Map<Integer, String> numberMap;
@@ -129,7 +129,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         storeHandlerThread = null;
     }
 
-    public void loadPixels(@NonNull ImageEntity entity) {
+    public void loadPixels(@NonNull ImageEntityNew entity) {
         this.entity = entity;
         storeHandler.sendLoadPixelsMsg();       
     }
@@ -194,11 +194,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 //                byte green = (byte) Color.green(color);
 //                byte blue = (byte) Color.blue(color);
 //                String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
-//                LogUtils.e(TAG, "--> setImageEntity()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
+//                LogUtils.e(TAG, "--> setImageEntityNew()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
 //            }
-//            LogUtils.e(TAG, "--> setImageEntity()   colorCount=" + colorCount); // 颜色种类个数
-//            LogUtils.e(TAG, "--> setImageEntity()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
-//            LogUtils.e(TAG, "--> setImageEntity()   pixels.size=" + pixelList.pixels.size()); // 所有像素点个数
+//            LogUtils.e(TAG, "--> setImageEntityNew()   colorCount=" + colorCount); // 颜色种类个数
+//            LogUtils.e(TAG, "--> setImageEntityNew()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
+//            LogUtils.e(TAG, "--> setImageEntityNew()   pixels.size=" + pixelList.pixels.size()); // 所有像素点个数
 
         pixelList = tmpPixelList; // pixelList 必须最后赋值，保证子线程中的其他操作都处理完成，UI线程才能进行正常绘制
         postInvalidate();

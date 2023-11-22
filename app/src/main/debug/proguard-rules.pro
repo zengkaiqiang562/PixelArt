@@ -20,7 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.project_ci01.app.dao.ImageEntity { *; }
+-keep class com.project_ci01.app.dao.ImageEntityNew { *; }
 -keep class com.project_ci01.app.base.bean.** { *; }
 
 

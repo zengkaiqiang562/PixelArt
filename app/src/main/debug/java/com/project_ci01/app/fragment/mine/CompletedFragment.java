@@ -26,7 +26,7 @@ import com.project_ci01.app.adapter.mine.IMineItem;
 import com.project_ci01.app.adapter.mine.ImageMineItem;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.dialog.MineCompleteDeleteDialog;
 import com.project_ci01.app.dialog.MineCompleteDialog;
 import com.project_ci01.app.dialog.MineCompleteRecolorDialog;
@@ -176,7 +176,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 if (entities == null || entities.isEmpty()) {
                     items.add(new EmptyMineItem("No completed pictures yet"));
                 } else {
-                    for (ImageEntity entity : entities) {
+                    for (ImageEntityNew entity : entities) {
                         items.add(new ImageMineItem(entity));
                     }
                 }
@@ -193,14 +193,14 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
     @Override
     public void onItemClick(int item, BaseHolder<IMineItem> holder) {
         if (holder instanceof MineImageAdapter.MineImageHolder) {
-            ImageEntity entity = ((MineImageAdapter.MineImageHolder) holder).entity;
+            ImageEntityNew entity = ((MineImageAdapter.MineImageHolder) holder).entity;
             if (entity != null) {
                 showCompleteDialog(entity);
             }
         }
     }
 
-    private void showCompleteDialog(@NonNull ImageEntity entity) {
+    private void showCompleteDialog(@NonNull ImageEntityNew entity) {
         completeDialog = DialogHelper.showDialog(activity, completeDialog, MineCompleteDialog.class, new SimpleDialogListener<MineCompleteDialog>() {
             @Override
             public void onShowBefore(MineCompleteDialog dialog) {
@@ -225,7 +225,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
         });
     }
 
-    private void showRecolorDialog(@NonNull ImageEntity entity) {
+    private void showRecolorDialog(@NonNull ImageEntityNew entity) {
         recolorDialog = DialogHelper.showDialog(activity, recolorDialog, MineCompleteRecolorDialog.class, new SimpleDialogListener<MineCompleteRecolorDialog>() {
 
             @Override
@@ -242,7 +242,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
         });
     }
 
-    private void showDeleteDialog(@NonNull ImageEntity entity) {
+    private void showDeleteDialog(@NonNull ImageEntityNew entity) {
         deleteDialog = DialogHelper.showDialog(activity, deleteDialog, MineCompleteDeleteDialog.class, new SimpleDialogListener<MineCompleteDeleteDialog>() {
 
             @Override
@@ -259,7 +259,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
         });
     }
 
-    private void startPixelActivity(@NonNull ImageEntity entity) {
+    private void startPixelActivity(@NonNull ImageEntityNew entity) {
         if (canTurn()) {
             Intent intent = new Intent(activity, PixelActivity.class);
             intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
@@ -267,7 +267,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
         }
     }
 
-    private void startCompleteActivity(@NonNull ImageEntity entity) {
+    private void startCompleteActivity(@NonNull ImageEntityNew entity) {
         if (canTurn()) {
             Intent intent = new Intent(activity, CompleteActivity.class);
             intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
@@ -304,14 +304,14 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
             super(looper);
         }
 
-        void sendRecolorMsg(ImageEntity entity) {
+        void sendRecolorMsg(ImageEntityNew entity) {
             Message msg = obtainMessage();
             msg.what = MSG_RECOLOR;
             msg.obj = entity;
             sendMessage(msg);
         }
 
-        void sendDeleteMsg(ImageEntity entity) {
+        void sendDeleteMsg(ImageEntityNew entity) {
             Message msg = obtainMessage();
             msg.what = MSG_DELETE;
             msg.obj = entity;
@@ -320,10 +320,10 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
 
         @Override
         public void handleMessage(@NonNull Message msg) {
-            if (msg.what == MSG_RECOLOR && msg.obj instanceof ImageEntity) {
+            if (msg.what == MSG_RECOLOR && msg.obj instanceof ImageEntityNew) {
                 long startTs = SystemClock.elapsedRealtime();
 
-                ImageEntity entity = (ImageEntity) msg.obj;
+                ImageEntityNew entity = (ImageEntityNew) msg.obj;
                 PixelList pixelList = PixelHelper.getPixelList(entity);
                 if (pixelList == null) {
                     return;
@@ -351,10 +351,10 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 return;
             }
 
-            if (msg.what == MSG_DELETE && msg.obj instanceof ImageEntity) {
+            if (msg.what == MSG_DELETE && msg.obj instanceof ImageEntityNew) {
                 long startTs = SystemClock.elapsedRealtime();
 
-                ImageEntity entity = (ImageEntity) msg.obj;
+                ImageEntityNew entity = (ImageEntityNew) msg.obj;
                 PixelList pixelList = PixelHelper.getPixelList(entity);
                 if (pixelList == null) {
                     return;

@@ -21,7 +21,7 @@ import com.project_ci01.app.adapter.mine.IMineItem;
 import com.project_ci01.app.adapter.mine.ImageMineItem;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.BaseHolder;
@@ -141,7 +141,7 @@ public class InProgressFragment extends BaseFragment implements OnItemClickListe
                 if (entities == null || entities.isEmpty()) {
                     items.add(new EmptyMineItem("No pictures in progress"));
                 } else {
-                    for (ImageEntity entity : entities) {
+                    for (ImageEntityNew entity : entities) {
                         items.add(new ImageMineItem(entity));
                     }
                 }
@@ -158,14 +158,14 @@ public class InProgressFragment extends BaseFragment implements OnItemClickListe
     @Override
     public void onItemClick(int item, BaseHolder<IMineItem> holder) {
         if (holder instanceof MineImageAdapter.MineImageHolder) {
-            ImageEntity entity = ((MineImageAdapter.MineImageHolder) holder).entity;
+            ImageEntityNew entity = ((MineImageAdapter.MineImageHolder) holder).entity;
             if (entity != null) {
                 startPixelActivity(entity);
             }
         }
     }
 
-    private void startPixelActivity(@NonNull ImageEntity entity) {
+    private void startPixelActivity(@NonNull ImageEntityNew entity) {
         if (canTurn()) {
             Intent intent = new Intent(activity, PixelActivity.class);
             intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);

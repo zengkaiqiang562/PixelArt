@@ -11,13 +11,13 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project_ci01.app.base.utils.MyTimeUtils;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.view.recyclerview.BaseAdapter;
 import com.project_ci01.app.base.view.recyclerview.BaseHolder;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 
-public class HomeImageAdapter extends BaseAdapter<ImageEntity, HomeImageAdapter.HomeImageHolder> {
+public class HomeImageAdapter extends BaseAdapter<ImageEntityNew, HomeImageAdapter.HomeImageHolder> {
 
     public HomeImageAdapter(OnItemClickListener<HomeImageHolder> listener, Context context) {
         super(null, listener, context);
@@ -29,13 +29,13 @@ public class HomeImageAdapter extends BaseAdapter<ImageEntity, HomeImageAdapter.
         return new HomeImageHolder(parent);
     }
 
-    public class HomeImageHolder extends BaseHolder<ImageEntity> {
+    public class HomeImageHolder extends BaseHolder<ImageEntityNew> {
 
         private final ImageView image;
 
         private final TextView newTag;
 
-        public ImageEntity entity;
+        public ImageEntityNew entity;
 
         public HomeImageHolder(ViewGroup parent) {
             super(parent, R.layout.item_home_image);
@@ -44,7 +44,7 @@ public class HomeImageAdapter extends BaseAdapter<ImageEntity, HomeImageAdapter.
         }
 
         @Override
-        public void setData(ImageEntity data, int position) {
+        public void setData(ImageEntityNew data, int position) {
             entity = data;
 
             if (MyTimeUtils.isInToday(entity.createTime)) {

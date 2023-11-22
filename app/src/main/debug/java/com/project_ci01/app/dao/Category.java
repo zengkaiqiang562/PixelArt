@@ -2,10 +2,10 @@ package com.project_ci01.app.dao;
 
 public enum Category {
     UNKNOWN("unknown"),
-    LOVE("love"),
-    CARTOON("cartoon"),
-    FOOD("food"),
-    DAILY("daily");
+    LOVE("Love"),
+    CARTOON("Cartoon"),
+    FOOD("Food"),
+    DAILY("Daily");
 
     public final String catName;
 

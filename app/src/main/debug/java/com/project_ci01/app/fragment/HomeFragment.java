@@ -23,11 +23,12 @@ import com.project_ci01.app.activity.PixelActivity;
 import com.project_ci01.app.banner.DailyBannerItem;
 import com.project_ci01.app.banner.IBannerItem;
 import com.project_ci01.app.banner.MultiBannerAdapter;
+import com.project_ci01.app.base.common.CompleteCallback;
 import com.project_ci01.app.indicator.MyNavigator;
 import com.project_ci01.app.indicator.MyPagerIndicator;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.fragment.category.AllFragment;
 import com.project_ci01.app.fragment.category.CartoonFragment;
 import com.project_ci01.app.fragment.category.FoodFragment;
@@ -96,6 +97,10 @@ public class HomeFragment extends BaseFragment implements ImageDbManager.OnImage
         initBanner();
         initIndicator();
         initViewPager();
+
+        ImageDbManager.getInstance().queryHomeCategories(categories -> {
+            LogUtils.e(TAG, "--> queryHomeCategories()  categories=" + categories);
+        });
     }
 
     private void initBanner() {
@@ -115,7 +120,7 @@ public class HomeFragment extends BaseFragment implements ImageDbManager.OnImage
             public void onBannerClick(RecyclerView.ViewHolder holder,  IBannerItem item, int position) {
                 LogUtils.e(TAG, "--> onBannerClick()  item=" + item + "  position=" + position);
                 if (holder instanceof MultiBannerAdapter.DailyHolder) {
-                    ImageEntity entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
+                    ImageEntityNew entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
                     if (entity != null) {
                         startPixelActivity(entity);
                     }
@@ -177,7 +182,7 @@ public class HomeFragment extends BaseFragment implements ImageDbManager.OnImage
         }
     }
 
-    private void startPixelActivity(@NonNull ImageEntity entity) {
+    private void startPixelActivity(@NonNull ImageEntityNew entity) {
         if (canTurn()) {
             Intent intent = new Intent(activity, PixelActivity.class);
             intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);

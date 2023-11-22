@@ -7,7 +7,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.project_ci01.app.config.IConfig;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.view.BaseActivity;
 import com.project_ci01.app.databinding.ActivityCompleteBinding;
 
@@ -15,7 +15,7 @@ public class CompleteActivity extends BaseActivity {
 
     private ActivityCompleteBinding binding;
 
-    private ImageEntity entity;
+    private ImageEntityNew entity;
 
     @Override
     protected String tag() {

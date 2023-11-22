@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase;
 import com.project_ci01.app.base.manage.LifecyclerManager;
 
 
-@Database(entities = {ImageEntity.class}, version = 1, exportSchema = false)
+@Database(entities = {ImageEntityNew.class}, version = 1, exportSchema = false)
 public abstract class ImageDB extends RoomDatabase {
     private static final String DATABASE_NAME = "image_db";
 

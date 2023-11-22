@@ -11,8 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 import com.project_ci01.app.base.utils.FileUtils;
-import com.project_ci01.app.base.utils.LogUtils;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -364,17 +363,17 @@ public class PixelHelper {
     }
 
     @Nullable
-    public static PixelList getPixelList(@NonNull ImageEntity entity) {
+    public static PixelList getPixelList(@NonNull ImageEntityNew entity) {
         return FileUtils.readObjectByZipJson(PixelList.class, entity.pixelsObjPath);
     }
 
     @Nullable
-    public static Map<Integer, List<List<PixelUnit>>> fetchAdjoinMapFromLocal(@NonNull ImageEntity entity) {
+    public static Map<Integer, List<List<PixelUnit>>> fetchAdjoinMapFromLocal(@NonNull ImageEntityNew entity) {
         String storePath = entity.storeDir + File.separator + "adjoin_map";
         return FileUtils.readObjectByZipJson(new TypeToken<>() {}, storePath);
     }
 
-    public static void storeAdjoinMap2Local(@Nullable Map<Integer, List<List<PixelUnit>>> adjoinMap, @NonNull ImageEntity entity) {
+    public static void storeAdjoinMap2Local(@Nullable Map<Integer, List<List<PixelUnit>>> adjoinMap, @NonNull ImageEntityNew entity) {
         if (adjoinMap == null || adjoinMap.isEmpty()) {
             return;
         }

@@ -15,7 +15,7 @@ import com.project_ci01.app.base.utils.MyTimeUtils;
 import com.project_ci01.app.base.view.recyclerview.BaseHolder;
 import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.youth.banner.adapter.BannerAdapter;
 import com.youth.banner.util.BannerUtils;
 
@@ -52,7 +52,7 @@ public class MultiBannerAdapter extends BannerAdapter<IBannerItem, BaseHolder<IB
 
         private final TextView date;
 
-        public ImageEntity entity;
+        public ImageEntityNew entity;
 
         public DailyHolder(ViewGroup parent) {
             super(parent, BannerUtils.getView(parent, R.layout.item_banner_daily));

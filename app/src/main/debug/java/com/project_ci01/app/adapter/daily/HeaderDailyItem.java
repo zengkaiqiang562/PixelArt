@@ -1,6 +1,6 @@
 package com.project_ci01.app.adapter.daily;
 
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ public class HeaderDailyItem implements IDailyItem {
 
     public final String month;
 
-    public final List<ImageEntity> entities;
+    public final List<ImageEntityNew> entities;
 
-    public HeaderDailyItem(String month, List<ImageEntity> entities) {
+    public HeaderDailyItem(String month, List<ImageEntityNew> entities) {
         this.month = month;
         this.entities = entities;
     }

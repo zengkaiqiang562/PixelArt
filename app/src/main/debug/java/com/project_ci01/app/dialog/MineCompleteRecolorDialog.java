@@ -1,12 +1,12 @@
 package com.project_ci01.app.dialog;
 
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.view.dialog.BaseDialog;
 
 public class MineCompleteRecolorDialog extends BaseDialog {
 
-    private ImageEntity entity;
+    private ImageEntityNew entity;
 
     @Override
     protected String tag() {
@@ -33,11 +33,11 @@ public class MineCompleteRecolorDialog extends BaseDialog {
         });
     }
 
-    public void setImageEntity(ImageEntity entity) {
+    public void setImageEntity(ImageEntityNew entity) {
         this.entity = entity;
     }
 
-    public ImageEntity getImageEntity() {
+    public ImageEntityNew getImageEntity() {
         return entity;
     }
 }

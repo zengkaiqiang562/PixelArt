@@ -10,9 +10,11 @@ import androidx.annotation.Nullable;
 import com.project_ci01.app.adapter.PaletteAdapter;
 import com.project_ci01.app.adapter.palette.PaletteItem;
 import com.project_ci01.app.base.utils.LogUtils;
+import com.project_ci01.app.base.view.dialog.DialogHelper;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.config.IConfig;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
+import com.project_ci01.app.dialog.PixelGuideDialog;
 import com.project_ci01.app.pixel.PixelView;
 import com.project_ci01.app.pixel.Props;
 import com.project_ci01.app.base.view.BaseActivity;
@@ -29,7 +31,9 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
 
     private PaletteAdapter adapter;
 
-    private ImageEntity entity;
+    private ImageEntityNew entity;
+
+    private PixelGuideDialog pixelGuideDialog;
 
     @Override
     protected String tag() {
@@ -52,6 +56,8 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
         super.onCreate(savedInstanceState);
 
         init(getIntent());
+
+        showPixelGuideDialog();
     }
 
     private void init(Intent intent) {
@@ -108,6 +114,10 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
         binding.btnBucket.setSelected(props == Props.BUCKET);
         binding.btnWand.setSelected(props == Props.WAND);
         binding.btnBrush.setSelected(props == Props.BRUSH);
+    }
+
+    private void showPixelGuideDialog() {
+        pixelGuideDialog = DialogHelper.showDialog(this, pixelGuideDialog, PixelGuideDialog.class, null);
     }
 
     /*===================  PixelView.OnPixelViewCallback  =====================*/

@@ -76,4 +76,57 @@ public class MyTest {
         String fitDate = TimeUtils.millis2String(tsDate, "yyyyMMdd HH:mm:ss");
         System.out.println("fitDate="+fitDate);
     }
+
+    @Test
+    public void test7() {
+        for (int i=1211; i < 1211+79; i++ ) {
+            System.out.println(i);
+        }
+    }
+
+    @Test
+    public void test8() {
+        String[] arr = new String[]{
+                "01",
+                "02",
+                "03",
+                "04",
+                "05",
+                "06",
+                "07",
+                "08",
+                "09",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26",
+                "27",
+                "28",
+                "29",
+        };
+
+        int count = 0;
+//        for (int i = arr.length - 1; i>=0; i--) {
+        for (int i = 0; i < arr.length; i++) {
+            if (count > 53) {
+                return;
+            }
+            System.out.println(arr[i]);
+            System.out.println(arr[i]);
+            count +=2;
+        }
+    }
 }

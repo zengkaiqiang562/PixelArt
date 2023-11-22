@@ -4,13 +4,13 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.view.dialog.BaseDialog;
 
 public class MineCompleteDialog extends BaseDialog {
 
-    private ImageEntity entity;
+    private ImageEntityNew entity;
 
     private OnActionListener onActionListener;
 
@@ -61,11 +61,11 @@ public class MineCompleteDialog extends BaseDialog {
                 .into(completeImage);
     }
 
-    public void setImageEntity(ImageEntity entity) {
+    public void setImageEntity(ImageEntityNew entity) {
         this.entity = entity;
     }
 
-    public ImageEntity getImageEntity() {
+    public ImageEntityNew getImageEntity() {
         return entity;
     }
 

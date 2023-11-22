@@ -14,7 +14,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project_ci01.app.adapter.daily.HeaderDailyItem;
 import com.project_ci01.app.adapter.daily.IDailyItem;
 import com.project_ci01.app.adapter.daily.ImageDailyItem;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 import com.sunfusheng.ExpandableGroupRecyclerViewAdapter;
@@ -34,7 +34,7 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
         super(context);
     }
 
-    public void setImageEntities(List<ImageEntity> entities, boolean reset) { // reset : 重置折叠状态，即当月展开，其他月折叠
+    public void setImageEntities(List<ImageEntityNew> entities, boolean reset) { // reset : 重置折叠状态，即当月展开，其他月折叠
 //        List<Integer>
         groups.clear();
         if (entities == null || entities.isEmpty()) {
@@ -43,10 +43,10 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
         }
 
         // 按年月分组
-        Map<String, List<ImageEntity>> monthMap = new HashMap<>();
-        for (ImageEntity entity : entities) {
+        Map<String, List<ImageEntityNew>> monthMap = new HashMap<>();
+        for (ImageEntityNew entity : entities) {
             String monthWithYear = MyTimeUtils.millis2String(entity.createTime, "MMMM - yyyy", Locale.ENGLISH);
-            List<ImageEntity> monthEntities = monthMap.get(monthWithYear);
+            List<ImageEntityNew> monthEntities = monthMap.get(monthWithYear);
             if (monthEntities == null) {
                 monthEntities = new ArrayList<>();
                 monthMap.put(monthWithYear, monthEntities);
@@ -54,7 +54,7 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
             monthEntities.add(entity);
         }
 
-        List<Map.Entry<String, List<ImageEntity>>> entryList = new ArrayList<>(monthMap.entrySet());
+        List<Map.Entry<String, List<ImageEntityNew>>> entryList = new ArrayList<>(monthMap.entrySet());
 
         Collections.sort(entryList, (o1, o2) -> { // createTime 降序
             long o1Time = o1.getValue().get(0).createTime;
@@ -62,12 +62,12 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
             return Long.compare(o2Time, o1Time);
         });
 
-        for (Map.Entry<String, List<ImageEntity>> entry : entryList) {
+        for (Map.Entry<String, List<ImageEntityNew>> entry : entryList) {
             String monthWithYear = entry.getKey();
-            List<ImageEntity> monthEntities = entry.getValue();
+            List<ImageEntityNew> monthEntities = entry.getValue();
             List<IDailyItem> items = new ArrayList<>();
             items.add(new HeaderDailyItem(monthWithYear, monthEntities)); // 月份 Item
-            for (ImageEntity entity : monthEntities) {
+            for (ImageEntityNew entity : monthEntities) {
                 items.add(new ImageDailyItem(entity)); // Image Item
             }
             groups.add(items);
@@ -136,7 +136,7 @@ public class DailyImageAdapter extends ExpandableGroupRecyclerViewAdapter<IDaily
         }
 
         int completeCount = 0;
-        for (ImageEntity entity : headerItem.entities) {
+        for (ImageEntityNew entity : headerItem.entities) {
             if (entity.completed) {
                 ++completeCount;
             }

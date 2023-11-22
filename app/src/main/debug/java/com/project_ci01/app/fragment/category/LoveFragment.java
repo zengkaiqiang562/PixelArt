@@ -19,7 +19,7 @@ import com.project_ci01.app.adapter.HomeImageAdapter;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.ImageDbManager;
-import com.project_ci01.app.dao.ImageEntity;
+import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
@@ -114,7 +114,7 @@ public class LoveFragment extends BaseFragment implements OnItemClickListener<Ho
         }
     }
 
-    private void startPixelActivity(@NonNull ImageEntity entity) {
+    private void startPixelActivity(@NonNull ImageEntityNew entity) {
         if (canTurn()) {
             Intent intent = new Intent(activity, PixelActivity.class);
             intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
