@@ -165,6 +165,7 @@ public class ImageDbManager {
     public void queryAllInHome(QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryAllInHome(MyTimeUtils.getEndOfToday());
+            List<ImageEntityNew> recommendEntities = queryAllRecommendInHome();
             LogUtils.e(TAG, "-->  queryAllInHome()  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -172,6 +173,12 @@ public class ImageDbManager {
                 }
             });
         });
+    }
+
+    public List<ImageEntityNew> queryAllRecommendInHome() {
+        List<ImageEntityNew> entities = imageDao.queryAllRecommendInHome(MyTimeUtils.getEndOfToday());
+        LogUtils.e(TAG, "-->  queryAllRecommendInHome()   entities.size=" + entities.size() + "  entities=" + entities);
+        return entities;
     }
 
     public void queryByFromType(String fromType, QueryImageCallback callback) {
@@ -189,6 +196,8 @@ public class ImageDbManager {
     public void queryByCategory(String category, QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryByCategory(category, MyTimeUtils.getEndOfToday());
+            List<ImageEntityNew> recommendEntities = queryRecommendCategory(category);
+
             LogUtils.e(TAG, "-->  queryByCategory()  category=" + category + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
@@ -196,6 +205,12 @@ public class ImageDbManager {
                 }
             });
         });
+    }
+
+    public List<ImageEntityNew> queryRecommendCategory(String category) {
+        List<ImageEntityNew> entities = imageDao.queryRecommendCategory(category, MyTimeUtils.getEndOfToday());
+        LogUtils.e(TAG, "-->  queryRecommendCategory()    category=" + category + "   entities.size=" + entities.size() + "  entities=" + entities);
+        return entities;
     }
 
     public void queryCompleted(QueryImageCallback callback) {

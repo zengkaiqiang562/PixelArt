@@ -9,8 +9,10 @@ import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.common.util.Hex;
 import com.google.gson.reflect.TypeToken;
 import com.project_ci01.app.base.utils.FileUtils;
+import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.dao.ImageEntityNew;
 
 import java.io.File;
@@ -133,7 +135,16 @@ public class PixelHelper {
                 Color.colorToHSV(pixel.color, hsv);
                 hsv[1] = 0f;
                 paint.setColor(Color.HSVToColor(hsv));
-//                    paint.setAlpha((int) (255 * 0.7f));
+
+                // TODO
+//                Color.colorToHSV(pixel.color, hsv);
+//                hsv[1] = 0f;
+//                int color = Color.HSVToColor(hsv);
+//                int red = (color >> 16) & 0xFF;
+//                int green = (color >> 8) & 0xFF;
+//                int blue = color & 0xFF;
+//                LogUtils.e("zkq", "color=" + "#" + Hex.bytesToStringUppercase(new byte[]{(byte) 255, (byte) red, (byte) green, (byte) blue}));
+//                paint.setColor(Color.argb(255, red, green, blue));
             }
             canvas.drawRect(rect, paint);
         }

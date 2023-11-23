@@ -176,6 +176,7 @@ public class ImageEntityNew implements Parcelable {
 //                ", category='" + category + '\'' +
 //                ", storeDir='" + storeDir + '\'' +
                 ", completed=" + completed +
+                ", display=" + display +
                 '}';
     }
 

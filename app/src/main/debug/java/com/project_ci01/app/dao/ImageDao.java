@@ -73,4 +73,14 @@ public interface ImageDao {
 
     @Query("select * from table_image_new where category not in ('Daily') and createTime <= :endTime order by createTime desc")
     List<ImageEntityNew> queryAllInHome(long endTime); // 排除 daily
+
+
+    @Query("select * from table_image_new where category not in ('Daily') and display like '%All%' and createTime <= :endTime order by createTime desc")
+    List<ImageEntityNew> queryAllRecommendInHome(long endTime); // 查询 All 中的推荐记录
+
+    @Query("select * from table_image_new where category= :category and display like '%' || :category || '%' and createTime <= :endTime order by createTime desc")
+    List<ImageEntityNew> queryRecommendCategory(String category, long endTime); // 查询 category 中的推荐记录
+
+    @Query("select * from table_image_new where  display like '%' || :display || '%' ")
+    List<ImageEntityNew> queryByDisplay(String display); // 查询某个具体推荐位置的记录，如 All_1 , Cartoon_1 等
 }
