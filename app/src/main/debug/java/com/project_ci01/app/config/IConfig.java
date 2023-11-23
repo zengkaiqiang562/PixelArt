@@ -5,5 +5,7 @@ public interface IConfig {
     int REQUEST_COMPLETE_ACTIVITY = 2;
     int REQUEST_PRIVACY_ACTIVITY = 3;
 
+    int REQUEST_COMPLETE_DISPLAY_ACTIVITY = 4;
+
     String KEY_IMAGE_ENTITY = "KEY_IMAGE_ENTITY";
 }

@@ -56,7 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     /**
      * @return 返回 true 表示可以跳转 UI，避免快速重复点击
      */
-    public boolean checkTurnFlag() {
+    public boolean canTurn() {
         return !turning && (turning = true);
     }
 

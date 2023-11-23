@@ -60,6 +60,7 @@
                 android:layout_toStartOf="@id/ll_delete"
                 android:layout_marginEnd="50dp"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 >
 
                 <ImageView
@@ -85,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 >
 
                 <ImageView
@@ -111,6 +113,7 @@
                 android:layout_toEndOf="@id/ll_delete"
                 android:layout_marginStart="50dp"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 >
 
                 <ImageView

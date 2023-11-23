@@ -90,7 +90,11 @@ public class DailyFragment extends BaseImageFragment implements GroupRecyclerVie
                 if (holder instanceof MultiBannerAdapter.DailyHolder) {
                     ImageEntityNew entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
                     if (entity != null) {
-                        startPixelActivity(entity);
+                        if (entity.completed) {
+                            startCompleteActivity(entity);
+                        } else {
+                            startPixelActivity(entity);
+                        }
                     }
                 }
             }
@@ -226,15 +230,11 @@ public class DailyFragment extends BaseImageFragment implements GroupRecyclerVie
         }
 
         if (data instanceof ImageDailyItem) {
-            startPixelActivity(((ImageDailyItem) data).entity);
-        }
-    }
-
-    private void startPixelActivity(@NonNull ImageEntityNew entity) {
-        if (canTurn()) {
-            Intent intent = new Intent(activity, PixelActivity.class);
-            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
-            activity.startActivityForResult(intent, IConfig.REQUEST_PIXEL_ACTIVITY);
+            if (((ImageDailyItem) data).entity.completed) {
+                startCompleteActivity(((ImageDailyItem) data).entity);
+            } else {
+                startPixelActivity(((ImageDailyItem) data).entity);
+            }
         }
     }
 

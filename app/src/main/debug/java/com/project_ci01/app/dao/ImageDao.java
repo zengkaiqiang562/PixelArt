@@ -67,6 +67,9 @@ public interface ImageDao {
     @Query("update table_image_new set colorTime= :colorTime, completed= :completed where imageId= :imageId")
     int updateImage(int imageId, long colorTime, boolean completed);
 
+    @Query("update table_image_new set saveImagePath= :saveImagePath where imageId= :imageId")
+    int updateImage(int imageId, String saveImagePath);
+
     @Query("select count(*) from table_image_new where imageId= :imageId")
     int countByImageId(long imageId);
 
@@ -94,4 +97,7 @@ public interface ImageDao {
 
     @Query("select * from table_image_new where category='Daily' and createTime >= :startTime and createTime <= :endTime order by createTime desc")
     List<ImageEntityNew> queryDailyInRange(long startTime, long endTime); // 查询某天更新的图片
+
+    @Query("select * from table_image_new where colorTime=0 and createTime <= :endTime order by createTime desc")
+    List<ImageEntityNew> queryWithoutColor(long endTime); // 查询未填色的图片
 }

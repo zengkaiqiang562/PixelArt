@@ -111,19 +111,29 @@ public class ImageDbManager {
         });
     }
 
+    public void updateSaveImagePath(ImageEntityNew entity) { // 更新填色进度
+        dbHandler.post(() -> {
+            int updateCount = imageDao.updateImage(entity.imageId, entity.saveImagePath);
+            LogUtils.e(TAG, "-->  updateSaveImagePath()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
+            mainHandler.post(() -> {
+                notifyOnImageUpdated(entity.category, entity.imageId);
+            });
+        });
+    }
+
     /**
      * storeDir 相同的 ImageEntityNew 视为同一个
      */
     private List<ImageEntityNew> queryByStoreDir(String storeDir) {
         List<ImageEntityNew> entities = imageDao.queryByStoreDir(storeDir);
-        LogUtils.e(TAG, "-->  queryByStoreDir()  entities=" + entities);
+        LogUtils.e(TAG, "-->  queryByStoreDir()   entities.size=" + entities.size() + "  entities=" + entities);
         return entities;
     }
 
     public void queryAll(QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryAll();
-            LogUtils.e(TAG, "-->  queryAll()  entities=" + entities);
+            LogUtils.e(TAG, "-->  queryAll()   entities.size=" + entities.size() + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);
@@ -160,7 +170,7 @@ public class ImageDbManager {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryAllInHome(MyTimeUtils.getEndOfToday());
             List<ImageEntityNew> recommendEntities = queryAllRecommendInHome();
-            LogUtils.e(TAG, "-->  queryAllInHome()  entities=" + entities);
+            LogUtils.e(TAG, "-->  queryAllInHome()   entities.size=" + entities.size() + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);
@@ -178,7 +188,7 @@ public class ImageDbManager {
     public void queryByFromType(String fromType, QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryByFromType(fromType);
-            LogUtils.e(TAG, "-->  queryByFromType()  entities=" + entities);
+            LogUtils.e(TAG, "-->  queryByFromType()   entities.size=" + entities.size() + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);
@@ -210,7 +220,7 @@ public class ImageDbManager {
     public void queryCompleted(QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryCompleted();
-            LogUtils.e(TAG, "-->  queryCompleted()  entities=" + entities);
+            LogUtils.e(TAG, "-->  queryCompleted()   entities.size=" + entities.size() + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);
@@ -222,7 +232,7 @@ public class ImageDbManager {
     public void queryInProgress(QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryInProgress();
-            LogUtils.e(TAG, "-->  queryInProgress()  entities=" + entities);
+            LogUtils.e(TAG, "-->  queryInProgress()   entities.size=" + entities.size() + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);
@@ -234,7 +244,19 @@ public class ImageDbManager {
     public void queryDailyInToday(QueryImageCallback callback) {
         dbHandler.post(() -> {
             List<ImageEntityNew> entities = imageDao.queryDailyInRange(MyTimeUtils.getStartOfToday(), MyTimeUtils.getEndOfToday());
-            LogUtils.e(TAG, "-->  queryDailyInToday()  entities=" + entities);
+            LogUtils.e(TAG, "-->  queryDailyInToday()   entities.size=" + entities.size() + "  entities=" + entities);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onSuccess(entities);
+                }
+            });
+        });
+    }
+
+    public void queryWithoutColor(QueryImageCallback callback) {
+        dbHandler.post(() -> {
+            List<ImageEntityNew> entities = imageDao.queryWithoutColor(MyTimeUtils.getEndOfToday());
+            LogUtils.e(TAG, "-->  queryWithoutColor()   entities.size=" + entities.size() + "  entities=" + entities);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSuccess(entities);

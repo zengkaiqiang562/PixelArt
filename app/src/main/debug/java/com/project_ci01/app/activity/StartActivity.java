@@ -142,7 +142,7 @@ public class StartActivity extends AdResourceActivity implements IEventListener 
     /*=================================*/
 
     private void startPrivacyActivity() {
-        if (checkTurnFlag() && !privacyShowing) {
+        if (canTurn() && !privacyShowing) {
             Intent intent = new Intent(this, PrivacyActivity.class);
             startActivityForResult(intent, IConfig.REQUEST_PRIVACY_ACTIVITY);
             privacyShowing = true;

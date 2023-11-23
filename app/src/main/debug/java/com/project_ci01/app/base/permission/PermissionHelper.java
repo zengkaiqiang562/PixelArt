@@ -103,13 +103,13 @@ public class PermissionHelper {
 
                     @Override
                     public void onGranted(List<String> permissions, boolean all) { // all 表示是否获取到了所有请求的权限
-                        LogUtils.e(TAG, "--> applyStoragePermission  onGranted()  permissions=" + permissions + "  all=" + all);
+                        LogUtils.e(TAG, "--> applyStorage13Permission  onGranted()  permissions=" + permissions + "  all=" + all);
                         callback.onCompleted(all);
                     }
 
                     @Override
                     public void onDenied(List<String> permissions, boolean never) { // never 为 true 表示拒绝，且不再询问；false 表示拒绝，下次还会询问
-                        LogUtils.e(TAG, "--> applyStoragePermission  onDenied()  permissions=" + permissions + "  never=" + never);
+                        LogUtils.e(TAG, "--> applyStorage13Permission  onDenied()  permissions=" + permissions + "  never=" + never);
                         if (never) {
                             // 如果是被永久拒绝就跳转到应用权限系统设置页面
                             XXPermissions.startPermissionActivity(activity, permissions);

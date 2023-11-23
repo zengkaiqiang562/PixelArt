@@ -120,6 +120,15 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
         pixelGuideDialog = DialogHelper.showDialog(this, pixelGuideDialog, PixelGuideDialog.class, null);
     }
 
+    private void startCompleteDisplayActivity(@NonNull ImageEntityNew entity) {
+        if (canTurn()) {
+            Intent intent = new Intent(this, CompleteDisplayActivity.class);
+            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     /*===================  PixelView.OnPixelViewCallback  =====================*/
 
     @Override
@@ -163,7 +172,7 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
     @Override
     public void onAllCompleted() {
         LogUtils.e(TAG, "--> onAllCompleted()");
-        // TODO 跳转完成页
+        startCompleteDisplayActivity(entity);
     }
 
     @Override
@@ -172,4 +181,5 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
         updatePropsView(Props.NONE);
         // TODO 道具数量减一（第一版无限道具）
     }
+
 }

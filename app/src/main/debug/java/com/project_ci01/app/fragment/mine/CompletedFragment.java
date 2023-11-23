@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ConvertUtils;
-import com.project_ci01.app.activity.CompleteActivity;
 import com.project_ci01.app.activity.PixelActivity;
 import com.project_ci01.app.adapter.MineImageAdapter;
 import com.project_ci01.app.adapter.mine.EmptyMineItem;
@@ -257,22 +256,6 @@ public class CompletedFragment extends BaseImageFragment implements OnItemClickL
                 }
             }
         });
-    }
-
-    private void startPixelActivity(@NonNull ImageEntityNew entity) {
-        if (canTurn()) {
-            Intent intent = new Intent(activity, PixelActivity.class);
-            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
-            activity.startActivityForResult(intent, IConfig.REQUEST_PIXEL_ACTIVITY);
-        }
-    }
-
-    private void startCompleteActivity(@NonNull ImageEntityNew entity) {
-        if (canTurn()) {
-            Intent intent = new Intent(activity, CompleteActivity.class);
-            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
-            activity.startActivityForResult(intent, IConfig.REQUEST_COMPLETE_ACTIVITY);
-        }
     }
 
     /*===================================*/

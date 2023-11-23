@@ -39,11 +39,13 @@ public class ImageEntityNew implements Parcelable {
     public String colorImagePath; // 填色图的本地储存路径（未填色就是灰色图）
     public String pixelsObjPath; // 像素集对象（PixelList）的持久化储存路径
 
+    public String saveImagePath; // 保存图片的路径
+
     public long colorTime; // 最近一次的填色时间（进入过填色页填过色或者重置就有值，没进过填色页或删除就置为0）
     public boolean completed; // 是否已完成填色
 
 
-    public ImageEntityNew(long id, long createTime, int imageId, String fileName, String description, List<String> permission, List<String> display, String category, String fromType, String filePath, String storeDir/*, String originImagePath*/, String colorImagePath, String pixelsObjPath, long colorTime, boolean completed) {
+    public ImageEntityNew(long id, long createTime, int imageId, String fileName, String description, List<String> permission, List<String> display, String category, String fromType, String filePath, String storeDir/*, String originImagePath*/, String colorImagePath, String pixelsObjPath, String saveImagePath, long colorTime, boolean completed) {
         this.id = id;
         this.createTime = createTime;
         this.imageId = imageId;
@@ -58,6 +60,7 @@ public class ImageEntityNew implements Parcelable {
 //        this.originImagePath = originImagePath;
         this.colorImagePath = colorImagePath;
         this.pixelsObjPath = pixelsObjPath;
+        this.saveImagePath = saveImagePath;
         this.colorTime = colorTime;
         this.completed = completed;
     }
@@ -117,6 +120,7 @@ public class ImageEntityNew implements Parcelable {
 //        originImagePath = in.readString();
         colorImagePath = in.readString();
         pixelsObjPath = in.readString();
+        saveImagePath = in.readString();
         colorTime = in.readLong();
         completed = in.readByte() != 0;
     }
@@ -137,6 +141,7 @@ public class ImageEntityNew implements Parcelable {
 //        dest.writeString(originImagePath);
         dest.writeString(colorImagePath);
         dest.writeString(pixelsObjPath);
+        dest.writeString(saveImagePath);
         dest.writeLong(colorTime);
         dest.writeByte((byte) (completed ? 1 : 0));
     }

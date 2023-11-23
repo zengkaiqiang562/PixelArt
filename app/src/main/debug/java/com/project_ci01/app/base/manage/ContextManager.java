@@ -31,7 +31,7 @@ public enum ContextManager {
         Uri uri = Uri.parse(host);
         intent.setData(uri);
         // 不要用 resolveActivity ，可能会跳转不过去
-        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.checkTurnFlag()) {
+        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.canTurn()) {
             try {
                 activity.startActivity(intent);
             } catch (Exception e) {
@@ -53,7 +53,7 @@ public enum ContextManager {
 //        // 设置邮件文本内容
 //        intent.putExtra(Intent.EXTRA_TEXT, content);
         // 不要用 resolveActivity ，可能会跳转不过去
-        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.checkTurnFlag()) {
+        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.canTurn()) {
             try {
                 activity.startActivity(Intent.createChooser(intent, "Select Email"));
             } catch (Exception e) {
@@ -71,7 +71,7 @@ public enum ContextManager {
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // 不要用 resolveActivity ，可能会跳转不过去
-        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.checkTurnFlag()) {
+        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.canTurn()) {
             try {
                 activity.startActivity(intent);
             } catch (Exception e) {
@@ -110,7 +110,7 @@ public enum ContextManager {
 //        }
 //        intent.putExtra(Intent.EXTRA_TITLE, title);
         // 不要用 resolveActivity ，可能会跳转不过去
-        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.checkTurnFlag()) {
+        if (/*intent.resolveActivity(activity.getPackageManager()) != null && */activity.canTurn()) {
             try {
                 Intent chooserIntent = Intent.createChooser(intent, "Share to: ");
                 activity.startActivity(chooserIntent);

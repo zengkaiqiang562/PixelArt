@@ -103,15 +103,11 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
     @Override
     public void onItemClick(int item, HomeImageAdapter.HomeImageHolder holder) {
         if (holder.entity != null) {
-            startPixelActivity(holder.entity);
-        }
-    }
-
-    private void startPixelActivity(@NonNull ImageEntityNew entity) {
-        if (canTurn()) {
-            Intent intent = new Intent(activity, PixelActivity.class);
-            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
-            activity.startActivityForResult(intent, IConfig.REQUEST_PIXEL_ACTIVITY);
+            if (holder.entity.completed) {
+                startCompleteActivity(holder.entity);
+            } else {
+                startPixelActivity(holder.entity);
+            }
         }
     }
 

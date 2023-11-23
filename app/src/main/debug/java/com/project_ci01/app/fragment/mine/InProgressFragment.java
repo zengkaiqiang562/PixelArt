@@ -155,14 +155,6 @@ public class InProgressFragment extends BaseImageFragment implements OnItemClick
         }
     }
 
-    private void startPixelActivity(@NonNull ImageEntityNew entity) {
-        if (canTurn()) {
-            Intent intent = new Intent(activity, PixelActivity.class);
-            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
-            activity.startActivityForResult(intent, IConfig.REQUEST_PIXEL_ACTIVITY);
-        }
-    }
-
     /*===================================*/
 
     private void sendUpdateInProgressMsg(long delay) {

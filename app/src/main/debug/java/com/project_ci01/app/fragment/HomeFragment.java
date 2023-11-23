@@ -110,7 +110,11 @@ public class HomeFragment extends BaseImageFragment {
                 if (holder instanceof MultiBannerAdapter.DailyHolder) {
                     ImageEntityNew entity = ((MultiBannerAdapter.DailyHolder) holder).entity;
                     if (entity != null) {
-                        startPixelActivity(entity);
+                        if (entity.completed) {
+                            startCompleteActivity(entity);
+                        } else {
+                            startPixelActivity(entity);
+                        }
                     }
                 }
             }
@@ -167,14 +171,6 @@ public class HomeFragment extends BaseImageFragment {
     public void onDailyChanged() {
         if (bannerAdapter != null) {
             bannerAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void startPixelActivity(@NonNull ImageEntityNew entity) {
-        if (canTurn()) {
-            Intent intent = new Intent(activity, PixelActivity.class);
-            intent.putExtra(IConfig.KEY_IMAGE_ENTITY, entity);
-            activity.startActivityForResult(intent, IConfig.REQUEST_PIXEL_ACTIVITY);
         }
     }
 
