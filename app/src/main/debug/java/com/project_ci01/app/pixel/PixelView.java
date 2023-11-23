@@ -865,7 +865,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 if (countResult[1] > 0) { // 如果从来没绘制过像素点就不更新 colorTime
                     entity.colorTime = System.currentTimeMillis();
                 }
-                ImageDbManager.getInstance().updateImage(entity);
+                ImageDbManager.getInstance().updateProgress(entity);
 
                 // 更新 pixelList
                 FileUtils.writeObjectByZipJson(pixelList, entity.pixelsObjPath); // 存在时删除重新创建

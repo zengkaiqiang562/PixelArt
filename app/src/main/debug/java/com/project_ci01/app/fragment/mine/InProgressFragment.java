@@ -27,11 +27,12 @@ import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.BaseHolder;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.databinding.FragmentInProgressBinding;
+import com.project_ci01.app.fragment.BaseImageFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class InProgressFragment extends BaseFragment implements OnItemClickListener<BaseHolder<IMineItem>>, ImageDbManager.OnImageDbChangedListener {
+public class InProgressFragment extends BaseImageFragment implements OnItemClickListener<BaseHolder<IMineItem>> {
 
     private FragmentInProgressBinding binding;
     private MineImageAdapter adapter;
@@ -50,17 +51,6 @@ public class InProgressFragment extends BaseFragment implements OnItemClickListe
     @Override
     protected View stubBar() {
         return null;
-    }
-
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
     @Override
@@ -151,8 +141,8 @@ public class InProgressFragment extends BaseFragment implements OnItemClickListe
     }
 
     @Override
-    public void onImageDbChanged() {
-        sendUpdateInProgressMsg();
+    public void onImageUpdated(String category, int imageId) {
+        sendUpdateInProgressMsg(200);
     }
 
     @Override
@@ -175,11 +165,11 @@ public class InProgressFragment extends BaseFragment implements OnItemClickListe
 
     /*===================================*/
 
-    private void sendUpdateInProgressMsg() {
+    private void sendUpdateInProgressMsg(long delay) {
         if (uiHandler.hasMessages(MSG_UPDATE_IN_PROGRESS)) {
-            uiHandler.removeMessages(MSG_UPDATE_IN_PROGRESS);
+            return; // 有相同时消息不处理
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_IN_PROGRESS, 500); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_IN_PROGRESS, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
     private static final int MSG_UPDATE_IN_PROGRESS = 2006;

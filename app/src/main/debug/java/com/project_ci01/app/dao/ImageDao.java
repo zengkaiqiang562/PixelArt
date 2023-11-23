@@ -62,6 +62,14 @@ public interface ImageDao {
     int countInProgress();
 
     /*==============================================*/
+    @Query("update table_image_new set fileName= :fileName, description= :description, permission= :permission, display= :display  where imageId= :imageId")
+    int updateImage(int imageId, String fileName, String description, List<String> permission, List<String> display);
+    @Query("update table_image_new set colorTime= :colorTime, completed= :completed where imageId= :imageId")
+    int updateImage(int imageId, long colorTime, boolean completed);
+
+    @Query("select count(*) from table_image_new where imageId= :imageId")
+    int countByImageId(long imageId);
+
     @Query("select distinct category from table_image_new")
     List<String> queryAllCategories();
 
@@ -83,4 +91,7 @@ public interface ImageDao {
 
     @Query("select * from table_image_new where  display like '%' || :display || '%' ")
     List<ImageEntityNew> queryByDisplay(String display); // 查询某个具体推荐位置的记录，如 All_1 , Cartoon_1 等
+
+    @Query("select * from table_image_new where category='Daily' and createTime >= :startTime and createTime <= :endTime order by createTime desc")
+    List<ImageEntityNew> queryDailyInRange(long startTime, long endTime); // 查询某天更新的图片
 }

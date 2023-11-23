@@ -24,8 +24,9 @@ import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.databinding.FragmentLoveBinding;
+import com.project_ci01.app.fragment.BaseImageFragment;
 
-public class LoveFragment extends BaseFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder>, ImageDbManager.OnImageDbChangedListener {
+public class LoveFragment extends BaseImageFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder> {
 
     private FragmentLoveBinding binding;
 
@@ -45,18 +46,6 @@ public class LoveFragment extends BaseFragment implements OnItemClickListener<Ho
     @Override
     protected View stubBar() {
         return null;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
     @Override
@@ -103,8 +92,17 @@ public class LoveFragment extends BaseFragment implements OnItemClickListener<Ho
     }
 
     @Override
-    public void onImageDbChanged() {
-        sendUpdateLoveMsg();
+    public void onImageAdded(String category, int imageId) {
+        if (Category.LOVE.catName.equals(category)) {
+            sendUpdateLoveMsg(500);
+        }
+    }
+
+    @Override
+    public void onImageUpdated(String category, int imageId) {
+        if (Category.LOVE.catName.equals(category)) {
+            sendUpdateLoveMsg(200);
+        }
     }
 
     @Override
@@ -124,11 +122,11 @@ public class LoveFragment extends BaseFragment implements OnItemClickListener<Ho
 
     /*===================================*/
 
-    private void sendUpdateLoveMsg() {
+    private void sendUpdateLoveMsg(long delay) {
         if (uiHandler.hasMessages(MSG_UPDATE_LOVE)) {
-            uiHandler.removeMessages(MSG_UPDATE_LOVE);
+            return; // 有相同时消息不处理
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_LOVE, 500); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_LOVE, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
     private static final int MSG_UPDATE_LOVE = 2004;

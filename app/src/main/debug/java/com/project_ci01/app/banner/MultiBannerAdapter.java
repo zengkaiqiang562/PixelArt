@@ -66,7 +66,7 @@ public class MultiBannerAdapter extends BannerAdapter<IBannerItem, BaseHolder<IB
                 return;
             }
 
-            ImageDbManager.getInstance().queryByCategory(Category.DAILY.catName, entities -> {
+            ImageDbManager.getInstance().queryDailyInToday(entities -> {
                 if (!ContextManager.isSurvival(getContext()) || entities.isEmpty()) {
                     return;
                 }

@@ -25,11 +25,13 @@ import com.project_ci01.app.adapter.mine.EmptyMineItem;
 import com.project_ci01.app.adapter.mine.IMineItem;
 import com.project_ci01.app.adapter.mine.ImageMineItem;
 import com.project_ci01.app.config.IConfig;
+import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.dialog.MineCompleteDeleteDialog;
 import com.project_ci01.app.dialog.MineCompleteDialog;
 import com.project_ci01.app.dialog.MineCompleteRecolorDialog;
+import com.project_ci01.app.fragment.BaseImageFragment;
 import com.project_ci01.app.pixel.PixelHelper;
 import com.project_ci01.app.pixel.PixelList;
 import com.project_ci01.app.pixel.PixelManager;
@@ -49,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CompletedFragment extends BaseFragment implements OnItemClickListener<BaseHolder<IMineItem>>, ImageDbManager.OnImageDbChangedListener {
+public class CompletedFragment extends BaseImageFragment implements OnItemClickListener<BaseHolder<IMineItem>> {
 
     private FragmentCompletedBinding binding;
     private MineImageAdapter adapter;
@@ -81,7 +83,6 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
         // storeHandler
         storeHandlerThread = new HandlerThread("thread_complete_store");
         storeHandlerThread.start();
@@ -95,7 +96,6 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
         storeHandlerThread.quitSafely();
         storeHandler = null;
         storeHandlerThread = null;
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
     @Override
@@ -186,8 +186,8 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
     }
 
     @Override
-    public void onImageDbChanged() {
-        sendUpdateCompletedMsg();
+    public void onImageUpdated(String category, int imageId) {
+        sendUpdateCompletedMsg(200);
     }
 
     @Override
@@ -277,11 +277,11 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
 
     /*===================================*/
 
-    private void sendUpdateCompletedMsg() {
+    private void sendUpdateCompletedMsg(long delay) {
         if (uiHandler.hasMessages(MSG_UPDATE_COMPLETED)) {
-            uiHandler.removeMessages(MSG_UPDATE_COMPLETED);
+            return; // 有相同时消息不处理
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_COMPLETED, 500); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_COMPLETED, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
     private static final int MSG_UPDATE_COMPLETED = 2005;
@@ -338,7 +338,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 // 更新数据库
                 entity.completed = false;
 //                entity.colorTime = 0; // colorTime 不变，否则就是删除了
-                ImageDbManager.getInstance().updateImageSync(entity);
+                ImageDbManager.getInstance().updateProgressSync(entity);
 
                 long duration = SystemClock.elapsedRealtime() - startTs;
                 LogUtils.e(TAG, "--> MSG_RECOLOR  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
@@ -369,7 +369,7 @@ public class CompletedFragment extends BaseFragment implements OnItemClickListen
                 // 更新数据库
                 entity.completed = false;
                 entity.colorTime = 0; // reset
-                ImageDbManager.getInstance().updateImageSync(entity);
+                ImageDbManager.getInstance().updateProgressSync(entity);
 
                 long duration = SystemClock.elapsedRealtime() - startTs;
                 LogUtils.e(TAG, "--> MSG_DELETE  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));

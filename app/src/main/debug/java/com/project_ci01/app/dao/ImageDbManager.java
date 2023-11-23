@@ -52,69 +52,63 @@ public class ImageDbManager {
             long result = imageDao.addImage(entity);
             LogUtils.e(TAG, "-->  addImage()  result=" + result);
 
-            mainHandler.post(this::notifyOnDbChanged);
-        });
-    }
+            mainHandler.post(() -> {
+                notifyOnImageAdded(entity.category, entity.imageId);
+            });
 
-
-    public void updateImage(ImageEntityNew entity) {
-        dbHandler.post(() -> {
-            List<ImageEntityNew> entities = queryByStoreDir(entity.storeDir);
-            if (entities != null && !entities.isEmpty()) {
-                for (ImageEntityNew tmp : entities) {
-                    if (entity.storeDir.equals(tmp.storeDir)) {
-                        tmp.createTime = entity.createTime;
-                        tmp.imageId = entity.imageId;
-                        tmp.fileName = entity.fileName;
-                        tmp.description = entity.description;
-                        tmp.permission = entity.permission;
-                        tmp.display = entity.display;
-                        tmp.category = entity.category;
-                        tmp.fromType = entity.fromType;
-                        tmp.filePath = entity.filePath;
-                        tmp.storeDir = entity.storeDir;
-                        tmp.colorImagePath = entity.colorImagePath;
-                        tmp.pixelsObjPath = entity.pixelsObjPath;
-                        tmp.colorTime = entity.colorTime;
-                        tmp.completed = entity.completed;
-                        int result = imageDao.updateImage(tmp);
-                        LogUtils.e(TAG, "-->  updateImage()  result=" + result);
-                        mainHandler.post(this::notifyOnDbChanged);
-                    }
-                }
-            } else {
-                addImage(entity);
+            if (Category.DAILY.catName.equals(entity.category) && MyTimeUtils.isInToday(entity.createTime)) {
+                mainHandler.post(this::notifyOnDailyChanged);
             }
         });
     }
 
-    public void updateImageSync(ImageEntityNew entity) {
-        List<ImageEntityNew> entities = queryByStoreDir(entity.storeDir);
-        if (entities != null && !entities.isEmpty()) {
-            for (ImageEntityNew tmp : entities) {
-                if (entity.storeDir.equals(tmp.storeDir)) {
-                    tmp.createTime = entity.createTime;
-                    tmp.imageId = entity.imageId;
-                    tmp.fileName = entity.fileName;
-                    tmp.description = entity.description;
-                    tmp.permission = entity.permission;
-                    tmp.display = entity.display;
-                    tmp.category = entity.category;
-                    tmp.fromType = entity.fromType;
-                    tmp.filePath = entity.filePath;
-                    tmp.storeDir = entity.storeDir;
-                    tmp.colorImagePath = entity.colorImagePath;
-                    tmp.pixelsObjPath = entity.pixelsObjPath;
-                    tmp.colorTime = entity.colorTime;
-                    tmp.completed = entity.completed;
-                    int result = imageDao.updateImage(tmp);
-                    LogUtils.e(TAG, "-->  updateImage()  result=" + result);
-                    mainHandler.post(this::notifyOnDbChanged);
-                }
-            }
-        } else {
-            addImage(entity);
+    public void addImageSync(ImageEntityNew entity) {
+        long result = imageDao.addImage(entity);
+        LogUtils.e(TAG, "-->  addImage()  result=" + result);
+
+        mainHandler.post(() -> {
+            notifyOnImageAdded(entity.category, entity.imageId);
+        });
+
+        if (Category.DAILY.catName.equals(entity.category) && MyTimeUtils.isInToday(entity.createTime)) {
+            mainHandler.post(this::notifyOnDailyChanged);
         }
+    }
+
+    public void updateProgress(ImageEntityNew entity) { // 更新填色进度
+        dbHandler.post(() -> {
+            int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed);
+            LogUtils.e(TAG, "-->  updateProgress()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
+            mainHandler.post(() -> {
+                notifyOnImageUpdated(entity.category, entity.imageId);
+            });
+        });
+    }
+
+    public void updateProgressSync(ImageEntityNew entity) { // 更新填色进度
+        int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed);
+        LogUtils.e(TAG, "-->  updateProgressSync()   entity.imageId="  + entity.imageId +  "   updateCount=" + updateCount);
+        mainHandler.post(() -> {
+            notifyOnImageUpdated(entity.category, entity.imageId);
+        });
+    }
+
+    public void updateImageFromNet(ImageEntityNew entity) { // 更新来自网络的图片
+        dbHandler.post(() -> {
+            int count = imageDao.countByImageId(entity.imageId);
+            LogUtils.e(TAG, "-->  updateImageFromNet()    entity.imageId=" + entity.imageId + "  count=" + count);
+            if (imageDao.countByImageId(entity.imageId) <= 0) { // 不存在，则添加
+                addImageSync(entity);
+            } else { // 存在时更新（主要是可能会更新 display）
+                // int imageId, String fileName, String description, List<String> permission, List<String> display
+                int updateCount = imageDao.updateImage(entity.imageId, entity.fileName, entity.description, entity.permission, entity.display);
+                LogUtils.e(TAG, "-->  updateImageFromNet()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
+
+                mainHandler.post(() -> {
+                    notifyOnImageUpdated(entity.category, entity.imageId);
+                });
+            }
+        });
     }
 
     /**
@@ -237,6 +231,18 @@ public class ImageDbManager {
         });
     }
 
+    public void queryDailyInToday(QueryImageCallback callback) {
+        dbHandler.post(() -> {
+            List<ImageEntityNew> entities = imageDao.queryDailyInRange(MyTimeUtils.getStartOfToday(), MyTimeUtils.getEndOfToday());
+            LogUtils.e(TAG, "-->  queryDailyInToday()  entities=" + entities);
+            mainHandler.post(() -> {
+                if (callback != null) {
+                    callback.onSuccess(entities);
+                }
+            });
+        });
+    }
+
 
     // 用于判断是否存在历史记录
     public void countAll(QueryCountCallback callback) {
@@ -276,8 +282,6 @@ public class ImageDbManager {
     }
 
 
-
-
     private static class ImageDbHandler extends Handler {
 
         public ImageDbHandler(Looper looper) {
@@ -294,7 +298,9 @@ public class ImageDbManager {
     }
 
     public interface OnImageDbChangedListener {
-        void onImageDbChanged(); // 数据库发生了变化
+        void onImageAdded(String category, int imageId);
+        void onImageUpdated(String category, int imageId);
+        void onDailyChanged();
     }
 
     public void addOnDbChangedListener(@NonNull OnImageDbChangedListener listener) {
@@ -307,9 +313,21 @@ public class ImageDbManager {
         onImageDbChangedListeners.remove(listener);
     }
 
-    private void notifyOnDbChanged() {
+    private void notifyOnImageAdded(String category, int imageId) {
         for (OnImageDbChangedListener listener : onImageDbChangedListeners) {
-            listener.onImageDbChanged();
+            listener.onImageAdded(category, imageId);
+        }
+    }
+
+    private void notifyOnImageUpdated(String category, int imageId) {
+        for (OnImageDbChangedListener listener : onImageDbChangedListeners) {
+            listener.onImageUpdated(category, imageId);
+        }
+    }
+
+    private void notifyOnDailyChanged() {
+        for (OnImageDbChangedListener listener : onImageDbChangedListeners) {
+            listener.onDailyChanged();
         }
     }
 }

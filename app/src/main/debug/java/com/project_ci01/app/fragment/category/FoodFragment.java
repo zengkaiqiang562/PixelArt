@@ -24,8 +24,9 @@ import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.databinding.FragmentFoodBinding;
+import com.project_ci01.app.fragment.BaseImageFragment;
 
-public class FoodFragment extends BaseFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder>, ImageDbManager.OnImageDbChangedListener {
+public class FoodFragment extends BaseImageFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder> {
 
     private FragmentFoodBinding binding;
 
@@ -45,18 +46,6 @@ public class FoodFragment extends BaseFragment implements OnItemClickListener<Ho
     @Override
     protected View stubBar() {
         return null;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
     @Override
@@ -103,8 +92,17 @@ public class FoodFragment extends BaseFragment implements OnItemClickListener<Ho
     }
 
     @Override
-    public void onImageDbChanged() {
-        sendUpdateFoodMsg();
+    public void onImageAdded(String category, int imageId) {
+        if (Category.FOOD.catName.equals(category)) {
+            sendUpdateFoodMsg(500);
+        }
+    }
+
+    @Override
+    public void onImageUpdated(String category, int imageId) {
+        if (Category.FOOD.catName.equals(category)) {
+            sendUpdateFoodMsg(200);
+        }
     }
 
     @Override
@@ -124,11 +122,11 @@ public class FoodFragment extends BaseFragment implements OnItemClickListener<Ho
 
     /*===================================*/
 
-    private void sendUpdateFoodMsg() {
+    private void sendUpdateFoodMsg(long delay) {
         if (uiHandler.hasMessages(MSG_UPDATE_FOOD)) {
-            uiHandler.removeMessages(MSG_UPDATE_FOOD);
+            return; // 有相同时消息不处理
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_FOOD, 500); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_FOOD, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
     private static final int MSG_UPDATE_FOOD = 2003;

@@ -9,6 +9,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.blankj.utilcode.util.TimeUtils;
 import com.project_ci01.app.base.utils.StringUtils;
 
 import java.io.File;
@@ -173,10 +174,11 @@ public class ImageEntityNew implements Parcelable {
                 "imageId=" + imageId +
 //                ", fileName='" + fileName + '\'' +
 //                ", fromType='" + fromType + '\'' +
-//                ", category='" + category + '\'' +
 //                ", storeDir='" + storeDir + '\'' +
                 ", completed=" + completed +
+                ", createTime=" + TimeUtils.millis2String(createTime, "yyyy-MM-dd HH:ss:mm") +
                 ", display=" + display +
+                ", category='" + category + '\'' +
                 '}';
     }
 

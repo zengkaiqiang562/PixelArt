@@ -40,7 +40,7 @@ import com.youth.banner.listener.OnBannerListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdapter.OnItemClickListener<IDailyItem>, ImageDbManager.OnImageDbChangedListener {
+public class DailyFragment extends BaseImageFragment implements GroupRecyclerViewAdapter.OnItemClickListener<IDailyItem> {
 
     private FragmentDailyBinding binding;
 
@@ -62,18 +62,6 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
     @Override
     protected View stubBar() {
         return binding.stubBar;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
     @Override
@@ -201,13 +189,25 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
     }
 
 
+    @Override
+    public void onImageAdded(String category, int imageId) {
+        if (Category.DAILY.catName.equals(category)) {
+            sendUpdateDailyMsg(500);
+        }
+    }
 
     @Override
-    public void onImageDbChanged() {
+    public void onImageUpdated(String category, int imageId) {
+        if (Category.DAILY.catName.equals(category)) {
+            sendUpdateDailyMsg(200);
+        }
+    }
+
+    @Override
+    public void onDailyChanged() {
         if (bannerAdapter != null) {
             bannerAdapter.notifyDataSetChanged();
         }
-        sendUpdateDailyMsg();
     }
 
     @Override
@@ -240,11 +240,11 @@ public class DailyFragment extends BaseFragment implements GroupRecyclerViewAdap
 
     /*===================================*/
 
-    private void sendUpdateDailyMsg() {
+    private void sendUpdateDailyMsg(long delay) {
         if (uiHandler.hasMessages(MSG_UPDATE_DAILY)) {
-            uiHandler.removeMessages(MSG_UPDATE_DAILY);
+            return; // 有相同时消息不处理
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_DAILY, 500); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_DAILY, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
     private static final int MSG_UPDATE_DAILY = 2010;

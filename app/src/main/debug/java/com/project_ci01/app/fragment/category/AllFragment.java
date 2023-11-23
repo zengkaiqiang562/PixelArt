@@ -23,8 +23,9 @@ import com.project_ci01.app.base.manage.ContextManager;
 import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.databinding.FragmentAllBinding;
+import com.project_ci01.app.fragment.BaseImageFragment;
 
-public class AllFragment extends BaseFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder>, ImageDbManager.OnImageDbChangedListener {
+public class AllFragment extends BaseImageFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder> {
 
     private FragmentAllBinding binding;
 
@@ -44,18 +45,6 @@ public class AllFragment extends BaseFragment implements OnItemClickListener<Hom
     @Override
     protected View stubBar() {
         return null;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
     @Override
@@ -102,8 +91,13 @@ public class AllFragment extends BaseFragment implements OnItemClickListener<Hom
     }
 
     @Override
-    public void onImageDbChanged() {
-        sendUpdateAllMsg();
+    public void onImageAdded(String category, int imageId) {
+        sendUpdateAllMsg(500);
+    }
+
+    @Override
+    public void onImageUpdated(String category, int imageId) {
+        sendUpdateAllMsg(200);
     }
 
     @Override
@@ -124,11 +118,11 @@ public class AllFragment extends BaseFragment implements OnItemClickListener<Hom
 
     /*===================================*/
 
-    private void sendUpdateAllMsg() {
+    private void sendUpdateAllMsg(long delay) {
         if (uiHandler.hasMessages(MSG_UPDATE_ALL)) {
-            uiHandler.removeMessages(MSG_UPDATE_ALL);
+            return; // 有相同时消息不处理
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_ALL, 500); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_ALL, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
     private static final int MSG_UPDATE_ALL = 2001;

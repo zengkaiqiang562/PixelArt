@@ -16,6 +16,7 @@ import com.project_ci01.app.base.utils.FileUtils;
 import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 import com.project_ci01.app.base.utils.StringUtils;
+import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.FromType;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
@@ -24,8 +25,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -71,12 +76,60 @@ public class PixelManager {
             List<String> infoPaths = infoPathMap.get("info_path");
             if (infoPaths == null) return;
             InfoBean infoBean;
+            Map<String, List<ImageEntityNew>> defaultListMap = new HashMap<>();
+            Map<String, List<ImageEntityNew>> updateListMap = new HashMap<>();
+            List<ImageEntityNew> entities;
             for (String infoPath : infoPaths) {
                 inputStream = assetManager.open(infoPath);
                 infoBean = gson.fromJson(new InputStreamReader(inputStream), InfoBean.class);
-                parseListBean(infoBean.category, infoBean.defaultListBean.folder, infoBean.defaultListBean.images);
-                parseListBean(infoBean.category, infoBean.updateListBean.folder, infoBean.updateListBean.images);
+                entities = parseListBean(infoBean.category, infoBean.defaultListBean.folder, infoBean.defaultListBean.images);
+                if (!entities.isEmpty()) {
+                    defaultListMap.put(infoBean.category, entities);
+                }
+                entities = parseListBean(infoBean.category, infoBean.updateListBean.folder, infoBean.updateListBean.images);
+                if (!entities.isEmpty()) {
+                    updateListMap.put(infoBean.category, entities);
+                }
             }
+
+            // update 列表的更新时间填充，一天更新两张不同种类的图片
+            List<ImageEntityNew> updateList = handUpdateList(updateListMap);
+
+            // 区分曝光位置图片和 Daily 图片，优先处理
+            List<ImageEntityNew> defaultRecommandList = new ArrayList<>();
+            List<ImageEntityNew> defaultUnrecommandList = new ArrayList<>();
+            List<ImageEntityNew> defaultDailyList = new ArrayList<>();
+            for (Map.Entry<String, List<ImageEntityNew>> entry : defaultListMap.entrySet()) {
+                if (Category.DAILY.catName.equals(entry.getKey())) {
+                    defaultDailyList.addAll(entry.getValue());
+                    continue;
+                }
+                for (ImageEntityNew imageEntityNew : entry.getValue()) {
+                    if (imageEntityNew.display == null || imageEntityNew.display.isEmpty()) {
+                        defaultUnrecommandList.add(imageEntityNew);
+                    } else {
+                        defaultRecommandList.add(imageEntityNew);
+                    }
+                }
+            }
+
+            for (ImageEntityNew imageEntityNew : defaultRecommandList) {
+                loadData(imageEntityNew);
+            }
+
+            for (ImageEntityNew imageEntityNew : defaultDailyList) {
+                loadData(imageEntityNew);
+            }
+
+            for (ImageEntityNew imageEntityNew : defaultUnrecommandList) {
+                loadData(imageEntityNew);
+            }
+
+            for (ImageEntityNew imageEntityNew : updateList) {
+                loadData(imageEntityNew);
+            }
+
+
             LogUtils.e(TAG, "--> parseInfoBean()   duration=" + (SystemClock.elapsedRealtime() - start));
         } catch (Exception e) {
             Log.e(TAG, "--> realLoad()  Failed!!! e=" + e);
@@ -84,11 +137,14 @@ public class PixelManager {
         }
     }
 
-    private void parseListBean(String category, String folder, List<ImageBean> imageBeans) {
-        if (imageBeans.isEmpty()) return;
+    private List<ImageEntityNew> parseListBean(String category, String folder, List<ImageBean> imageBeans) {
+        List<ImageEntityNew> entities = new ArrayList<>();
+        if (imageBeans.isEmpty()) return entities;
         for (ImageBean imageBean : imageBeans) {
             ImageEntityNew imageEntityNew = new ImageEntityNew();
-            imageEntityNew.createTime = TimeUtils.string2Millis(imageBean.date, "yyyy-MM-dd HH:mm:ss");
+            if (imageBean.date != null && !imageBean.date.isEmpty()) {
+                imageEntityNew.createTime = TimeUtils.string2Millis(imageBean.date, "yyyy-MM-dd HH:mm:ss");
+            }
             imageEntityNew.imageId = imageBean.image_id;
             imageEntityNew.fileName = imageBean.fileName;
             imageEntityNew.description = imageBean.description;
@@ -105,8 +161,48 @@ public class PixelManager {
             imageEntityNew.pixelsObjPath = imageEntityNew.storeDir + File.separator + "pixel_list";
             imageEntityNew.colorTime = 0;
             imageEntityNew.completed = false;
-            loadData(imageEntityNew);
+            entities.add(imageEntityNew);
         }
+        return entities;
+    }
+
+    private List<ImageEntityNew> handUpdateList(Map<String, List<ImageEntityNew>> updateListMap) {
+        // update 列表的更新时间填充，一天更新两张不同种类的图片
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2023);
+        calendar.set(Calendar.MONTH, 11 - 1); // 11 月
+        calendar.set(Calendar.DATE, 30); // 从 11.30 号开始添加更新图片
+        List<ImageEntityNew> updateEntities = new ArrayList<>();
+
+        int index = 0;
+        int count = 0;
+        for(;;) {
+            int lastSize = updateEntities.size();
+
+            for (Map.Entry<String, List<ImageEntityNew>> entry : updateListMap.entrySet()) {
+                if (index < entry.getValue().size()) {
+                    ImageEntityNew imageEntityNew = entry.getValue().get(index);
+                    imageEntityNew.createTime = calendar.getTimeInMillis();
+                    updateEntities.add(imageEntityNew);
+                    ++count;
+                }
+                if (count == 2) { // 每天更新2个
+                    calendar.add(Calendar.DATE, 1);
+                    count = 0;
+                }
+            }
+            int size = updateEntities.size();
+            if (lastSize == size) { // 没有了
+                break;
+            }
+            ++index;
+        }
+
+//            LogUtils.e(TAG, "--> parseInfoBean()   updateEntities.size=" + updateEntities.size());
+//            for (ImageEntityNew imageEntityNew : updateEntities) {
+//                LogUtils.e(TAG, "--> parseInfoBean()   updateEntities  imageEntityNew=" + imageEntityNew);
+//            }
+        return updateEntities;
     }
 
     private void loadData(ImageEntityNew imageEntityNew) {

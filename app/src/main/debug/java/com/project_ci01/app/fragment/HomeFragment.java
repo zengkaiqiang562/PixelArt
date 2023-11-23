@@ -53,7 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFragment extends BaseFragment implements ImageDbManager.OnImageDbChangedListener {
+public class HomeFragment extends BaseImageFragment {
 
     private FragmentHomeBinding binding;
 
@@ -77,18 +77,6 @@ public class HomeFragment extends BaseFragment implements ImageDbManager.OnImage
     @Override
     protected View stubBar() {
         return binding.stubBar;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ImageDbManager.getInstance().addOnDbChangedListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ImageDbManager.getInstance().removeOnDbChangedListener(this);
     }
 
 
@@ -176,7 +164,7 @@ public class HomeFragment extends BaseFragment implements ImageDbManager.OnImage
     }
 
     @Override
-    public void onImageDbChanged() {
+    public void onDailyChanged() {
         if (bannerAdapter != null) {
             bannerAdapter.notifyDataSetChanged();
         }
