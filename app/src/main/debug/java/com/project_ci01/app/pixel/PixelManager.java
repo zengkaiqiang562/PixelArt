@@ -227,7 +227,7 @@ public class PixelManager {
                         LogUtils.e(TAG, "--> loadData() bitmap == null!!!  filePath=" + imageEntityNew.filePath);
                         return;
                     }
-                    pixelList = PixelHelper.getAllPixels(bitmap, 5);
+                    pixelList = PixelHelper.getAllPixels(bitmap/*, 5*/);
                     FileUtils.writeObjectByZipJson(pixelList, imageEntityNew.pixelsObjPath);
                 } else {
                     pixelList = PixelHelper.getPixelList(imageEntityNew);

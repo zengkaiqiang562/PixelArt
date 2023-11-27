@@ -33,7 +33,6 @@ import com.project_ci01.app.base.utils.MyTimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private boolean firstScroll; // Down事件后的第一次滚动
     private boolean isScaleEvent; // 是否为缩放事件
 
+    private int curPixelUnit;
     private float lastPixelUnit;
+
+    private int maxPixelUnit;
+    private int minPixelUnit;
 
     private RectF colorRectF; // 填色像素单元在整个View中的位置
     private Canvas unitColorCanvas; // 像素单元的颜色画布
@@ -183,6 +186,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         int[] result = PixelHelper.countDrawnPixels(tmpPixelList);
         LogUtils.e(TAG, "--> loadPixelsInternal()   countDrawnPixels  duration=" + (SystemClock.elapsedRealtime() - start));
         totalByBrush = (int) (result[0] * 0.1); // 单次可通过笔刷上色的像素点个数上线 为总像素点个数的 10%
+
+        curPixelUnit = PixelHelper.getStdPixelUnitSize(tmpPixelList);
+        maxPixelUnit = PixelHelper.getMaxPixelUnitSize();
+        minPixelUnit = PixelHelper.getMinPixelUnitSize(tmpPixelList);
+
         post(this::notifyInited);
 
         /*================== logcat =============*/
@@ -246,7 +254,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             return;
         }
 
-        float pixelUnit = pixelList.curUnitSize * curFactor;
+        float pixelUnit = curPixelUnit * curFactor;
         if (lastPixelUnit > 0) {
             transX = transX * pixelUnit / lastPixelUnit; // 缩放调整
             transY = transY * pixelUnit / lastPixelUnit; // 缩放调整
@@ -590,14 +598,14 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
 
         // 将 undrawPixel 移动到视图中间显示
-//        pixelList.curUnitSize = (int) (pixelList.curUnitSize * curFactor); // 保存上次缩放时的状态
-        pixelList.curUnitSize = 90; // 固定显示的大小
+//        pixelList.curUnitSize = 90; // 固定显示的大小
+        curPixelUnit = PixelHelper.getHintPixelUnitSize();
         curFactor = 1.0f;
-        lastPixelUnit = pixelList.curUnitSize * curFactor;
-        int left = undrawPixel.x * pixelList.curUnitSize; // undrawPixel 相对于图片左边的距离
-        int top = undrawPixel.y * pixelList.curUnitSize; // undrawPixel 相对于图片顶部的距离
-        int centerLeft = pixelList.originWidth * pixelList.curUnitSize / 2; // 图片中心点相对于图片左边的距离
-        int centerTop = pixelList.originHeight * pixelList.curUnitSize / 2; // 图片中心点相对于图片顶部边的距离
+        lastPixelUnit = curPixelUnit * curFactor;
+        int left = undrawPixel.x * curPixelUnit; // undrawPixel 相对于图片左边的距离
+        int top = undrawPixel.y * curPixelUnit; // undrawPixel 相对于图片顶部的距离
+        int centerLeft = pixelList.originWidth * curPixelUnit / 2; // 图片中心点相对于图片左边的距离
+        int centerTop = pixelList.originHeight * curPixelUnit / 2; // 图片中心点相对于图片顶部边的距离
         transX = centerLeft - left; // 固定平移的位置
         transY = centerTop - top; // 固定平移的位置
         invalidate();
@@ -765,6 +773,11 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 ////                + ",  xFactor=" + xFactor + ",  yFactor=" + yFactor + ",  factor=" + factor
 ////        );
 //        LogUtils.e(TAG, "--> OnScaleGestureListener onScale()    factor=" + factor);
+
+        float pixelUnit = curPixelUnit * factor;
+        if (pixelUnit < minPixelUnit || pixelUnit > maxPixelUnit) {
+            return false;
+        }
         curFactor = factor;
 
         invalidate();
@@ -777,7 +790,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (pixelList == null) {
             return false;
         }
-        pixelList.curUnitSize = (int) (pixelList.curUnitSize * curFactor); // 保存上次缩放时的状态
+        curPixelUnit = (int) (curPixelUnit * curFactor); // 保存上次缩放时的状态
         return true;
     }
 

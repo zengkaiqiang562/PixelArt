@@ -16,16 +16,16 @@ import java.util.Map;
 public class PixelList implements Serializable {
 
     public List<PixelUnit> pixels; // 所有像素点的集合
-    public int stdUnitSize;  // 标准的像素单元长度
-    public int curUnitSize;  // 当前的（缩放后）像素单元长度
+//    public int stdUnitSize;  // 标准的像素单元长度
+//    public int curUnitSize;  // 当前的（缩放后）像素单元长度
 
     public int originWidth; // 原始像素宽度 （实际的 = 原始的 x unitSize）
     public int originHeight; // 原始像素高度
 
-    public PixelList(List<PixelUnit> pixels, int stdUnitSize, int curUnitSize, int originWidth, int originHeight) {
+    public PixelList(List<PixelUnit> pixels/*, int stdUnitSize, int curUnitSize*/, int originWidth, int originHeight) {
         this.pixels = pixels;
-        this.stdUnitSize = stdUnitSize;
-        this.curUnitSize = curUnitSize;
+//        this.stdUnitSize = stdUnitSize;
+//        this.curUnitSize = curUnitSize;
         this.originWidth = originWidth;
         this.originHeight = originHeight;
     }
@@ -34,8 +34,8 @@ public class PixelList implements Serializable {
     public String toString() {
         return "PixelList{" +
                 "pixels.size=" + pixels.size() +
-                ", stdUnitSize=" + stdUnitSize +
-                ", curUnitSize=" + curUnitSize +
+//                ", stdUnitSize=" + stdUnitSize +
+//                ", curUnitSize=" + curUnitSize +
                 ", originWidth=" + originWidth +
                 ", originHeight=" + originHeight +
                 '}';
@@ -45,19 +45,19 @@ public class PixelList implements Serializable {
         return originWidth * originHeight;
     }
 
-    public int stdWidth() {
-        return originWidth * stdUnitSize;
-    }
-
-    public int stdHeight() {
-        return originHeight * stdUnitSize;
-    }
-
-    public int realWidth() {
-        return originWidth * curUnitSize;
-    }
-
-    public int realHeight() {
-        return originHeight * curUnitSize;
-    }
+//    public int stdWidth() {
+//        return originWidth * stdUnitSize;
+//    }
+//
+//    public int stdHeight() {
+//        return originHeight * stdUnitSize;
+//    }
+//
+//    public int realWidth() {
+//        return originWidth * curUnitSize;
+//    }
+//
+//    public int realHeight() {
+//        return originHeight * curUnitSize;
+//    }
 }

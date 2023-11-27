@@ -9,11 +9,11 @@ import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.util.Hex;
+import com.blankj.utilcode.util.ConvertUtils;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.google.gson.reflect.TypeToken;
 import com.project_ci01.app.base.utils.BitmapUtils;
 import com.project_ci01.app.base.utils.FileUtils;
-import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.dao.ImageEntityNew;
 
 import java.io.File;
@@ -25,6 +25,44 @@ import java.util.Map;
 
 public class PixelHelper {
     private static final String TAG = "PixelHelper";
+
+    public static int getStdPixelUnitSize(@NonNull PixelList pixelList) {
+        int bitmapWidth = pixelList.originWidth;
+        int screenWidth = ScreenUtils.getScreenWidth();
+        float unitSize = screenWidth * 1f / bitmapWidth;
+//        LogUtils.e(TAG, "--> getPixelUnitSize()  unitSize=" + unitSize);
+        return  unitSize < 1 ? 1 : Math.round(unitSize);
+    }
+
+    public static int getHintPixelUnitSize() {
+        int screenWidth = ScreenUtils.getScreenWidth();
+        float unitSize = screenWidth / 14f; // 单个像素点尺寸占屏幕宽度的 1/14
+//        LogUtils.e(TAG, "--> getHintPixelUnitSize()  unitSize=" + unitSize);
+        return  unitSize < 1 ? 1 : Math.round(unitSize);
+    }
+    public static int getMaxPixelUnitSize() {
+        int screenWidth = ScreenUtils.getScreenWidth();
+        float unitSize = screenWidth / 4f; // 单个像素点尺寸占屏幕宽度的 1/3 为最大
+//        LogUtils.e(TAG, "--> getHintPixelUnitSize()  unitSize=" + unitSize);
+        return  unitSize < 1 ? 1 : Math.round(unitSize);
+    }
+
+    public static int getMinPixelUnitSize(@NonNull PixelList pixelList) {
+        int bitmapWidth = pixelList.originWidth;
+        int screenWidth = ScreenUtils.getScreenWidth();
+        float unitSize = screenWidth * 1f / bitmapWidth / 2; // 单个像素尺寸最小缩小到原图的一半
+//        LogUtils.e(TAG, "--> getPixelUnitSize()  unitSize=" + unitSize);
+        return  unitSize < 1 ? 1 : Math.round(unitSize);
+    }
+
+
+    public static int getListPixelUnitSize(@NonNull PixelList pixelList) {
+        int bitmapWidth = pixelList.originWidth;
+        int dp162 = ConvertUtils.dp2px(162);
+        float unitSize = dp162 * 1f / bitmapWidth;
+//        LogUtils.e(TAG, "--> getListPixelUnitSize()  unitSize=" + unitSize);
+        return  unitSize < 1 ? 1 : Math.round(unitSize);
+    }
 
     /**
      * @param mapResult
@@ -115,12 +153,13 @@ public class PixelHelper {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
-        Bitmap bitmap = Bitmap.createBitmap(pixelList.stdWidth(), pixelList.stdHeight(), Bitmap.Config.ARGB_8888);
+        int pixelUnit = PixelHelper.getListPixelUnitSize(pixelList);
+        int width = pixelList.originWidth * pixelUnit;
+        int height = pixelList.originHeight * pixelUnit;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);
-        int pixelUnit = pixelList.stdUnitSize;
 
         List<PixelUnit> pixels = pixelList.pixels;
-        float[] hsv = new float[3];
 
         for (PixelUnit pixel : pixels) {
             if (PixelHelper.ignorePixel(pixel)) {
@@ -146,7 +185,7 @@ public class PixelHelper {
 
     /*==================================================*/
 
-    public static PixelList getAllPixels(@NonNull Bitmap bitmap, int unit) { // bitmap 像素点太多时，会内存溢出，所以 bitmap 一定是很小很小的原图
+    public static PixelList getAllPixels(@NonNull Bitmap bitmap/*, int unit*/) { // bitmap 像素点太多时，会内存溢出，所以 bitmap 一定是很小很小的原图
         int bitmapWidth = bitmap.getWidth();
         int bitmapHeight = bitmap.getHeight();
 
@@ -163,7 +202,7 @@ public class PixelHelper {
             }
         }
 
-        return new PixelList(pixels, unit, unit, bitmapWidth, bitmapHeight);
+        return new PixelList(pixels/*, unit, unit*/, bitmapWidth, bitmapHeight);
     }
 
     public static Map<Integer, String> getNumberMap(@NonNull PixelList pixelList, @NonNull Map<Integer, List<PixelUnit>> colorMap) {
