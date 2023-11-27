@@ -82,6 +82,9 @@ public class ImageDbManager {
             mainHandler.post(() -> {
                 notifyOnImageUpdated(entity.category, entity.imageId);
             });
+            if (Category.DAILY.catName.equals(entity.category) && MyTimeUtils.isInToday(entity.createTime)) {
+                mainHandler.post(this::notifyOnDailyChanged);
+            }
         });
     }
 
@@ -91,6 +94,9 @@ public class ImageDbManager {
         mainHandler.post(() -> {
             notifyOnImageUpdated(entity.category, entity.imageId);
         });
+        if (Category.DAILY.catName.equals(entity.category) && MyTimeUtils.isInToday(entity.createTime)) {
+            mainHandler.post(this::notifyOnDailyChanged);
+        }
     }
 
     public void updateImageFromNet(ImageEntityNew entity) { // 更新来自网络的图片
@@ -111,7 +117,7 @@ public class ImageDbManager {
         });
     }
 
-    public void updateSaveImagePath(ImageEntityNew entity) { // 更新填色进度
+    public void updateSaveImagePath(ImageEntityNew entity) { // 更新本地保存图片路径
         dbHandler.post(() -> {
             int updateCount = imageDao.updateImage(entity.imageId, entity.saveImagePath);
             LogUtils.e(TAG, "-->  updateSaveImagePath()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);

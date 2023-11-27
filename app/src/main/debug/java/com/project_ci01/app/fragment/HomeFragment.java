@@ -121,7 +121,7 @@ public class HomeFragment extends BaseImageFragment {
         });
 
         List<IBannerItem> bannerItems = new ArrayList<>();
-        bannerItems.add(new DailyBannerItem());
+//        bannerItems.add(new DailyBannerItem());
         bannerItems.add(new DailyBannerItem());
         bannerAdapter.setDatas(bannerItems);
     }

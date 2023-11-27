@@ -101,7 +101,7 @@ public class DailyFragment extends BaseImageFragment implements GroupRecyclerVie
         });
 
         List<IBannerItem> bannerItems = new ArrayList<>();
-        bannerItems.add(new DailyBannerItem());
+//        bannerItems.add(new DailyBannerItem());
         bannerItems.add(new DailyBannerItem());
         bannerAdapter.setDatas(bannerItems);
     }

@@ -48,6 +48,16 @@
         android:textSize="14sp"
         android:gravity="center"
         />
+    
+    <View
+        android:layout_width="134dp"
+        android:layout_height="134dp"
+        app:layout_constraintStart_toStartOf="@id/image_daily"
+        app:layout_constraintEnd_toEndOf="@id/image_daily"
+        app:layout_constraintTop_toTopOf="@id/image_daily"
+        app:layout_constraintBottom_toBottomOf="@id/image_daily"
+        android:background="@drawable/icon_banenr_r"
+        />
 
     <ImageView
         android:id="@+id/image_daily"
