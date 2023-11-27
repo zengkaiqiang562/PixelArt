@@ -23,6 +23,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.common.util.Hex;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.utils.BitmapUtils;
@@ -183,22 +184,25 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         LogUtils.e(TAG, "--> loadPixelsInternal()   countDrawnPixels  duration=" + (SystemClock.elapsedRealtime() - start));
         totalByBrush = (int) (result[0] * 0.1); // 单次可通过笔刷上色的像素点个数上线 为总像素点个数的 10%
         post(this::notifyInited);
-//            int colorCount = 0;
-//            int allColorPixelCount = 0;
-//            for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
-//                colorCount++;
-//                allColorPixelCount += entry.getValue().size();
-//                int color = entry.getKey();
-//                byte alpha = (byte) Color.alpha(color);
-//                byte red = (byte) Color.red(color);
-//                byte green = (byte) Color.green(color);
-//                byte blue = (byte) Color.blue(color);
-//                String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
-//                LogUtils.e(TAG, "--> setImageEntityNew()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
-//            }
-//            LogUtils.e(TAG, "--> setImageEntityNew()   colorCount=" + colorCount); // 颜色种类个数
-//            LogUtils.e(TAG, "--> setImageEntityNew()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
-//            LogUtils.e(TAG, "--> setImageEntityNew()   pixels.size=" + pixelList.pixels.size()); // 所有像素点个数
+
+        /*================== logcat =============*/
+        int colorCount = 0;
+        int allColorPixelCount = 0;
+        for (Map.Entry<Integer, List<PixelUnit>> entry : colorMap.entrySet()) {
+            colorCount++;
+            allColorPixelCount += entry.getValue().size();
+            int color = entry.getKey();
+            byte alpha = (byte) Color.alpha(color);
+            byte red = (byte) Color.red(color);
+            byte green = (byte) Color.green(color);
+            byte blue = (byte) Color.blue(color);
+            String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+            LogUtils.e(TAG, "--> setImageEntityNew()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
+        }
+        LogUtils.e(TAG, "--> setImageEntityNew()   colorCount=" + colorCount); // 颜色种类个数
+        LogUtils.e(TAG, "--> setImageEntityNew()   allColorPixelCount=" + allColorPixelCount); // 除白色和透明色外的像素点个数
+        LogUtils.e(TAG, "--> setImageEntityNew()   pixels.size=" + tmpPixelList.pixels.size()); // 所有像素点个数
+        /*================== logcat =============*/
 
         pixelList = tmpPixelList; // pixelList 必须最后赋值，保证子线程中的其他操作都处理完成，UI线程才能进行正常绘制
         postInvalidate();

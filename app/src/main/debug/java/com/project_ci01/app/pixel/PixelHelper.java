@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.common.util.Hex;
 import com.google.gson.reflect.TypeToken;
+import com.project_ci01.app.base.utils.BitmapUtils;
 import com.project_ci01.app.base.utils.FileUtils;
 import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.dao.ImageEntityNew;
@@ -93,12 +94,13 @@ public class PixelHelper {
      */
     public static boolean ignorePixel(@NonNull PixelUnit pixel) {
         // 不处理白色和透明
-        return pixel.color == Color.WHITE || pixel.color == Color.TRANSPARENT;
+        return ignoreColor(pixel.color);
     }
 
     public static boolean ignoreColor(int color) {
         // 不处理白色和透明
-        return color == Color.WHITE || color == Color.TRANSPARENT;
+        boolean likeWhite = (Color.red(color) >= 250 && Color.green(color) >= 250 && Color.blue(color) >= 250) || Color.alpha(color) < 20; // 类似白色也不处理
+        return color == Color.WHITE || color == Color.TRANSPARENT || likeWhite;
     }
 
     /*========================*/
@@ -132,19 +134,7 @@ public class PixelHelper {
             if (pixel.enableDraw) {
                 paint.setColor(pixel.color);
             } else {
-                Color.colorToHSV(pixel.color, hsv);
-                hsv[1] = 0f;
-                paint.setColor(Color.HSVToColor(hsv));
-
-                // TODO
-//                Color.colorToHSV(pixel.color, hsv);
-//                hsv[1] = 0f;
-//                int color = Color.HSVToColor(hsv);
-//                int red = (color >> 16) & 0xFF;
-//                int green = (color >> 8) & 0xFF;
-//                int blue = color & 0xFF;
-//                LogUtils.e("zkq", "color=" + "#" + Hex.bytesToStringUppercase(new byte[]{(byte) 255, (byte) red, (byte) green, (byte) blue}));
-//                paint.setColor(Color.argb(255, red, green, blue));
+                paint.setColor(BitmapUtils.convertGrey(pixel.color));
             }
             canvas.drawRect(rect, paint);
         }
@@ -205,7 +195,7 @@ public class PixelHelper {
         for (PixelUnit pixel : pixels) {
             color = pixel.color;
             // 添加到按颜色分类的集合
-            if (color != Color.WHITE && color != Color.TRANSPARENT) { // 不处理白色和透明
+            if (!ignoreColor(color)) { // 不处理白色和透明
                 List<PixelUnit> colorPixels = colorMap.get(color);
                 if (colorPixels == null) {
                     colorPixels = new ArrayList<>();
@@ -253,7 +243,7 @@ public class PixelHelper {
             y = pixel.y;
             color = pixel.color;
             // 相邻同色像素点放一起
-            if (color != Color.WHITE && color != Color.TRANSPARENT) { // 不处理白色和透明
+            if (!ignoreColor(color)) { // 不处理白色和透明
                 boolean adjoinL = false; // 是否左邻同色
                 if ((x - 1) >= 0) { // 存在 左 邻像素点
                     int indexL = (x-1) * bitmapHeight + y;
@@ -367,7 +357,7 @@ public class PixelHelper {
         int color;
         for (PixelUnit pixel : pixels) {
             color = pixel.color;
-            if (color != Color.WHITE && color != Color.TRANSPARENT) { // 不处理白色和透明
+            if (!ignoreColor(color)) { // 不处理白色和透明
                 pixel.enableDraw = false;
             }
         }
