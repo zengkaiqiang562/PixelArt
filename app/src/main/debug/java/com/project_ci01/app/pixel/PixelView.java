@@ -468,29 +468,65 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         return pixelUnit;
     }
 
+    private PixelUnit lastSwipePixel;
+    private void drawSwipePixel(float x, float y) {
+
+        PixelUnit curPixel = findPixel(x, y);
+        if (curPixel == null || lastSwipePixel == null) {
+            lastSwipePixel = curPixel;
+            return;
+        }
+        PixelUnit lastPixel = lastSwipePixel;
+
+        int minColumn = Math.min(curPixel.x, lastPixel.x);
+        int maxColumn = Math.max(curPixel.x, lastPixel.x);
+        int minRow = Math.min(curPixel.y, lastPixel.y);
+        int maxRow = Math.max(curPixel.y, lastPixel.y);
+        boolean handle = false;
+        PixelUnit pixel;
+        for (int i = minColumn; i <= maxColumn; i++) {
+            for (int j = minRow; j <= maxRow; j++) {
+                int tmpIndex = j + i * pixelList.originHeight;
+                pixel = pixelList.pixels.get(tmpIndex);
+                if (pixel != null && !PixelHelper.ignorePixel(pixel) && !pixel.enableDraw && (selColor == pixel.color || props == Props.BRUSH)) {
+                    pixel.enableDraw = true;
+                    handle = true;
+
+                    if (props == Props.BRUSH) {
+                        ++countByBrush; // 笔刷滑动上色时，累计数量
+                        if (countByBrush == totalByBrush) {
+                            notifyPropsEnd(Props.BRUSH);
+                            props = Props.NONE;
+                            countByBrush = 0; // reset
+                        }
+                    }
+                }
+            }
+        }
+
+        lastSwipePixel = curPixel;
+
+        if (handle) {
+            invalidate();
+        }
+    }
+
     /**
      * @return true 能绘制；false 其他没有绘制的情况（如没找到像素点，or 像素点已绘制，or 像素点颜色不是选中颜色）
      */
-    private boolean drawPixel(float x, float y) {
+    private boolean drawSinglePixel(float x, float y) {
         PixelUnit pixel = findPixel(x, y);
         if (pixel == null || PixelHelper.ignorePixel(pixel)) {
             return false;
         }
-        if (!pixel.enableDraw && (selColor == pixel.color || props == Props.BRUSH)) { // 未绘制，且 （匹配选中颜色 or 正在使用笔刷）时才能进行绘制
+        if (!pixel.enableDraw && selColor == pixel.color) { // 未绘制，且 匹配选中颜色时 才能进行绘制
             pixel.enableDraw = true;
             invalidate();
-            if (swipeColor && props == Props.BRUSH) {
-                ++countByBrush; // 笔刷滑动上色时，累计数量
-                if (countByBrush == totalByBrush) {
-                    notifyPropsEnd(Props.BRUSH);
-                    props = Props.NONE;
-                    countByBrush = 0; // reset
-                }
-            }
             return true;
         }
         return false;
     }
+
 
     /**
      * 通过道具绘制，
@@ -677,6 +713,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     public void onShowPress(@NonNull MotionEvent e) {
         LogUtils.e(TAG, "--> OnGestureListener onShowPress()  action=" + e.getAction());
         swipeColor = true; // 有按压动作时，判定为滑动上色
+        lastSwipePixel = null; //reset
     }
 
     @Override
@@ -686,7 +723,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (propsDraw(x, y)) { // 道具绘制
             return true;
         }
-        return drawPixel(x, y); // 绘制像素点时消费掉
+        return drawSinglePixel(x, y); // 绘制像素点时消费掉
     }
 
     @Override
@@ -701,7 +738,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (swipeColor) { // 滑动上色
             float x = e2.getX();
             float y = e2.getY();
-            drawPixel(x, y);
+            drawSwipePixel(x, y);
         } else { // 拖动图片
             transX += -distanceX;
             transY += -distanceY;
