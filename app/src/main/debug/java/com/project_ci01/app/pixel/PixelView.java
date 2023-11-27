@@ -179,10 +179,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             }
         }
 
-        if (adjoinMap == null) {
-            adjoinMap = PixelHelper.getAdjoinMap(tmpPixelList);
-            PixelHelper.storeAdjoinMap2Local(adjoinMap, entity);
-        }
         LogUtils.e(TAG, "--> loadPixelsInternal()   getAdjoinMap  duration=" + (SystemClock.elapsedRealtime() - start));
 
         colorMap = PixelHelper.getColorMap(tmpPixelList);
@@ -219,6 +215,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         /*================== logcat =============*/
 
         pixelList = tmpPixelList; // pixelList 必须最后赋值，保证子线程中的其他操作都处理完成，UI线程才能进行正常绘制
+        if (adjoinMap == null) {
+            storeHandler.sendParseAdjoinMapMsg();
+        }
         postInvalidate();
         LogUtils.e(TAG, "--> loadPixelsInternal()   duration=" + (SystemClock.elapsedRealtime() - start));
     }
@@ -556,7 +555,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             return;
         }
         PixelUnit pixel = findPixel(x, y);
-        if (pixel == null || PixelHelper.ignorePixel(pixel)) {
+        if (pixel == null || PixelHelper.ignorePixel(pixel) || adjoinMap == null) {
             return;
         }
         List<List<PixelUnit>> adjoinOuters = adjoinMap.get(pixel.color);
@@ -853,6 +852,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
         static final int MSG_STORE = 100;
         static final int MSG_LOAD_PIXELS = 101;
+        static final int MSG_PARSE_ADJOIN_MAP = 102;
 
         int[] lastCountResult;
 
@@ -874,8 +874,23 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             sendEmptyMessage(MSG_LOAD_PIXELS);
         }
 
+        void sendParseAdjoinMapMsg() {
+            if (hasMessages(MSG_PARSE_ADJOIN_MAP)) {
+                removeMessages(MSG_PARSE_ADJOIN_MAP);
+            }
+            sendEmptyMessage(MSG_PARSE_ADJOIN_MAP);
+        }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
+            if (msg.what == MSG_PARSE_ADJOIN_MAP) {
+                long start = SystemClock.elapsedRealtime();
+                adjoinMap = PixelHelper.getAdjoinMap(pixelList);
+                PixelHelper.storeAdjoinMap2Local(adjoinMap, entity);
+                long duration = SystemClock.elapsedRealtime() - start;
+                LogUtils.e(TAG, "--> MSG_PARSE_ADJOIN_MAP  duration=" + MyTimeUtils.millis2StringGMT(duration, "HH:mm:ss SSS"));
+                return;
+            }
             if (msg.what == MSG_LOAD_PIXELS) {
                 loadPixelsInternal();
                 return;
@@ -939,7 +954,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                 PixelHelper.writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
                 
                 // 更新 adjoinMap
-                PixelHelper.storeAdjoinMap2Local(adjoinMap, entity);
+                if (adjoinMap != null) {
+                    PixelHelper.storeAdjoinMap2Local(adjoinMap, entity);
+                }
 
                 lastCountResult = countResult;
 
