@@ -41,6 +41,8 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private static final String TAG = "PixelView";
 
+    private final static int STD_ALPHA = (int) (255 * 0.6f); // 标准透明度
+
     private final Context context;
     private int width;
     private int height;
@@ -56,6 +58,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private boolean firstScroll; // Down事件后的第一次滚动
     private boolean isScaleEvent; // 是否为缩放事件
 
+    private int stdPixelUnit;
     private int curPixelUnit;
     private float lastPixelUnit;
 
@@ -78,6 +81,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     private float drawTop; // 绘图的左上角的 y
 
     private Region drawRegion; // 绘图区域
+
+    private boolean showNumber = false; // 是否显示数字
+
 
     /*========================*/
     private int selColor; // 当前选中的颜色
@@ -187,7 +193,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         LogUtils.e(TAG, "--> loadPixelsInternal()   countDrawnPixels  duration=" + (SystemClock.elapsedRealtime() - start));
         totalByBrush = (int) (result[0] * 0.1); // 单次可通过笔刷上色的像素点个数上线 为总像素点个数的 10%
 
-        curPixelUnit = PixelHelper.getStdPixelUnitSize(tmpPixelList);
+        stdPixelUnit = curPixelUnit = PixelHelper.getStdPixelUnitSize(tmpPixelList);
         maxPixelUnit = PixelHelper.getMaxPixelUnitSize();
         minPixelUnit = PixelHelper.getMinPixelUnitSize(tmpPixelList);
 
@@ -267,6 +273,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
         drawRegion.set((int) drawLeft, (int) drawTop, (int) (drawLeft + pixelList.originWidth * pixelUnit), (int) (drawTop + pixelList.originHeight * pixelUnit));
 
+        showNumber = pixelUnit > stdPixelUnit; // 是否绘制数字
 
         bitmapMap.clear(); // reset
 
@@ -409,21 +416,25 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         unitNumberRectF.set(0, 0, numberBitmap.getWidth(), numberBitmap.getHeight());
 
         if (selColor == pixel.color) { // 选中颜色的部分高亮
-            unitBgPaint.setColor(Color.GRAY);
+            unitBgPaint.setColor(Color.DKGRAY);
             unitBgPaint.setAlpha(255);
-            unitNumberPaint.setFakeBoldText(true);
         } else {
             unitBgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
-            unitBgPaint.setAlpha((int) (255 * 0.3f));
-            unitNumberPaint.setFakeBoldText(false);
+            float fAlpha = STD_ALPHA - STD_ALPHA * (pixelUnit / (maxPixelUnit + maxPixelUnit / 2f));
+            int alpha = fAlpha < 0 ? 0 : (int) (fAlpha > STD_ALPHA ? STD_ALPHA : fAlpha);
+            unitBgPaint.setAlpha(alpha);
         }
 
         unitNumberCanvas.drawRect(unitNumberRectF, unitBgPaint); // 画数字像素单元的边框
-        unitNumberCanvas.drawRect(unitNumberRectF, unitBorderPaint); // 画数字像素单元的背景
-        unitNumberPaint.setTextSize(pixelUnit * 0.5f);
-        Paint.FontMetrics fontMetrics = unitNumberPaint.getFontMetrics();
-        float fontHeight = fontMetrics.ascent - fontMetrics.descent;
-        unitNumberCanvas.drawText(number, unitNumberRectF.centerX(), unitNumberRectF.centerY() - fontHeight / 2, unitNumberPaint);  // 画数字像素单元的内容数字
+
+        if (showNumber) {
+            unitNumberCanvas.drawRect(unitNumberRectF, unitBorderPaint); // 画数字像素单元的背景
+            unitNumberPaint.setFakeBoldText(selColor == pixel.color);
+            unitNumberPaint.setTextSize(pixelUnit * 0.5f);
+            Paint.FontMetrics fontMetrics = unitNumberPaint.getFontMetrics();
+            float fontHeight = fontMetrics.ascent - fontMetrics.descent;
+            unitNumberCanvas.drawText(number, unitNumberRectF.centerX(), unitNumberRectF.centerY() - fontHeight / 2, unitNumberPaint);  // 画数字像素单元的内容数字
+        }
 
         unitNumberCanvas.setBitmap(null);
 
