@@ -14,6 +14,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     
+    <com.project_ci01.app.pixel.PixelView
+        android:id="@+id/view_pixel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/palette_rv"
+        android:layout_marginBottom="16dp"
+        />
+
     <ImageView
         android:id="@+id/top_back"
         android:layout_width="wrap_content"
@@ -25,31 +36,14 @@
         android:src="@drawable/all_return"
         />
 
-    <com.project_ci01.app.pixel.PixelView
-        android:id="@+id/view_pixel"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.3"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/bg_pixel_view"
-        />
-
     <ImageView
         android:id="@+id/btn_bucket"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_pixel"
         app:layout_constraintBottom_toTopOf="@id/palette_rv"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.561"
         android:layout_marginStart="17dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/selector_icon_bucket"
         />
 
@@ -90,10 +84,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_bucket"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="horizontal"
         tools:listitem="@layout/item_color_palette"
