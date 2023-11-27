@@ -41,7 +41,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
 
     private static final String TAG = "PixelView";
 
-    private final static int STD_ALPHA = (int) (255 * 0.6f); // 标准透明度
+    private final static int STD_ALPHA = (int) (255 * 0.45f); // 标准透明度
 
     private final Context context;
     private int width;
@@ -416,7 +416,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         unitNumberRectF.set(0, 0, numberBitmap.getWidth(), numberBitmap.getHeight());
 
         if (selColor == pixel.color) { // 选中颜色的部分高亮
-            unitBgPaint.setColor(Color.DKGRAY);
+            unitBgPaint.setColor(Color.parseColor("#FF666666"));
             unitBgPaint.setAlpha(255);
         } else {
             unitBgPaint.setColor(BitmapUtils.convertGrey(pixel.color));
