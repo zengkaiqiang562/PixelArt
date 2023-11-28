@@ -1,6 +1,5 @@
 package com.project_ci01.app.fragment.category;
 
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Message;
@@ -14,22 +13,31 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ConvertUtils;
-import com.project_ci01.app.activity.PixelActivity;
 import com.project_ci01.app.adapter.HomeImageAdapter;
-import com.project_ci01.app.config.IConfig;
+import com.project_ci01.app.base.view.FragmentPresenter;
+import com.project_ci01.app.base.view.RefreshPresenter;
+import com.project_ci01.app.dao.Category;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.manage.ContextManager;
-import com.project_ci01.app.base.view.BaseFragment;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.databinding.FragmentAllBinding;
 import com.project_ci01.app.fragment.BaseImageFragment;
+import com.project_ci01.app.presenter.AllPresenter;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 
-public class AllFragment extends BaseImageFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class AllFragment extends BaseImageFragment implements OnItemClickListener<HomeImageAdapter.HomeImageHolder>,
+        RefreshPresenter.OnDataChangedListener<ImageEntityNew>, OnRefreshLoadMoreListener {
 
     private FragmentAllBinding binding;
 
     private HomeImageAdapter adapter;
+
+    private AllPresenter presenter;
 
     @Override
     protected String tag() {
@@ -48,7 +56,21 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        presenter = new AllPresenter(this);
+        presenter.setOnDataChangedListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.release();
+    }
+
+    @Override
     protected void initView(View view, Bundle savedInstanceState) {
+        binding.allRefresh.setOnRefreshLoadMoreListener(this);
         // 必须设置后才能嵌套滑动
         binding.allRv.setLayoutManager(new GridLayoutManager(activity, 2));
         binding.allRv.setAdapter(adapter = new HomeImageAdapter(this, activity));
@@ -74,7 +96,7 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
             }
         });
 
-        update();
+        tryAutoRefresh();
     }
 
     @Override
@@ -82,22 +104,14 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
         super.onResume();
     }
 
-    public void update() {
-        ImageDbManager.getInstance().queryAllInHome(entities -> {
-            if (ContextManager.isSurvival(activity) && adapter != null) {
-                adapter.setDatasAndNotify(entities);
-            }
-        });
-    }
-
     @Override
     public void onImageAdded(String category, int imageId) {
-        sendUpdateAllMsg(500);
+        sendAutoRefreshMsg(500);
     }
 
     @Override
     public void onImageUpdated(String category, int imageId) {
-        sendUpdateAllMsg(200);
+        updateItem(category, imageId);
     }
 
     @Override
@@ -111,22 +125,97 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
         }
     }
 
-
-    /*===================================*/
-
-    private void sendUpdateAllMsg(long delay) {
-        if (uiHandler.hasMessages(MSG_UPDATE_ALL)) {
-            return; // 有相同时消息不处理
+    public void tryAutoRefresh() {
+        if (ContextManager.isSurvival(activity) && presenter != null && presenter.checkAutoRefresh()) {
+            binding.allRefresh.autoRefresh(0, 50, 0.1f ,false);
         }
-        uiHandler.sendEmptyMessageDelayed(MSG_UPDATE_ALL, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
     }
 
-    private static final int MSG_UPDATE_ALL = 2001;
+    public void updateItem(String category, int imageId) {
+        if (!Category.DAILY.catName.equals(category)) {
+            ImageDbManager.getInstance().queryByImageId(imageId, entities -> {
+                if (!ContextManager.isSurvival(activity) || adapter == null || entities.isEmpty()) {
+                    return;
+                }
+
+                ImageEntityNew entity = entities.get(0);
+                List<ImageEntityNew> datas = adapter.getDatas();
+                int index = datas.indexOf(entity);
+                if (index != -1) {
+                    adapter.notifyItemChanged(index);
+                }
+            });
+        }
+    }
+
+
+    /*================== 上拉刷新 & 下拉加载更多 =================*/
+
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        binding.allRefresh.setEnableLoadMore(true);
+        if (presenter != null) {
+            presenter.refreshData();
+        }
+    }
+
+    @Override
+    public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+        if (presenter != null) {
+            presenter.loadMoreData();
+        }
+    }
+
+    @Override
+    public void onDataChanged(ArrayList<ImageEntityNew> data) {
+        if (!ContextManager.isSurvival(activity) || presenter == null) {
+            return;
+        }
+
+        if (binding.allRefresh.isRefreshing()) {
+            binding.allRefresh.finishRefresh();
+        }
+        if (binding.allRefresh.isLoading()) {
+            binding.allRefresh.finishLoadMore();
+        }
+
+        if (!presenter.hasMoreData()) {
+            binding.allRefresh.setEnableLoadMore(false);
+        }
+
+        if (adapter != null) {
+            List<ImageEntityNew> showData = adapter.getDatas();
+            if (showData == null || showData.isEmpty()) { // 第一次加载
+                adapter.setDatas(data);
+                adapter.notifyItemRangeChanged(0, data.size());
+                return;
+            }
+
+            if (data.size() < showData.size()) { // 下拉刷新
+                adapter.setDatas(data);
+                adapter.notifyItemRangeRemoved(data.size(), showData.size() - data.size());
+                adapter.notifyItemRangeChanged(0, data.size());
+            } else if (data.size() > showData.size()){ // 上拉加载更多
+                adapter.setDatas(data);
+                adapter.notifyItemRangeChanged(showData.size(), data.size() - showData.size());
+            }
+        }
+    }
+    /*=================== handler ================*/
+
+    private void sendAutoRefreshMsg(long delay) {
+        if (uiHandler.hasMessages(MSG_AUTO_REFRESH)) {
+            return; // 有相同时消息不处理
+        }
+        uiHandler.sendEmptyMessageDelayed(MSG_AUTO_REFRESH, delay); // 延迟更新，避免数据库频繁操作导致的UI频繁更新
+    }
+
+    private static final int MSG_AUTO_REFRESH = 2001;
 
     @Override
     protected void handleMessage(@NonNull Message msg) {
-        if (msg.what == MSG_UPDATE_ALL) {
-            update();
+        if (msg.what == MSG_AUTO_REFRESH) {
+            tryAutoRefresh();
         }
     }
 }

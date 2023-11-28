@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.scwang.smart.refresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/all_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:srlEnableLoadMore="false"
-    app:srlEnableRefresh="false">
+    app:srlEnableLoadMore="true"
+    app:srlEnableRefresh="true">
 
     <!-- 必须  SmartRefreshLayout 作为根布局才能支持 CoordinatorLayout + ViewPager + RecyclerView
         的嵌套滑动，并设置 srlEnableLoadMore=false 且 srlEnableRefresh="false"
         否则会因为刷新/加载导致无法滑动，除非实现了刷新/加载的功能
     -->
 
+    <com.project_ci01.app.refresh.MyRefreshHeader
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/all_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <com.project_ci01.app.refresh.MyRefreshFooter
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </com.scwang.smart.refresh.layout.SmartRefreshLayout>

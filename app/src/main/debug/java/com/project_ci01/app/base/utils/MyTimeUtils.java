@@ -159,6 +159,18 @@ public class MyTimeUtils {
         return getEndOfDay(today);
     }
 
+    public static long getStartOfYesterday() {
+        Calendar yesterdayCalendar = Calendar.getInstance();
+        yesterdayCalendar.add(Calendar.DATE, -1);
+        return getStartOfDay(yesterdayCalendar);
+    }
+
+    public static long getEndOfYesterday() {
+        Calendar yesterdayCalendar = Calendar.getInstance();
+        yesterdayCalendar.add(Calendar.DATE, -1);
+        return getEndOfDay(yesterdayCalendar);
+    }
+
     /**
      * @return 判断 参数时间 time 是否在昨天之内
      */

@@ -23,6 +23,7 @@ public class HomeImageAdapter extends BaseAdapter<ImageEntityNew, HomeImageAdapt
         super(null, listener, context);
     }
 
+
     @NonNull
     @Override
     public HomeImageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
