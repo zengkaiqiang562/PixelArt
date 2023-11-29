@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PixelArt"
+rootProject.name = "RelaxingPixelColoringBookGame"
 include(":app")
 include(":MPChartLib")
 include(":banner")

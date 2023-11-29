@@ -208,7 +208,7 @@ public class CompleteActivity extends BaseActivity {
                     canvas.drawBitmap(bitmap, 0, 0, null);
                     Bitmap.CompressFormat format = Bitmap.CompressFormat.PNG;
                     String fileName = TimeUtils.millis2String(System.currentTimeMillis(), "yyyMMdd_HHmmss") + "_" + imageEntity.imageId + "." + format.name();
-                    saveFile = MyImageUtils.save2Album(dstBitmap, getString(R.string.app_name), fileName, Bitmap.CompressFormat.PNG, 100, true);
+                    saveFile = MyImageUtils.save2Album(dstBitmap, getString(R.string.app_name_no_space), fileName, Bitmap.CompressFormat.PNG, 100, true);
                     canvas.setBitmap(null);
                     bitmap.recycle();
                     if (saveFile != null) {

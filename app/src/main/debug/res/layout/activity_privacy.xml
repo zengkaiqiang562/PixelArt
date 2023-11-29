@@ -17,7 +17,7 @@
         android:src="@drawable/frist_logo"/>
 
 
-    <TextView
+    <!--<TextView
         android:id="@+id/privacy_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,6 +31,19 @@
         android:textColor="#FF2E2A2B"
         android:textSize="42sp"
         android:textStyle="bold"
+        />-->
+
+    <ImageView
+        android:id="@+id/privacy_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/privacy_icon"
+        app:layout_constraintBottom_toTopOf="@id/privacy_content"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.7"
+        android:src="@drawable/text_welcome"
         />
 
     <TextView
@@ -41,7 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/privacy_welcome"
         app:layout_constraintBottom_toTopOf="@id/privacy_accept"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="25dp"
         android:lineSpacingExtra="3dp"
         tools:text="@string/privacy_content"
         android:textColor="#FF686566"
