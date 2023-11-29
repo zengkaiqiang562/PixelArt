@@ -80,7 +80,7 @@ public class ImageDbManager {
 
     public void updateColorTime(ImageEntityNew entity) { // 更新进入填色页的时间
         dbHandler.post(() -> {
-            int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime);
+            int updateCount = imageDao.updateColorTime(entity.imageId, entity.colorTime);
             LogUtils.e(TAG, "-->  updateColorTime()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
             mainHandler.post(() -> {
                 notifyOnImageUpdated(entity.category, entity.imageId);
@@ -90,7 +90,7 @@ public class ImageDbManager {
 
     public void updateProgress(ImageEntityNew entity) { // 更新填色进度
         dbHandler.post(() -> {
-            int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed, entity.colorCount, entity.totalCount);
+            int updateCount = imageDao.updateProgress(entity.imageId, entity.colorTime, entity.completed, entity.colorCount, entity.totalCount);
             LogUtils.e(TAG, "-->  updateProgress()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
             mainHandler.post(() -> {
                 notifyOnImageUpdated(entity.category, entity.imageId);
@@ -102,7 +102,7 @@ public class ImageDbManager {
     }
 
     public void updateProgressSync(ImageEntityNew entity) { // 更新填色进度
-        int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed, entity.colorCount, entity.totalCount);
+        int updateCount = imageDao.updateProgress(entity.imageId, entity.colorTime, entity.completed, entity.colorCount, entity.totalCount);
         LogUtils.e(TAG, "-->  updateProgressSync()   entity.imageId="  + entity.imageId +  "   updateCount=" + updateCount);
         mainHandler.post(() -> {
             notifyOnImageUpdated(entity.category, entity.imageId);
@@ -132,7 +132,7 @@ public class ImageDbManager {
 
     public void updateSaveImagePath(ImageEntityNew entity) { // 更新本地保存图片路径
         dbHandler.post(() -> {
-            int updateCount = imageDao.updateImage(entity.imageId, entity.saveImagePath);
+            int updateCount = imageDao.updateSaveImagePath(entity.imageId, entity.saveImagePath);
             LogUtils.e(TAG, "-->  updateSaveImagePath()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
             mainHandler.post(() -> {
                 notifyOnImageUpdated(entity.category, entity.imageId);

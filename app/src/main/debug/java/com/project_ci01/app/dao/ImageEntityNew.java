@@ -46,7 +46,6 @@ public class ImageEntityNew implements Parcelable {
     public int colorCount; // 已填色的像素点个数
     public int totalCount; // 总像素点个数（去掉白色和透明色）
 
-
     public ImageEntityNew(long id, long createTime, int imageId, String fileName, String description, List<String> permission, List<String> display, String category, String fromType,
                           String filePath, String storeDir/*, String originImagePath*/, String colorImagePath, String pixelsObjPath, String saveImagePath,
                           long colorTime, boolean completed, int colorCount, int totalCount) {

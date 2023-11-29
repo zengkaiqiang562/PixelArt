@@ -65,13 +65,13 @@ public interface ImageDao {
     @Query("update table_image_new set fileName= :fileName, description= :description, permission= :permission, display= :display  where imageId= :imageId")
     int updateImage(int imageId, String fileName, String description, List<String> permission, List<String> display);
     @Query("update table_image_new set colorTime= :colorTime, completed= :completed, colorCount= :colorCount, totalCount= :totalCount where imageId= :imageId")
-    int updateImage(int imageId, long colorTime, boolean completed, int colorCount, int totalCount);
+    int updateProgress(int imageId, long colorTime, boolean completed, int colorCount, int totalCount);
 
     @Query("update table_image_new set colorTime= :colorTime where imageId= :imageId")
-    int updateImage(int imageId, long colorTime);
+    int updateColorTime(int imageId, long colorTime);
 
     @Query("update table_image_new set saveImagePath= :saveImagePath where imageId= :imageId")
-    int updateImage(int imageId, String saveImagePath);
+    int updateSaveImagePath(int imageId, String saveImagePath);
 
     @Query("select count(*) from table_image_new where imageId= :imageId")
     int countByImageId(long imageId);

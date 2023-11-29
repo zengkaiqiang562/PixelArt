@@ -9,20 +9,27 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.project_ci01.app.R;
+import com.project_ci01.app.base.constants.SPConstants;
 import com.project_ci01.app.base.view.BaseActivity;
+import com.project_ci01.app.base.view.dialog.DialogHelper;
+import com.project_ci01.app.base.view.dialog.SimpleDialogListener;
 import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.databinding.ActivityCompleteBinding;
 import com.project_ci01.app.databinding.ActivityCompleteDisplayBinding;
+import com.project_ci01.app.dialog.RateDialog;
 
 public class CompleteDisplayActivity extends BaseActivity {
 
     private ActivityCompleteDisplayBinding binding;
 
     private ImageEntityNew entity;
+
+    private RateDialog rateDialog;
 
     @Override
     protected String tag() {
@@ -67,7 +74,11 @@ public class CompleteDisplayActivity extends BaseActivity {
 
             @Override
             public void onAnimationEnd(@NonNull Animator animation) {
-                startCompleteActivity(entity);
+                if (SPUtils.getInstance().getBoolean(SPConstants.SP_HAS_BEEN_RATED)) {
+                    startCompleteActivity(entity);
+                } else {
+                    showRateDialog();
+                }
             }
 
             @Override
@@ -114,5 +125,24 @@ public class CompleteDisplayActivity extends BaseActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    private void showRateDialog() {
+        rateDialog = DialogHelper.showDialog(this, rateDialog, RateDialog.class, new SimpleDialogListener<RateDialog>() {
+            @Override
+            public void onConfirm() {
+                startCompleteActivity(entity);
+            }
+
+            @Override
+            public void onCancel() {
+                startCompleteActivity(entity);
+            }
+
+            @Override
+            public void onDismiss() {
+                startCompleteActivity(entity);
+            }
+        });
     }
 }

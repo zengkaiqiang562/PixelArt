@@ -5,6 +5,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.project_ci01.app.R;
 import com.project_ci01.app.base.config.AppConfig;
 import com.project_ci01.app.base.constants.SPConstants;
@@ -57,6 +58,10 @@ public class RateDialog extends BaseDialog implements View.OnClickListener {
             dismiss();
         });
 
+        findViewById(R.id.close).setOnClickListener(v -> {
+            dismiss();
+        });
+
         for (int i = 0; i < sRateIds.length; i++) {
             ivRates[i] = findViewById(sRateIds[i]);
             ivRates[i].setOnClickListener(this);
@@ -75,7 +80,8 @@ public class RateDialog extends BaseDialog implements View.OnClickListener {
         if (ratingCount >= 4.0f) {
             ContextManager.turn2Playstore(activity, activity.getPackageName());
         } else {
-            ContextManager.turn2Email(activity, AppConfig.FEEDBACK_EMAIL);
+//            ContextManager.turn2Email(activity, AppConfig.FEEDBACK_EMAIL);
+            ToastUtils.showShort("Thanks for your feedback");
         }
         SPUtils.getInstance().put(SPConstants.SP_HAS_BEEN_RATED, true);
         rootView.postDelayed(this::dismissAllowingStateLoss, 500);
