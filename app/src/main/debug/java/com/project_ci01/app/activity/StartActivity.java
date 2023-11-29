@@ -163,6 +163,7 @@ public class StartActivity extends AdResourceActivity implements IEventListener 
             if (!ContextManager.INSTANCE.contains(PrivacyActivity.class)
                     && !ContextManager.INSTANCE.contains(PixelActivity.class)
                     && !ContextManager.INSTANCE.contains(CompleteActivity.class)
+                    && !ContextManager.INSTANCE.contains(CompleteDisplayActivity.class)
             )
 //            if (true) // TODO
             { // 冷启动 or 热启动时任务栈中无首页 or 首页在栈顶则跳首页

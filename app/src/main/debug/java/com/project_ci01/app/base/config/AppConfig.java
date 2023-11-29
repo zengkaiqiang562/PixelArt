@@ -6,7 +6,7 @@ public final class AppConfig {
 
     public static final int MAX_LAUNCH_TIME = 10; // 启动页最大时长（s）
 
-    public static final int MIN_LAUNCH_TIME = 3; // 启动页最小时长（s）
+    public static final int MIN_LAUNCH_TIME = 0; // 启动页最小时长（s）
 
     public static final boolean VPN_DEBUG = BuildConfig.VPN_DEBUG;
     public static final boolean VPN_LIMIT = BuildConfig.VPN_LIMIT;

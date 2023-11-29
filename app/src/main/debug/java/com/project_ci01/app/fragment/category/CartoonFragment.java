@@ -98,8 +98,8 @@ public class CartoonFragment extends BaseImageFragment implements OnItemClickLis
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onFirstResume() {
+        super.onFirstResume();
     }
 
 

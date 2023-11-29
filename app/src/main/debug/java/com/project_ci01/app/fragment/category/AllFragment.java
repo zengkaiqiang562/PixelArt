@@ -100,8 +100,8 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onFirstResume() {
+        super.onFirstResume();
     }
 
     @Override

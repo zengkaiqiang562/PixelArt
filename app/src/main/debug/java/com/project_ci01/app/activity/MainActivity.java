@@ -51,36 +51,38 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        init(getIntent());
+        init(getIntent(), false);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        init(intent);
+        init(intent, true);
     }
 
-    private void init(Intent intent) {
+    private void init(Intent intent, boolean newIntent) {
+        if (!newIntent) { // onNewIntent 时不再初始化
+//            uiHandler.postDelayed(this::initViewPager, 50);
+            initViewPager();
 
-        initViewPager();
+            binding.menuHomeClick.setOnClickListener(v -> {
+                if (binding.viewPager.getCurrentItem() != BottomMenu.HOME.ordinal()) {
+                    setBottomMenu(BottomMenu.HOME);
+                }
+            });
 
-        binding.menuHomeClick.setOnClickListener(v -> {
-            if (binding.viewPager.getCurrentItem() != BottomMenu.HOME.ordinal()) {
-                setBottomMenu(BottomMenu.HOME);
-            }
-        });
+            binding.menuDailyClick.setOnClickListener(v -> {
+                if (binding.viewPager.getCurrentItem() != BottomMenu.DAILY.ordinal()) {
+                    setBottomMenu(BottomMenu.DAILY);
+                }
+            });
 
-        binding.menuDailyClick.setOnClickListener(v -> {
-            if (binding.viewPager.getCurrentItem() != BottomMenu.DAILY.ordinal()) {
-                setBottomMenu(BottomMenu.DAILY);
-            }
-        });
-
-        binding.menuMineClick.setOnClickListener(v -> {
-            if (binding.viewPager.getCurrentItem() != BottomMenu.MINE.ordinal()) {
-                setBottomMenu(BottomMenu.MINE);
-            }
-        });
+            binding.menuMineClick.setOnClickListener(v -> {
+                if (binding.viewPager.getCurrentItem() != BottomMenu.MINE.ordinal()) {
+                    setBottomMenu(BottomMenu.MINE);
+                }
+            });
+        }
     }
 
     private void initViewPager() {

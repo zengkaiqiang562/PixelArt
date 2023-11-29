@@ -24,6 +24,9 @@ import java.lang.ref.WeakReference;
 public abstract class BaseFragment extends Fragment {
     protected String TAG = "BaseFragment";
 
+    public boolean isPaused = false;
+    public boolean isResumed = false;
+
     protected boolean turning = false;
 
     protected FragmentActivity activity;
@@ -102,6 +105,8 @@ public abstract class BaseFragment extends Fragment {
         fillStatusbar(stubBar());
         initView(view, savedInstanceState);
         isViewCreated = true;
+        isResumed = false; // reset
+        isPaused = false; // reset
     }
 
     protected void initBar() {
@@ -131,13 +136,24 @@ public abstract class BaseFragment extends Fragment {
     public void onResume() {
         super.onResume();
         LogUtils.e(TAG, "--> onResume()");
+        isResumed = true;
         turning = false;
+        if (!isPaused) {
+            onFirstResume();
+        }
+        isPaused = false;
+    }
+
+    protected void onFirstResume() {
+        LogUtils.e(TAG, "--> onFirstResume()");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         LogUtils.e(TAG, "--> onPause()");
+        isResumed = false;
+        isPaused = true;
     }
 
     @Override

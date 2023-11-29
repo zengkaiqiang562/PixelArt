@@ -99,8 +99,8 @@ public class LoveFragment extends BaseImageFragment implements OnItemClickListen
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onFirstResume() {
+        super.onFirstResume();
     }
 
     @Override

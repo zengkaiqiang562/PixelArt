@@ -190,7 +190,7 @@ public class HomeFragment extends BaseImageFragment {
     private class CategoryPagerAdapter extends FragmentPagerAdapter {
 
         public CategoryPagerAdapter(@NonNull FragmentManager fm) {
-            super(fm);
+            super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @NonNull
