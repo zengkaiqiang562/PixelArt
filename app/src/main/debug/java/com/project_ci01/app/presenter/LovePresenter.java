@@ -44,7 +44,9 @@ public class LovePresenter extends FragmentPresenter<LoveFragment, ImageEntityNe
         }
 
         LogUtils.e(TAG, "-->  handleData()   data.size=" + data.size());
-
+        for (ImageEntityNew entity : data) {
+            LogUtils.e(TAG, "---->  handleData()  data item ##   entity=" + entity);
+        }
         noMore = data.size() != 0 && data.size() >= totalSize;
         isUpdating = false;
         notifyDataChanged();

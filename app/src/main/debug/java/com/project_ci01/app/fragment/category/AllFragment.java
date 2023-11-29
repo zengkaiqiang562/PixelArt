@@ -126,8 +126,10 @@ public class AllFragment extends BaseImageFragment implements OnItemClickListene
     }
 
     public void tryAutoRefresh() {
-        if (ContextManager.isSurvival(activity) && presenter != null && presenter.checkAutoRefresh()) {
-            binding.allRefresh.autoRefresh(0, 50, 0.1f ,false);
+        if (ContextManager.isSurvival(activity) && presenter != null/* && presenter.checkAutoRefresh()*/) {
+//            binding.allRefresh.autoRefresh(0, 50, 0.1f ,false);
+            binding.allRefresh.setEnableLoadMore(true);
+            presenter.refreshData();
         }
     }
 
