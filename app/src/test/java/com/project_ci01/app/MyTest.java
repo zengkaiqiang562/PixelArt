@@ -3,9 +3,9 @@ package com.project_ci01.app;
 import com.blankj.utilcode.constant.TimeConstants;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.TimeUtils;
-import com.google.android.gms.common.util.Hex;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -50,7 +50,7 @@ public class MyTest {
         byte red = (byte) ((color >> 16) & 0xFF);
         byte green = (byte) ((color >> 8) & 0xFF);
         byte blue = (byte) (color & 0xFF);
-        String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+        String hexColor = "#" + Hex.encodeHexString(new byte[]{alpha, red, green, blue}, false);
         System.out.println("hexColor="+hexColor);
     }
 

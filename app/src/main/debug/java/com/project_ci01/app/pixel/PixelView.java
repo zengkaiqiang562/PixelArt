@@ -23,13 +23,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.util.Hex;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.base.utils.BitmapUtils;
 import com.project_ci01.app.base.utils.FileUtils;
 import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.utils.MyTimeUtils;
+
+import org.apache.commons.codec.binary.Hex;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -204,7 +205,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
             byte red = (byte) Color.red(color);
             byte green = (byte) Color.green(color);
             byte blue = (byte) Color.blue(color);
-            String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+            String hexColor = "#" + Hex.encodeHexString(new byte[]{alpha, red, green, blue}, false);
             LogUtils.e(TAG, "--> setImageEntityNew()   color=" + hexColor + ",  number=" + numberMap.get(color) + ",  count=" + entry.getValue().size());
         }
         LogUtils.e(TAG, "--> setImageEntityNew()   colorCount=" + colorCount); // 颜色种类个数

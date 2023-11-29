@@ -2,8 +2,6 @@ package com.project_ci01.app.base.utils;
 
 import android.graphics.Color;
 
-import com.google.android.gms.common.util.Hex;
-
 public class BitmapUtils {
 
     /**

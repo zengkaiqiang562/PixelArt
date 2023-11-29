@@ -2,7 +2,7 @@ package com.project_ci01.app.pixel;
 
 import android.graphics.Color;
 
-import com.google.android.gms.common.util.Hex;
+import org.apache.commons.codec.binary.Hex;
 
 public class Pixel {
     int x;
@@ -23,7 +23,7 @@ public class Pixel {
         byte red = (byte) Color.red(color);
         byte green = (byte) Color.green(color);
         byte blue = (byte) Color.blue(color);
-        String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+        String hexColor = "#" + Hex.encodeHexString(new byte[]{alpha, red, green, blue}, false);
         return "Pixel{" +
                 "x=" + x +
                 ", y=" + y +

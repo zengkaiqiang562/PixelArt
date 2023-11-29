@@ -2,7 +2,7 @@ package com.project_ci01.app.pixel;
 
 import android.graphics.Color;
 
-import com.google.android.gms.common.util.Hex;
+import org.apache.commons.codec.binary.Hex;
 
 import java.io.Serializable;
 
@@ -34,7 +34,7 @@ public class PixelUnit implements Serializable {
         byte red = (byte) Color.red(color);
         byte green = (byte) Color.green(color);
         byte blue = (byte) Color.blue(color);
-        String hexColor = "#" + Hex.bytesToStringUppercase(new byte[]{alpha, red, green, blue});
+        String hexColor = "#" + Hex.encodeHexString(new byte[]{alpha, red, green, blue}, false);
         return "Pixel{" +
                 "x=" + x +
                 ", y=" + y +

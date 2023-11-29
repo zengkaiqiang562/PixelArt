@@ -201,17 +201,15 @@ dependencies {
 //    implementation("com.facebook.android:facebook-core:12.1.0")
 //    implementation("com.facebook.android:facebook-applinks:12.1.0")
 
-    /* Adjust */
-    implementation("com.adjust.sdk:adjust-android:4.33.5")
-    implementation("com.android.installreferrer:installreferrer:2.2")
-    // Add the following if you are using the Adjust SDK inside web views on your app
-    implementation("com.adjust.sdk:adjust-android-webbridge:4.33.5")
-    implementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
+//    /* Adjust */
+//    implementation("com.adjust.sdk:adjust-android:4.33.5")
+//    implementation("com.android.installreferrer:installreferrer:2.2")
+//    // Add the following if you are using the Adjust SDK inside web views on your app
+//    implementation("com.adjust.sdk:adjust-android-webbridge:4.33.5")
+//    implementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
 }
 
 fun buildConfig(config: com.android.build.api.dsl.DefaultConfig) {
-    config.buildConfigField("boolean", "VPN_DEBUG", "${deployExt.debug}")
-    config.buildConfigField("boolean", "VPN_LIMIT", "${deployExt.vpnlimit}")
     config.buildConfigField("boolean", "ENABLE_LOG", "${deployExt.enableLog}")
     config.buildConfigField("boolean", "ENABLE_CRASH", "${deployExt.enableCrash}")
 

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.adjust.sdk.Adjust;
+//import com.adjust.sdk.Adjust;
 import com.blankj.utilcode.util.SPUtils;
 import com.project_ci01.app.base.constants.SPConstants;
 import com.project_ci01.app.base.utils.LogUtils;
@@ -85,13 +85,13 @@ public enum LifecyclerManager implements Application.ActivityLifecycleCallbacks 
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
         LogUtils.e(TAG, "--> onActivityResumed()  activity=" + activity);
-        Adjust.onResume();
+//        Adjust.onResume();
     }
 
     @Override
     public void onActivityPaused(@NonNull Activity activity) {
         LogUtils.e(TAG, "--> onActivityPaused()  activity=" + activity);
-        Adjust.onPause();
+//        Adjust.onPause();
     }
 
     @Override

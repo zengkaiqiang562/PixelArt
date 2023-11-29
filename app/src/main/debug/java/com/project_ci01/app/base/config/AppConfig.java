@@ -8,8 +8,6 @@ public final class AppConfig {
 
     public static final int MIN_LAUNCH_TIME = 0; // 启动页最小时长（s）
 
-    public static final boolean VPN_DEBUG = BuildConfig.VPN_DEBUG;
-    public static final boolean VPN_LIMIT = BuildConfig.VPN_LIMIT;
     public static final boolean ENABLE_LOG = BuildConfig.ENABLE_LOG;
     public static final boolean ENABLE_CRASH = BuildConfig.ENABLE_CRASH;
     public static final String URL_PRIVACY = BuildConfig.URL_PRIVACY;
@@ -26,7 +24,8 @@ public final class AppConfig {
     // TODO 去掉 Facebook
 //    public static final String FACEBOOK_ID = BuildConfig.FACEBOOK_ID;
 //    public static final String FACEBOOK_TOKEN = BuildConfig.FACEBOOK_TOKEN;
-    public static final String ADJUST_TOKEN = BuildConfig.ADJUST_TOKEN;
+
+//    public static final String ADJUST_TOKEN = BuildConfig.ADJUST_TOKEN;
 
 //    public static final String LOCAL_CONFIG = BuildConfig.LOCAL_CONFIG; // TODO 去掉本地全局配置
 //    public static final String VPN_LIST = BuildConfig.VPN_LIST;
