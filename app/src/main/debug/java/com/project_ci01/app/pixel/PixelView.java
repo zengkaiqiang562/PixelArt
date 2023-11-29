@@ -193,8 +193,6 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         maxPixelUnit = PixelHelper.getMaxPixelUnitSize();
         minPixelUnit = PixelHelper.getMinPixelUnitSize(tmpPixelList);
 
-        post(this::notifyInited);
-
         /*================== logcat =============*/
         int colorCount = 0;
         int allColorPixelCount = 0;
@@ -218,7 +216,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         if (adjoinMap == null) {
             storeHandler.sendParseAdjoinMapMsg();
         }
+
         postInvalidate();
+        post(this::notifyInited);
+
         LogUtils.e(TAG, "--> loadPixelsInternal()   duration=" + (SystemClock.elapsedRealtime() - start));
     }
 
@@ -918,14 +919,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
                         colors.add(color);
                     }
                 }
-                if (!colors.isEmpty()) {
-                    PixelView.this.post(() -> {
-                        notifyColorCompleted(colors);
-                    });
-                }
-                if (countResult[0] == countResult[1]) {
-                    PixelView.this.post(PixelView.this::notifyAllCompleted);
-                }
+
+                PixelView.this.post(() -> {
+                    notifyProgressChanged(colors, mapResult, countResult);
+                });
 
 
                 if (lastCountResult == null) { // 第一次 onDraw 时不更新
@@ -999,6 +996,10 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         return false;
     }
 
+    public int getSelColor() {
+        return selColor;
+    }
+
     /*=============================== Callback ============================*/
 
     public void setOnPixelViewCallback(OnPixelViewCallback callback) {
@@ -1017,15 +1018,9 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
         }
     }
 
-    private void notifyColorCompleted(@NonNull List<Integer> colors) {
+    private void notifyProgressChanged(@NonNull List<Integer> colors, Map<Integer, int[]> mapResult, int[] countResult) { // 填色进度发生了改变
         if (callback != null) {
-            callback.onColorCompleted(colors);
-        }
-    }
-
-    private void notifyAllCompleted() {
-        if (callback != null) {
-            callback.onAllCompleted();
+            callback.onProgressChanged(colors, mapResult, countResult);
         }
     }
 
@@ -1038,8 +1033,7 @@ public class PixelView extends View implements GestureDetector.OnGestureListener
     public interface OnPixelViewCallback {
         void onInited(); // 初始化完成
         void onSelColorChanged(int selColor); // 选中颜色改变
-        void onColorCompleted(@NonNull List<Integer> colors); // 填色完毕的颜色集
-        void onAllCompleted(); // 全部填色完毕
+        void onProgressChanged(@NonNull List<Integer> colors, Map<Integer, int[]> mapResult, int[] countResult); // colors 填色完毕的颜色集, mapResult 某种颜色像素点的填色进度集, countResult 所有像素点的进度集
         void onPropsEnd(Props props); // 某种道具使用结束
     }
 }

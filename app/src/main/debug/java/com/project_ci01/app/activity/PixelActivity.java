@@ -1,6 +1,7 @@
 package com.project_ci01.app.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
@@ -16,13 +17,17 @@ import com.project_ci01.app.config.IConfig;
 import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.dialog.PixelGuideDialog;
+import com.project_ci01.app.pixel.PixelHelper;
+import com.project_ci01.app.pixel.PixelList;
 import com.project_ci01.app.pixel.PixelView;
 import com.project_ci01.app.pixel.Props;
 import com.project_ci01.app.base.view.BaseActivity;
 import com.project_ci01.app.databinding.ActivityPixelBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -152,7 +157,24 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
             adapter.setDatasAndNotify(items);
         }
 
-        if (binding.viewPixel.setSelColor(numberEntries.get(0).getKey())) { // 默认选中数字为 1 的颜色
+        // 初始化选中颜色
+        PixelList pixelList = binding.viewPixel.getPixelList();
+        int selColor = numberEntries.get(0).getKey(); // 默认取数字1为选中颜色
+        if (pixelList != null) {
+            Map<Integer, int[]> mapResult = new HashMap<>();
+            PixelHelper.countDrawnPixels(pixelList, mapResult); // 计算某种颜色的填色进度
+            for (Map.Entry<Integer, String> entry: numberEntries) {
+                int color = entry.getKey();
+                int[] colorResult = mapResult.get(color); // 取颜色 color 的填色进度
+                if (colorResult == null) continue;
+                if (colorResult[0] != colorResult[1]) { // 优先取 numberEntries 集合中第一个未填色完的颜色作为选中颜色
+                    selColor = color;
+                    break;
+                }
+            }
+        }
+
+        if (binding.viewPixel.setSelColor(selColor)) {
             binding.viewPixel.invalidate();
         }
     }
@@ -161,22 +183,64 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
     public void onSelColorChanged(int selColor) {
         LogUtils.e(TAG, "--> onSelColorChanged()  selColor=" + selColor);
         if (adapter != null) {
-            adapter.updateSelColor(selColor);
+            int selColorIndex = adapter.updateSelColor(selColor);
+            if (selColorIndex != -1) {
+                binding.paletteRv.postDelayed(() -> {
+                    binding.paletteRv.smoothScrollToPosition(selColorIndex); // 滚动到选中颜色处
+                }, 100);
+            }
         }
     }
 
     @Override
-    public void onColorCompleted(@NonNull List<Integer> colors) {
-        LogUtils.e(TAG, "--> onColorCompleted()  colors=" + colors);
-        if (adapter != null) {
+    public void onProgressChanged(@NonNull List<Integer> colors, Map<Integer, int[]> mapResult, int[] countResult) {
+        LogUtils.e(TAG, "--> onProgressChanged()  colors=" + colors + "   countResult=" + Arrays.toString(countResult));
+        if (!colors.isEmpty() && adapter != null) { // 有颜色填完了
             adapter.updateCompletedColor(colors);
         }
-    }
 
-    @Override
-    public void onAllCompleted() {
-        LogUtils.e(TAG, "--> onAllCompleted()");
-        startCompleteDisplayActivity(entity);
+        if (countResult[0] == countResult[1]) { // 全部颜色都填完了
+            startCompleteDisplayActivity(entity);
+            return;
+        }
+
+        /* 未填完全部颜色，但当前颜色填完时，需要自动切换到颜色盘中的下一个未填完的颜色 */
+        int selColor = binding.viewPixel.getSelColor();
+        if (!colors.contains(selColor)) { // 当前颜色没有填完
+            return;
+        }
+        if (adapter == null || adapter.getDatas() == null || adapter.getDatas().isEmpty()) {
+            return;
+        }
+
+        List<PaletteItem> paletteItems = adapter.getDatas();
+        int selColorIndex = -1; // 当前选中颜色在 numberEntries 中的索引
+        for (int index = 0; index < paletteItems.size(); index++) {
+            PaletteItem paletteItem = paletteItems.get(index);
+            if (selColor == paletteItem.color) {
+                selColorIndex = index;
+                break;
+            }
+        }
+
+        if (selColorIndex == -1) {
+            return;
+        }
+
+        int nextColor = Color.TRANSPARENT;
+        int nextIndex = (selColorIndex + 1) % paletteItems.size();
+        while (nextIndex != selColorIndex) {
+            int color = paletteItems.get(nextIndex).color;
+            if (!colors.contains(color)) {
+                nextColor = color;
+                break;
+            }
+            nextIndex = (nextIndex + 1) % paletteItems.size();
+        }
+
+        if (nextColor != Color.TRANSPARENT && binding.viewPixel.setSelColor(nextColor)) {
+            binding.viewPixel.invalidate();
+        }
     }
 
     @Override

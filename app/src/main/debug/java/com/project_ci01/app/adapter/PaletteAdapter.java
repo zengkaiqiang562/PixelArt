@@ -37,14 +37,25 @@ public class PaletteAdapter extends BaseAdapter<PaletteItem, PaletteAdapter.Pale
         strokeDrawable.getPaint().setColor(Color.parseColor("#FF2E2A2B"));
     }
 
-    public void updateSelColor(int selColor) {
+    public int updateSelColor(int selColor) { // 返回选中颜色在颜色盘中的索引
+        int selColorIndex = -1;
+
         if (datas == null) {
-            return;
+            return selColorIndex;
         }
-        for (PaletteItem item : datas) {
-            item.selected = item.color == selColor;
+
+        for (int index = 0; index < datas.size(); index++) {
+            PaletteItem item = datas.get(index);
+            if (item.color == selColor) {
+                selColorIndex = index;
+                item.selected = true;
+            } else {
+                item.selected = false;
+            }
         }
+//        notifyItemRangeChanged(0, datas.size());
         notifyDataSetChanged();
+        return selColorIndex;
     }
 
     public void updateCompletedColor(@NonNull List<Integer> colors) {
@@ -54,6 +65,7 @@ public class PaletteAdapter extends BaseAdapter<PaletteItem, PaletteAdapter.Pale
         for (PaletteItem item : datas) {
             item.completed = colors.contains(item.color);
         }
+//        notifyItemRangeChanged(0, datas.size());
         notifyDataSetChanged();
     }
 
