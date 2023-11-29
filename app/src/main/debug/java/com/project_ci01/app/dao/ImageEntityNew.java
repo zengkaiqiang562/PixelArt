@@ -41,11 +41,15 @@ public class ImageEntityNew implements Parcelable {
 
     public String saveImagePath; // 保存图片的路径
 
-    public long colorTime; // 最近一次的填色时间（进入过填色页填过色或者重置就有值，没进过填色页或删除就置为0）
+    public long colorTime; // 进入填色页的时间
     public boolean completed; // 是否已完成填色
+    public int colorCount; // 已填色的像素点个数
+    public int totalCount; // 总像素点个数（去掉白色和透明色）
 
 
-    public ImageEntityNew(long id, long createTime, int imageId, String fileName, String description, List<String> permission, List<String> display, String category, String fromType, String filePath, String storeDir/*, String originImagePath*/, String colorImagePath, String pixelsObjPath, String saveImagePath, long colorTime, boolean completed) {
+    public ImageEntityNew(long id, long createTime, int imageId, String fileName, String description, List<String> permission, List<String> display, String category, String fromType,
+                          String filePath, String storeDir/*, String originImagePath*/, String colorImagePath, String pixelsObjPath, String saveImagePath,
+                          long colorTime, boolean completed, int colorCount, int totalCount) {
         this.id = id;
         this.createTime = createTime;
         this.imageId = imageId;
@@ -63,43 +67,45 @@ public class ImageEntityNew implements Parcelable {
         this.saveImagePath = saveImagePath;
         this.colorTime = colorTime;
         this.completed = completed;
+        this.colorCount = colorCount;
+        this.totalCount = totalCount;
     }
 
-    // for Home
-    @Ignore
-    public ImageEntityNew(Context context, long createTime, String fileName, String fromType, String category) {
-        this.createTime = createTime;
-        this.colorTime = 0;
-        this.fileName = fileName;
-        this.filePath = null;
-        this.fromType = fromType;
-        this.category = category;
-        this.storeDir = context.getCacheDir() + File.separator
-                + fromType + File.separator + category + File.separator
-                + StringUtils.trimSuffix(fileName);
-//        this.originImagePath = storeDir + File.separator + fileName;
-        this.colorImagePath = storeDir + File.separator + "color_image";
-        this.pixelsObjPath = storeDir + File.separator + "pixel_list";
-        this.completed = false;
-    }
+//    // for Home
+//    @Ignore
+//    public ImageEntityNew(Context context, long createTime, String fileName, String fromType, String category) {
+//        this.createTime = createTime;
+//        this.colorTime = 0;
+//        this.fileName = fileName;
+//        this.filePath = null;
+//        this.fromType = fromType;
+//        this.category = category;
+//        this.storeDir = context.getCacheDir() + File.separator
+//                + fromType + File.separator + category + File.separator
+//                + StringUtils.trimSuffix(fileName);
+////        this.originImagePath = storeDir + File.separator + fileName;
+//        this.colorImagePath = storeDir + File.separator + "color_image";
+//        this.pixelsObjPath = storeDir + File.separator + "pixel_list";
+//        this.completed = false;
+//    }
 
-    // for daily
-    @Ignore
-    public ImageEntityNew(Context context, long createTime, String fileName, String fromType, String category, String dateOfMonth) {
-        this.createTime = createTime;
-        this.colorTime = 0;
-        this.fileName = fileName;
-        this.filePath = null;
-        this.fromType = fromType;
-        this.category = category;
-        this.storeDir = context.getCacheDir() + File.separator
-                + fromType + File.separator + category + File.separator + dateOfMonth + File.separator
-                + StringUtils.trimSuffix(fileName);
-//        this.originImagePath = storeDir + File.separator + fileName;
-        this.colorImagePath = storeDir + File.separator + "color_image";
-        this.pixelsObjPath = storeDir + File.separator + "pixel_list";
-        this.completed = false;
-    }
+//    // for daily
+//    @Ignore
+//    public ImageEntityNew(Context context, long createTime, String fileName, String fromType, String category, String dateOfMonth) {
+//        this.createTime = createTime;
+//        this.colorTime = 0;
+//        this.fileName = fileName;
+//        this.filePath = null;
+//        this.fromType = fromType;
+//        this.category = category;
+//        this.storeDir = context.getCacheDir() + File.separator
+//                + fromType + File.separator + category + File.separator + dateOfMonth + File.separator
+//                + StringUtils.trimSuffix(fileName);
+////        this.originImagePath = storeDir + File.separator + fileName;
+//        this.colorImagePath = storeDir + File.separator + "color_image";
+//        this.pixelsObjPath = storeDir + File.separator + "pixel_list";
+//        this.completed = false;
+//    }
 
     @Ignore
     public ImageEntityNew() {}
@@ -123,6 +129,8 @@ public class ImageEntityNew implements Parcelable {
         saveImagePath = in.readString();
         colorTime = in.readLong();
         completed = in.readByte() != 0;
+        colorCount = in.readInt();
+        totalCount = in.readInt();
     }
 
     @Override
@@ -144,6 +152,8 @@ public class ImageEntityNew implements Parcelable {
         dest.writeString(saveImagePath);
         dest.writeLong(colorTime);
         dest.writeByte((byte) (completed ? 1 : 0));
+        dest.writeInt(colorCount);
+        dest.writeInt(totalCount);
     }
 
     public static final Creator<ImageEntityNew> CREATOR = new Creator<ImageEntityNew>() {
@@ -173,6 +183,28 @@ public class ImageEntityNew implements Parcelable {
         return storeDir.hashCode();
     }
 
+    public void update(ImageEntityNew entity) {
+        this.id = entity.id;
+        this.createTime = entity.createTime;
+        this.imageId = entity.imageId;
+        this.fileName = entity.fileName;
+        this.description = entity.description;
+        this.permission = entity.permission;
+        this.display = entity.display;
+        this.category = entity.category;
+        this.fromType = entity.fromType;
+        this.filePath = entity.filePath;
+        this.storeDir = entity.storeDir;
+//        this.originImagePath = entity.originImagePath;
+        this.colorImagePath = entity.colorImagePath;
+        this.pixelsObjPath = entity.pixelsObjPath;
+        this.saveImagePath = entity.saveImagePath;
+        this.colorTime = entity.colorTime;
+        this.completed = entity.completed;
+        this.colorCount = entity.colorCount;
+        this.totalCount = entity.totalCount;
+    }
+
     @Override
     public String toString() {
         return "ImageEntity{" +
@@ -181,7 +213,10 @@ public class ImageEntityNew implements Parcelable {
 //                ", fromType='" + fromType + '\'' +
 //                ", storeDir='" + storeDir + '\'' +
                 ", completed=" + completed +
+                ", colorCount=" + colorCount +
+                ", totalCount=" + totalCount +
                 ", createTime=" + TimeUtils.millis2String(createTime, "yyyy-MM-dd HH:ss:mm") +
+                ", colorTime=" + colorTime +
                 ", display=" + display +
                 ", category='" + category + '\'' +
                 '}';

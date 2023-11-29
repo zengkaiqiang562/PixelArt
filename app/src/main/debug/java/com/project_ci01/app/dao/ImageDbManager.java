@@ -78,9 +78,19 @@ public class ImageDbManager {
         }
     }
 
+    public void updateColorTime(ImageEntityNew entity) { // 更新进入填色页的时间
+        dbHandler.post(() -> {
+            int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime);
+            LogUtils.e(TAG, "-->  updateColorTime()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
+            mainHandler.post(() -> {
+                notifyOnImageUpdated(entity.category, entity.imageId);
+            });
+        });
+    }
+
     public void updateProgress(ImageEntityNew entity) { // 更新填色进度
         dbHandler.post(() -> {
-            int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed);
+            int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed, entity.colorCount, entity.totalCount);
             LogUtils.e(TAG, "-->  updateProgress()  entity.imageId=" + entity.imageId + "  updateCount=" + updateCount);
             mainHandler.post(() -> {
                 notifyOnImageUpdated(entity.category, entity.imageId);
@@ -92,7 +102,7 @@ public class ImageDbManager {
     }
 
     public void updateProgressSync(ImageEntityNew entity) { // 更新填色进度
-        int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed);
+        int updateCount = imageDao.updateImage(entity.imageId, entity.colorTime, entity.completed, entity.colorCount, entity.totalCount);
         LogUtils.e(TAG, "-->  updateProgressSync()   entity.imageId="  + entity.imageId +  "   updateCount=" + updateCount);
         mainHandler.post(() -> {
             notifyOnImageUpdated(entity.category, entity.imageId);

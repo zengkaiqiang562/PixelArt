@@ -147,6 +147,7 @@ public class LoveFragment extends BaseImageFragment implements OnItemClickListen
                 List<ImageEntityNew> datas = adapter.getDatas();
                 int index = datas.indexOf(entity);
                 if (index != -1) {
+                    datas.get(index).update(entity);
                     adapter.notifyItemChanged(index);
                 }
             });
@@ -195,11 +196,11 @@ public class LoveFragment extends BaseImageFragment implements OnItemClickListen
                 return;
             }
 
-            if (data.size() < showData.size()) { // 下拉刷新
+            if (data.size() <= showData.size()) { // 下拉刷新
                 adapter.setDatas(data);
                 adapter.notifyItemRangeRemoved(data.size(), showData.size() - data.size());
                 adapter.notifyItemRangeChanged(0, data.size());
-            } else if (data.size() > showData.size()){ // 上拉加载更多
+            } else { // 上拉加载更多
                 adapter.setDatas(data);
                 adapter.notifyItemRangeChanged(showData.size(), data.size() - showData.size());
             }

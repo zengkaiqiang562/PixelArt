@@ -46,7 +46,7 @@ public interface ImageDao {
     @Query("select * from table_image_new where completed= 1 order by colorTime desc")
     List<ImageEntityNew> queryCompleted();
 
-    @Query("select * from table_image_new where completed= 0 and colorTime > 0  order by colorTime desc")
+    @Query("select * from table_image_new where completed= 0 and totalCount > 0  order by colorTime desc") // totalCount > 0 表示有填过色（即使recolor图片，totalCount也不会重置）
     List<ImageEntityNew> queryInProgress();
 
     @Query("select count(*) from table_image_new")
@@ -58,14 +58,17 @@ public interface ImageDao {
     @Query("select count(*) from table_image_new where completed= 1")
     int countCompleted();
 
-    @Query("select count(*) from table_image_new where completed= 0 and colorTime > 0")
+    @Query("select count(*) from table_image_new where completed= 0 and totalCount > 0") // totalCount > 0 表示有填过色（即使recolor图片，totalCount也不会重置）
     int countInProgress();
 
     /*==============================================*/
     @Query("update table_image_new set fileName= :fileName, description= :description, permission= :permission, display= :display  where imageId= :imageId")
     int updateImage(int imageId, String fileName, String description, List<String> permission, List<String> display);
-    @Query("update table_image_new set colorTime= :colorTime, completed= :completed where imageId= :imageId")
-    int updateImage(int imageId, long colorTime, boolean completed);
+    @Query("update table_image_new set colorTime= :colorTime, completed= :completed, colorCount= :colorCount, totalCount= :totalCount where imageId= :imageId")
+    int updateImage(int imageId, long colorTime, boolean completed, int colorCount, int totalCount);
+
+    @Query("update table_image_new set colorTime= :colorTime where imageId= :imageId")
+    int updateImage(int imageId, long colorTime);
 
     @Query("update table_image_new set saveImagePath= :saveImagePath where imageId= :imageId")
     int updateImage(int imageId, String saveImagePath);

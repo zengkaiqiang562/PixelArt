@@ -321,6 +321,8 @@ public class CompletedFragment extends BaseImageFragment implements OnItemClickL
                 // 更新数据库
                 entity.completed = false;
 //                entity.colorTime = 0; // colorTime 不变，否则就是删除了
+                entity.colorCount = 0;
+//                entity.totalCount = 0; // totalCount 也不变，否则就是删除了（因为 totalCount 只有在填色过后才会有值，进入填色页但是没有填色时，totalCount 也不会赋值）
                 ImageDbManager.getInstance().updateProgressSync(entity);
 
                 long duration = SystemClock.elapsedRealtime() - startTs;
@@ -351,7 +353,9 @@ public class CompletedFragment extends BaseImageFragment implements OnItemClickL
                 PixelHelper.writeColorImage(entity.colorImagePath, pixelList, true); // 文件存在时删除重新创建
                 // 更新数据库
                 entity.completed = false;
-                entity.colorTime = 0; // reset
+                entity.colorTime = 0; // reset，删除就重置进入填色页的时间
+                entity.colorCount = 0;
+                entity.totalCount = 0;
                 ImageDbManager.getInstance().updateProgressSync(entity);
 
                 long duration = SystemClock.elapsedRealtime() - startTs;

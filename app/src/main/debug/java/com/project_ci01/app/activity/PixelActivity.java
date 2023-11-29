@@ -13,6 +13,7 @@ import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.view.dialog.DialogHelper;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 import com.project_ci01.app.config.IConfig;
+import com.project_ci01.app.dao.ImageDbManager;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.dialog.PixelGuideDialog;
 import com.project_ci01.app.pixel.PixelView;
@@ -70,7 +71,10 @@ public class PixelActivity extends BaseActivity implements OnItemClickListener<P
         binding.viewPixel.setOnPixelViewCallback(this);
 
         if (entity != null) {
-            binding.viewPixel.loadPixels(entity);
+            entity.colorTime = System.currentTimeMillis(); // 更新进入填色页的时间
+            ImageDbManager.getInstance().updateColorTime(entity);
+
+            binding.viewPixel.loadPixels(entity); // 加载像素点数据
         }
 
         binding.topBack.setOnClickListener(v -> {

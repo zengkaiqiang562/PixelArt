@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.project_ci01.app.base.utils.LogUtils;
 import com.project_ci01.app.base.utils.MyTimeUtils;
 import com.project_ci01.app.dao.ImageEntityNew;
 import com.project_ci01.app.R;
@@ -18,6 +19,8 @@ import com.project_ci01.app.base.view.recyclerview.BaseHolder;
 import com.project_ci01.app.base.view.recyclerview.OnItemClickListener;
 
 public class HomeImageAdapter extends BaseAdapter<ImageEntityNew, HomeImageAdapter.HomeImageHolder> {
+
+    private static final String TAG = "HomeImageAdapter";
 
     public HomeImageAdapter(OnItemClickListener<HomeImageHolder> listener, Context context) {
         super(null, listener, context);
@@ -47,8 +50,8 @@ public class HomeImageAdapter extends BaseAdapter<ImageEntityNew, HomeImageAdapt
         @Override
         public void setData(ImageEntityNew data, int position) {
             entity = data;
-
-            if (MyTimeUtils.isInToday(entity.createTime)) {
+            LogUtils.e(TAG, "--> setData()  entity=" + entity);
+            if (MyTimeUtils.isInToday(entity.createTime) && entity.colorTime <= 0) { // 当天图片且没进入过填色页
                 newTag.setVisibility(View.VISIBLE);
             } else {
                 newTag.setVisibility(View.GONE);
